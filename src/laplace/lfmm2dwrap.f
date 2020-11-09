@@ -68,7 +68,7 @@ c
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
 
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 0
@@ -79,7 +79,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -125,7 +125,7 @@ c
       complex *16 hess,hesstarg
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 0
@@ -136,7 +136,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -187,7 +187,7 @@ c
       complex *16 dipstr
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 0
@@ -198,7 +198,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -245,7 +245,7 @@ c
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
 
-      integer nd
+      integer nd,iper
 
       ifcharge = 0
       ifdipole = 1
@@ -256,7 +256,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -302,7 +302,7 @@ c
       complex *16 hess,hesstarg
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 0
       ifdipole = 1
@@ -313,7 +313,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -364,7 +364,7 @@ c
       complex *16 charge
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 0
       ifdipole = 1
@@ -375,7 +375,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -422,7 +422,7 @@ c
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
 
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 1
@@ -433,7 +433,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -478,7 +478,7 @@ c
       complex *16 hess,hesstarg
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 1
@@ -489,7 +489,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
@@ -540,7 +540,7 @@ cc     temporary variables
 c
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
-      integer nd
+      integer nd,iper
 
       ifcharge = 1
       ifdipole = 1
@@ -551,7 +551,7 @@ c
       nd = 1
 
       call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return

@@ -18,7 +18,7 @@ c    $Date$
 c    $Revision$
 
       subroutine lfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,ifpgh,pot,grad,hess,
+     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
 c----------------------------------------------
@@ -35,6 +35,7 @@ c   ifdipole      : flag for including dipole interactions
 c                   dipole interactions included if ifcharge =1
 c                   not included otherwise
 c   dipstr(nd,ns)    : dipole strengths
+c   iper          : flag for periodic implmentations. Currently unused
 c   ifpgh         : flag for computing pot/grad/hess
 c                   ifpgh = 1, only potential is computed
 c                   ifpgh = 2, potential and gradient are computed
@@ -78,6 +79,7 @@ cc      Tree variables
 c
       integer, allocatable :: itree(:)
       integer iptr(8)
+      integer iper,nlmin
       real *8, allocatable :: tcenters(:,:),boxsize(:)
       integer nexpc,ntj
       real *8 expc(2)
@@ -132,6 +134,8 @@ c
       idivflag =0
       ndiv = 20
       ltree = 0
+      nlmin = 0
+      iper = 0
 
       ifprint = 0
 c
@@ -141,8 +145,8 @@ c       number of levels and length of tree
 c
 
       
-      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlevels,
-     1   nboxes,ltree)
+      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
+     1  nlevels,nboxes,ltree)
 
 
       allocate(itree(ltree))
@@ -153,8 +157,8 @@ c
 c       call the tree code
 c
 
-      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlevels,
-     1  nboxes,ltree,itree,iptr,tcenters,boxsize)
+      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
+     1  nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
 
       allocate(isrc(ns),isrcse(2,nboxes))
       allocate(itarg(nt),itargse(2,nboxes),iexpcse(2,nboxes))
@@ -356,7 +360,7 @@ C$      time1=omp_get_wtime()
      $   nt,targsort,nexpc,expc,
      $   iaddr,rmlexp,mptemp,lmptmp,
      $   itree,ltree,iptr,ndiv,nlevels,
-     $   nboxes,boxsize,rscales,tcenters,itree(iptr(1)),
+     $   nboxes,iper,boxsize,rscales,tcenters,itree(iptr(1)),
      $   isrcse,itargse,iexpcse,nterms,ntj,
      $   ifpgh,potsort,gradsort,hesssort,
      $   ifpghtarg,pottargsort,gradtargsort,
@@ -421,7 +425,7 @@ c
      $     ntarget,targetsort,nexpc,expcsort,
      $     iaddr,rmlexp,mptemp,lmptmp,
      $     itree,ltree,iptr,ndiv,nlevels, 
-     $     nboxes,boxsize,rscales,centers,laddr,
+     $     nboxes,iper,boxsize,rscales,centers,laddr,
      $     isrcse,itargse,iexpcse,nterms,ntj,
      $     ifpgh,pot,grad,hess,
      $     ifpghtarg,pottarg,gradtarg,hesstarg,
@@ -440,18 +444,6 @@ c
 c   \phi(x_i) = \sum_{j\ne i} charge_j log(x_i-x_j)
 c   + dipstr_j/(x_i - x_j)
 c
-c   This subroutine lfmm2dgqbx (helmholtz fmm implementation
-c   of global qbx)
-c   returns the local expansions of order ntj due to the
-c   collection of sources given by the user at the expansion centers
-c   and evaluates the potential and gradients
-c   at the targets
-c
-c   Dependencies
-c   laprouts2d.f
-c   laprouts2d_dir.f
-c   hank103cc.f
-c   l2dterms.f
 c
 c   All the source/target/expansion center related quantities
 c   are assumed to be tree-sorted
@@ -520,6 +512,8 @@ c
 c     boxsize in: real*8 (0:nlevels)
 c             boxsize(i) is the size of the box from end to end
 c             at level i
+c     iper    in: integer
+c             flag for periodic implementation
 c
 c     centers in: real *8(2,nboxes)
 c                 array containing the centers of all the boxes
@@ -573,6 +567,8 @@ c------------------------------------------------------------------
       implicit none
 
       integer nd
+
+      integer iper
 
       integer nsource,ntarget,nexpc
       integer ndiv,nlevels,ntj
@@ -672,14 +668,14 @@ c
 c        compute list info
 c
         call computemnlists(nlevels,nboxes,itree,ltree,iptr,centers,
-     1    boxsize,mnlist1,mnlist2,mnlist3,mnlist4)
+     1    boxsize,iper,mnlist1,mnlist2,mnlist3,mnlist4)
         allocate(nlist1s(nboxes),list1(mnlist1,nboxes))
         allocate(nlist2s(nboxes),list2(mnlist2,nboxes))
         allocate(nlist3s(nboxes),list3(mnlist3,nboxes))
         allocate(nlist4s(nboxes),list4(mnlist4,nboxes))
         
         call computelists(nlevels,nboxes,itree,ltree,iptr,centers,
-     1    boxsize,mnlist1,nlist1s,list1,mnlist2,nlist2s,list2,
+     1    boxsize,iper,mnlist1,nlist1s,list1,mnlist2,nlist2s,list2,
      2    mnlist3,nlist3s,list3,mnlist4,nlist4s,list4)
 c
 c

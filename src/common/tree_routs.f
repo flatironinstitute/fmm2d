@@ -98,7 +98,7 @@ c
 c
 
       subroutine computecoll(nlevels,nboxes,laddr,boxsize,
-     1                       centers,iparent,nchild,ichild,
+     1                       centers,iparent,nchild,ichild,iper,
      2                       nnbors,nbors)
 
 c     This subroutine computes the colleagues for an adaptive
@@ -136,6 +136,10 @@ c     ichild      in: integer(4,nboxes)
 c                 ichild(j,i) is the box id of the jth child of
 c                 box i
 c
+c     iper        in: integer
+c                 flag for periodic implementations. 
+c                 Currently not used. Feature under construction.
+c
 c----------------------------------------------------------------
 c     OUTPUT
 c     nnbors      out: integer(nboxes)
@@ -148,6 +152,7 @@ c                 box of box i
 c---------------------------------------------------------------
       implicit none
       integer nlevels,nboxes
+      integer iper
       integer laddr(2,0:nlevels)
       double precision boxsize(0:nlevels)
       double precision centers(2,nboxes)
@@ -336,13 +341,18 @@ c
       integer ichild(4,nboxes),nchild(nboxes)
       integer iflag(nboxes)
       integer ifirstbox
-      integer, allocatable :: isum(:)
+      integer, allocatable :: isum(:),itmp(:)
 
       integer i,ibox,nel0,j,l,jbox,nel1,nbl
       integer ii
 
-      allocate(isum(nbloc))
-      if(nbloc.gt.0) call cumsum_nz(nbloc,iflag(ifirstbox),isum)
+      allocate(isum(nbloc),itmp(nbloc))
+      do i=1,nbloc
+        ibox = ifirstbox+i-1
+        itmp(i) = 0
+        if(iflag(ibox).gt.0) itmp(i) = 1
+      enddo
+      if(nbloc.gt.0) call cumsum(nbloc,itmp,isum)
       
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nbl,j,jbox)
       do i = 1,nbloc
@@ -380,71 +390,6 @@ c
 c
 c
 c
-      subroutine cumsum(n,a,b)
-c
-c        this subroutine computes the cumulative sum of an array
-c
-c
-c       TODO: need to make this routine openmp
-c
-c       input:
-c         n - number of elements
-c         a - integer(n)
-c              input array
-c
-c       output:
-c         b - integer(n)
-c            b(i) = sum_{j=1}^{i} a(j)
-c
-      implicit none
-      integer a(n),b(n),n,i,isum
-      isum = 0
-
-
-      do i=1,n
-        isum = isum + a(i)
-        b(i) = isum
-      enddo
-      
-      return
-      end
-c
-c
-c
-c
-c
-      subroutine cumsum_nz(n,a,b)
-c
-c        this subroutine computes the cumulative sum of postive
-c        entries of an array
-c
-c
-c       TODO: need to make this routine openmp
-c
-c       input:
-c         n - number of elements
-c         a - integer(n)
-c              input array
-c
-c       output:
-c         b - integer(n)
-c            b(i) = sum_{j=1}^{i} I_{a(j)>0}
-c
-      implicit none
-      integer a(n),b(n),n,i,isum
-
-      isum = 0
-      do i=1,n
-        if(a(i).gt.0) isum = isum+1
-        b(i) = isum
-      enddo
-      
-      return
-      end
-c
-c
-c
-c 
 c
 c
       subroutine print_tree(itree,ltree,nboxes,centers,boxsize,nlevels,
@@ -513,7 +458,7 @@ c
 
       subroutine computemnlists(nlevels,nboxes,itree,ltree,
      1   iptr,centers,
-     1   boxsize,mnlist1,mnlist2,mnlist3,mnlist4)
+     1   boxsize,iper,mnlist1,mnlist2,mnlist3,mnlist4)
 c
 c        determine maximum number of elements in list1,list2,list3,list4
 c
@@ -540,7 +485,7 @@ c
 
       subroutine computelists(nlevels,nboxes,itree,ltree,
      1            iptr,centers,
-     2            boxsize,mnlist1,nlist1,list1,
+     2            boxsize,iper,mnlist1,nlist1,list1,
      3            mnlist2,nlist2,list2,
      4            mnlist3,nlist3,list3,
      5            mnlist4,nlist4,list4)
@@ -570,6 +515,10 @@ c                 xy coordinates of centers of boxes
 c   
 c     boxsize     in: real *8(0:nlevels)
 c                 Array of boxsizes
+c   
+c     iper        in: integer
+c                 flag for periodic implementations. Currently not used.
+c                 Feature under construction
 c 
 c     mnlist1     in: integer
 c                 max number of boxes in list 1 of a box
@@ -619,6 +568,7 @@ c                 list4 of box i
 c---------------------------------------------------------------
       implicit none
       integer nlevels,nboxes,ltree
+      integer iper
       integer itree(ltree),iptr(8)
       real *8 boxsize(0:nlevels)
       real *8 centers(2,nboxes)

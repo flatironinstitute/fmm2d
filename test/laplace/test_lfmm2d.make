@@ -32,6 +32,7 @@ OBJECTS =  test_lfmm2d.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree.o \
   $(COM)/tree_routs.o \
+  $(COM)/cumsum.o \
   $(LFMM)/lfmm2d.o \
   $(LFMM)/lfmm2dwrap.o \
   $(LFMM)/lfmm2dwrap_vec.o \

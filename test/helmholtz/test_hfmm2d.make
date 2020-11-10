@@ -1,4 +1,4 @@
-PROJECT = int2-lfmm2d
+PROJECT = int2-hfmm2d
 
 HOST = gcc
 HOST = gcc-openmp
@@ -19,27 +19,33 @@ endif
 # Test objects
 #
 
-LFMM = ../../src/laplace
+HFMM = ../../src/helmholtz
 COM = ../../src/common
 
 
 .PHONY: all clean list
 
 
-OBJECTS =  test_lfmm2d.o \
+OBJECTS =  test_hfmm2d.o \
   $(COM)/prini_new.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree2d.o \
   $(COM)/tree_routs.o \
   $(COM)/cumsum.o \
-  $(LFMM)/lfmm2d.o \
-  $(LFMM)/lfmm2dwrap.o \
-  $(LFMM)/lfmm2dwrap_vec.o \
+  $(HFMM)/hfmm2d.o \
+  $(HFMM)/hfmm2dwrap.o \
+  $(HFMM)/hfmm2dwrap_vec.o \
   $(COM)/fmmcommon2d.o \
-  $(LFMM)/laprouts2d.o \
-  $(LFMM)/lapkernels2d.o \
-  $(LFMM)/l2dterms.o 
+  $(COM)/cdjseval2d.o \
+  $(COM)/dfft.o \
+  $(COM)/next235.o \
+  $(HFMM)/helmrouts2d.o \
+  $(HFMM)/helmkernels2d.o \
+  $(HFMM)/hank103.o \
+  $(HFMM)/h2dcommon.o \
+  $(HFMM)/wideband2d.o \
+  $(HFMM)/h2dterms.o 
 
 
 #

@@ -30,7 +30,7 @@ OBJECTS =  test_lfmm2d_vec.o \
   $(COM)/prini_new.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
-  $(COM)/pts_tree.o \
+  $(COM)/pts_tree2d.o \
   $(COM)/tree_routs.o \
   $(COM)/cumsum.o \
   $(LFMM)/lfmm2d.o \
@@ -38,7 +38,7 @@ OBJECTS =  test_lfmm2d_vec.o \
   $(LFMM)/lfmm2dwrap_vec.o \
   $(COM)/fmmcommon2d.o \
   $(LFMM)/laprouts2d.o \
-  $(LFMM)/laprouts2d_dir.o \
+  $(LFMM)/lapkernels2d.o \
   $(LFMM)/l2dterms.o 
 
 

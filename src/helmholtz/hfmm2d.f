@@ -826,18 +826,38 @@ C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,nlist4,istart,iend,npts,i)
 C$OMP$SCHEDULE(DYNAMIC)
             do ibox = laddr(1,ilev),laddr(2,ilev)
-               
-               do i=1,nlist4s(ibox)
-                  jbox = list4(i,ibox)
-                  istart = isrcse(1,jbox)
-                  iend = isrcse(2,jbox)
-                  npts = iend-istart+1
+               npts = 0
 
-                  call h2dformtac_vec(nd,zk,rscales(ilev),
-     1              sourcesort(1,istart),npts,
-     2              chargesort(1,istart),centers(1,ibox),
-     3              nterms(ilev),rmlexp(iaddr(2,ibox)))
-               enddo
+               if(ifpghtarg.gt.0) then
+                  istart = itargse(1,ibox)
+                  iend = itargse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               istart = iexpcse(1,ibox)
+               iend = iexpcse(2,ibox)
+               npts = npts + iend-istart+1
+
+               if(ifpgh.gt.0) then
+                  istart = isrcse(1,ibox)
+                  iend = isrcse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               if(npts.gt.0) then
+                  
+                  do i=1,nlist4s(ibox)
+                     jbox = list4(i,ibox)
+                     istart = isrcse(1,jbox)
+                     iend = isrcse(2,jbox)
+                     npts = iend-istart+1
+                     
+                     call h2dformtac_vec(nd,zk,rscales(ilev),
+     1                    sourcesort(1,istart),npts,
+     2                    chargesort(1,istart),centers(1,ibox),
+     3                    nterms(ilev),rmlexp(iaddr(2,ibox)))
+                  enddo
+               endif
             enddo
 C$OMP END PARALLEL DO        
          endif
@@ -846,18 +866,39 @@ C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,nlist4,istart,iend,npts,i)
 C$OMP$SCHEDULE(DYNAMIC)
             do ibox = laddr(1,ilev),laddr(2,ilev)
-               
-               do i=1,nlist4s(ibox)
-                  jbox = list4(i,ibox)
-                  istart = isrcse(1,jbox)
-                  iend = isrcse(2,jbox)
-                  npts = iend-istart+1
+               npts = 0
 
-                  call h2dformtad_vec(nd,zk,rscales(ilev),
-     1              sourcesort(1,istart),npts,
-     2              dipstrsort(1,istart),dipvecsort(1,1,istart),
-     3              centers(1,ibox),nterms(ilev),rmlexp(iaddr(2,ibox)))
-               enddo
+               if(ifpghtarg.gt.0) then
+                  istart = itargse(1,ibox)
+                  iend = itargse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               istart = iexpcse(1,ibox)
+               iend = iexpcse(2,ibox)
+               npts = npts + iend-istart+1
+
+               if(ifpgh.gt.0) then
+                  istart = isrcse(1,ibox)
+                  iend = isrcse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               if(npts.gt.0) then
+                  
+                  do i=1,nlist4s(ibox)
+                     jbox = list4(i,ibox)
+                     istart = isrcse(1,jbox)
+                     iend = isrcse(2,jbox)
+                     npts = iend-istart+1
+
+                     call h2dformtad_vec(nd,zk,rscales(ilev),
+     1                    sourcesort(1,istart),npts,
+     2                    dipstrsort(1,istart),dipvecsort(1,1,istart),
+     3                    centers(1,ibox),nterms(ilev),
+     4                    rmlexp(iaddr(2,ibox)))
+                  enddo
+               endif
             enddo
 C$OMP END PARALLEL DO        
          endif
@@ -866,19 +907,39 @@ C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,nlist4,istart,iend,npts,i)
 C$OMP$SCHEDULE(DYNAMIC)
             do ibox = laddr(1,ilev),laddr(2,ilev)
-               
-               do i=1,nlist4s(ibox)
-                  jbox = list4(i,ibox)
-                  istart = isrcse(1,jbox)
-                  iend = isrcse(2,jbox)
-                  npts = iend-istart+1
+               npts = 0
 
-                  call h2dformtacd_vec(nd,zk,rscales(ilev),
-     1              sourcesort(1,istart),npts,
-     2              chargesort(1,istart),dipstrsort(1,istart),
-     3              dipvecsort(1,1,istart),centers(1,ibox),
-     3              nterms(ilev),rmlexp(iaddr(2,ibox)))
-               enddo
+               if(ifpghtarg.gt.0) then
+                  istart = itargse(1,ibox)
+                  iend = itargse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               istart = iexpcse(1,ibox)
+               iend = iexpcse(2,ibox)
+               npts = npts + iend-istart+1
+
+               if(ifpgh.gt.0) then
+                  istart = isrcse(1,ibox)
+                  iend = isrcse(2,ibox)
+                  npts = npts + iend-istart+1
+               endif
+
+               if(npts.gt.0) then
+                  
+                  do i=1,nlist4s(ibox)
+                     jbox = list4(i,ibox)
+                     istart = isrcse(1,jbox)
+                     iend = isrcse(2,jbox)
+                     npts = iend-istart+1
+
+                     call h2dformtacd_vec(nd,zk,rscales(ilev),
+     1                    sourcesort(1,istart),npts,
+     2                    chargesort(1,istart),dipstrsort(1,istart),
+     3                    dipvecsort(1,1,istart),centers(1,ibox),
+     3                    nterms(ilev),rmlexp(iaddr(2,ibox)))
+                  enddo
+               endif
             enddo
 C$OMP END PARALLEL DO        
          endif

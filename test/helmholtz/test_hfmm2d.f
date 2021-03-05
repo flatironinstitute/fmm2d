@@ -23,7 +23,7 @@
       read *, n
 
 
-      nsrc = 10000
+      nsrc = n
       ntarg = nsrc
 
       allocate(sources(2,nsrc),charges(nsrc),dipstr(nsrc))

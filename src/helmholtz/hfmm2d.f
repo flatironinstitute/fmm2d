@@ -1024,8 +1024,9 @@ C$    time1=omp_get_wtime()
 cc        call zffti(nsig, wsave)
        
 
+      call cpu_time(tt1)
+C$    tt1=omp_get_wtime()
 
-       tt1 = second()
 
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
@@ -1079,7 +1080,8 @@ ccc                    print *, '. . . high freq mploc, ilev = ', ilev
 C$OMP END PARALLEL DO        
        endif
 
-       tt2 = second()
+      call cpu_time(tt2)
+C$    tt2=omp_get_wtime()
        timelev(ilev) = tt2-tt1
 
        deallocate(sig, wsave)

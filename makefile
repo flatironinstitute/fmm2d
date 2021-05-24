@@ -195,7 +195,7 @@ $(DYNAMICLIB): $(OBJS)
 # testing routines
 #
 test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec 
-	(cd test/helmholtz; ./run_helmtest.sh)
+#	(cd test/helmholtz; ./run_helmtest.sh)
 	(cd test/laplace; ./run_laptest.sh)
 	cat print_testreshelm.txt
 	cat print_testreslap.txt

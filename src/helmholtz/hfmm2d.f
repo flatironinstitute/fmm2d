@@ -16,7 +16,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c    $Date$
 c    $Revision$
-      subroutine hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      subroutine hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -82,7 +82,7 @@ cc      Tree variables
 c
       integer, allocatable :: itree(:)
       integer iptr(8)
-      integer nlmin
+      integer nlmin,nlmax,ifunif
       real *8, allocatable :: tcenters(:,:),boxsize(:)
       integer nexpc,ntj
       real *8 expc(2)
@@ -138,6 +138,8 @@ c
       ndiv = 20
       ltree = 0
       nlmin = 0
+      nlmax = 51
+      ifunif = 0
       iper = 0
 
       ifprint = 0
@@ -149,8 +151,8 @@ c       number of levels and length of tree
 c
 
       
-      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree)
+      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree)
 
 
       allocate(itree(ltree))
@@ -161,8 +163,8 @@ c
 c       call the tree code
 c
 
-      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
+      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
 
       allocate(isrc(ns),isrcse(2,nboxes))
       allocate(itarg(nt),itargse(2,nboxes),iexpcse(2,nboxes))
@@ -659,7 +661,7 @@ c     Suppressed if ifprint=0.
 c     Prints timing breakdown and other things if ifprint=1.
 c     Prints timing breakdown, list information, and other things if ifprint=2.
 c      
-        ifprint=1
+        ifprint=0
 
         pi = 4*atan(1.0d0)
 c
@@ -984,7 +986,7 @@ C$OMP END PARALLEL DO
          endif
 
          if(boxlam.gt.8.0d0) then
-           print *, "Doing mpmp using hf"
+           if(ifprint.ge.1) print *, "Doing mpmp using hf"
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
               do i=1,nchild

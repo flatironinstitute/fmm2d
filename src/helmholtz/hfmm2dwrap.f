@@ -31,7 +31,7 @@ c                                          k/|x_i-x_j|
 c
 c
 
-      subroutine hfmm2dpartstostcp(eps,zk,ns,sources,
+      subroutine hfmm2d_st_c_p(eps,zk,ns,sources,
      1            charge,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -82,7 +82,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -91,7 +91,7 @@ c
 c------------------------------
 
 
-      subroutine hfmm2dpartstostcg(eps,zk,ns,sources,
+      subroutine hfmm2d_st_c_g(eps,zk,ns,sources,
      1            charge,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -142,7 +142,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -154,7 +154,7 @@ c
 c
 c
 c
-      subroutine hfmm2dpartstostch(eps,zk,ns,sources,
+      subroutine hfmm2d_st_c_h(eps,zk,ns,sources,
      1            charge,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -207,7 +207,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -217,7 +217,7 @@ c
 
 c-------------------------------      
 
-      subroutine hfmm2dpartstostdp(eps,zk,ns,sources,
+      subroutine hfmm2d_st_d_p(eps,zk,ns,sources,
      1            dipstr,dipvec,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -269,7 +269,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -278,7 +278,7 @@ c
 c------------------------------
 
 
-      subroutine hfmm2dpartstostdg(eps,zk,ns,sources,
+      subroutine hfmm2d_st_d_g(eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -330,7 +330,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -342,7 +342,7 @@ c
 c
 c
 c
-      subroutine hfmm2dpartstostdh(eps,zk,ns,sources,
+      subroutine hfmm2d_st_d_h(eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -396,7 +396,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -406,7 +406,7 @@ c
 
 c-------------------------------      
 
-      subroutine hfmm2dpartstostcdp(eps,zk,ns,sources,charge,
+      subroutine hfmm2d_st_cd_p(eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -458,16 +458,19 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
       return
       end
 c------------------------------
+c
+c
+c
+c
 
-
-      subroutine hfmm2dpartstostcdg(eps,zk,ns,sources,charge,
+      subroutine hfmm2d_st_cd_g(eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -518,7 +521,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -530,7 +533,7 @@ c
 c
 c
 c
-      subroutine hfmm2dpartstostcdh(eps,zk,ns,sources,charge,
+      subroutine hfmm2d_st_cd_h(eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -584,7 +587,7 @@ c
 
       nd = 1
 
-      call hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      call hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)

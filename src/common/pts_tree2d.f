@@ -31,8 +31,8 @@ c
 c 
 
 
-      subroutine pts_tree_mem(src,ns,targ,nt,idivflag,ndiv,nlmin,
-     1     iper,nlevels,nboxes,ltree)
+      subroutine pts_tree_mem(src,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1     ifunif,iper,nlevels,nboxes,ltree)
 c
 c----------------------------------------
 c  get memory requirements for the tree
@@ -54,10 +54,14 @@ c        per box is greater than ndiv
 c    - nlmin: integer
 c        minimum number of levels of uniform refinement.
 c        Note that empty boxes are not pruned along the way
+c    - nlmax: integer
+c        maximum number of levels of refinement in tree
+c    - ifunif: integer
+c        flag for creating uniform pruned tree
+c        Tree is uniform if ifunif=1 (Currently pruned part
 c    - iper: integer
 c        flag for periodic implementations. Currently unused.
 c        Feature under construction
-c
 c        
 c  output parameters
 c    - nlevels: integer
@@ -72,7 +76,7 @@ c
 
       implicit none
       integer nlevels,nboxes,ltree,idivflag
-      integer nlmin,iper
+      integer nlmin,iper,nlmax,ifunif
       integer ns,nt,ndiv
       real *8 src(2,ns),targ(2,nt)
 
@@ -88,7 +92,7 @@ c
      1    ichild2(:,:),isrcse2(:,:),itargse2(:,:)
       real *8, allocatable :: centers2(:,:)
 
-      integer nbmax,nlmax
+      integer nbmax
       integer i,itype,j
 
       real *8, allocatable :: centerstmp(:,:,:)
@@ -106,7 +110,6 @@ c
       real *8 dfac
 
       nbmax = 100000
-      nlmax = 51
 
       allocate(boxsize(0:nlmax))
 
@@ -216,7 +219,10 @@ c$OMP$ REDUCTION(max:irefine) REDUCTION(+:nbadd)
               if(irefinebox(i) .eq. 1) nbadd = nbadd+4
               irefine = max(irefinebox(i),irefine)
            enddo
-c$OMP END PARALLEL DO           
+c$OMP END PARALLEL DO          
+           if(ifunif.eq.1) then
+             irefinebox(i) = irefine
+           endif
         else
            irefine = 1
            nbadd = 4*nbloc
@@ -391,7 +397,8 @@ c
 c
 
       subroutine pts_tree_build(src,ns,targ,nt,idivflag,ndiv,
-     1  nlmin,iper,nlevels,nboxes,ltree,itree,iptr,centers,boxsize)
+     1  nlmin,nlmax,ifunif,iper,nlevels,nboxes,ltree,itree,iptr,
+     2  centers,boxsize)
 c
 c
 c----------------------------------------
@@ -414,6 +421,12 @@ c        per box is greater than ndiv
 c    - nlmin: integer
 c        minimum number of levels of uniform refinement.
 c        Note that empty boxes are not pruned along the way
+c    - nlmax: integer
+c        max number of levels
+c    - ifunif: integer
+c        flag for creating uniform pruned tree
+c        Tree is uniform if ifunif=1 (Currently pruned part
+c        under construction)
 c    - iper: integer
 c        flag for periodic implementations. Currently unused.
 c        Feature under construction
@@ -443,7 +456,7 @@ c
 
       implicit none
       integer nlevels,nboxes,ltree,ns,nt,idivflag,ndiv
-      integer iper,nlmin
+      integer iper,nlmin,nlmax,ifunif
       integer iptr(8)
       integer itree(ltree),ier
       real *8 centers(2,nboxes),src(2,ns),targ(2,nt)
@@ -451,7 +464,7 @@ c
       real *8 boxsize(0:nlevels)
       integer, allocatable :: isrc(:),itarg(:),isrcse(:,:),itargse(:,:)
 
-      integer i,ilev,irefine,itype,nbmax,nlmax,npbox,npc,ii
+      integer i,ilev,irefine,itype,nbmax,npbox,npc,ii
       integer ifirstbox,ilastbox,nbctr,nbloc
       real *8 rsc
 
@@ -558,6 +571,12 @@ c
 
             if(nn.gt.ndiv) irefinebox(i) = 1
           enddo
+          irefine = maxval(irefinebox(1:nbloc))
+          if(ifunif.eq.1) then
+            do i=1,nbloc
+              irefinebox(i) = irefine
+            enddo
+          endif
         else
           do i=1,nbloc
             irefinebox(i) = 1

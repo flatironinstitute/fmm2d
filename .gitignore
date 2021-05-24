@@ -13,8 +13,6 @@ int2
 *.save*
 *_save*
 *.txt
-lib-static/*
-lib/*
 *.pyc
 *int2*
 *.mex*

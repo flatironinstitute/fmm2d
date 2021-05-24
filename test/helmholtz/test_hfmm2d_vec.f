@@ -84,7 +84,7 @@ c
       thresh = 2.0d0**(-51)
 
       call hfmm2d_st_c_p_vec(nd,eps,zk,nsrc,sources,charges,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
       
 
       ifcharge = 1
@@ -123,7 +123,7 @@ c
 
 
       call hfmm2d_st_c_g_vec(nd,eps,zk,nsrc,sources,charges,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -164,7 +164,7 @@ c
 
       call hfmm2d_st_c_h_vec(nd,eps,zk,nsrc,sources,charges,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -206,7 +206,7 @@ c
 
 
       call hfmm2d_st_d_p_vec(nd,eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,ntarg,targ,pottarg)
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -248,7 +248,7 @@ c
 
 
       call hfmm2d_st_d_g_vec(nd,eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -290,7 +290,7 @@ c
 
       call hfmm2d_st_d_h_vec(nd,eps,zk,nsrc,sources,dipstr,
      1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -334,7 +334,7 @@ c
 
 
       call hfmm2d_st_cd_p_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
-     1        dipvec,pot,ntarg,targ,pottarg)
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
 c
 cc       test against exact potential
 c
@@ -374,7 +374,7 @@ c
 
 
       call hfmm2d_st_cd_g_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
-     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -414,7 +414,7 @@ c
 
       call hfmm2d_st_cd_h_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
      1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c

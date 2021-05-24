@@ -6,7 +6,7 @@
       complex *16, allocatable :: pottarg(:),gradtarg(:,:),hesstarg(:,:)
       character(len=72) str1
 
-      integer ipass(9)
+      integer ipass(27)
       
       complex *16 ima,zk
       data ima/(0.0d0,1.0d0)/
@@ -55,7 +55,7 @@ c
 
       open(unit=33,file='print_testres.txt',access='append')
 
-      ntests = 9
+      ntests = 18
       do i=1,ntests
         ipass(i) = 0
       enddo
@@ -77,7 +77,7 @@ c
       thresh = 2.0d0**(-51)
 
       call hfmm2d_st_c_p(eps,zk,nsrc,sources,charges,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
       
 
       ifcharge = 1
@@ -116,7 +116,7 @@ c
 
 
       call hfmm2d_st_c_g(eps,zk,nsrc,sources,charges,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -157,7 +157,7 @@ c
 
       call hfmm2d_st_c_h(eps,zk,nsrc,sources,charges,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -199,7 +199,7 @@ c
 
 
       call hfmm2d_st_d_p(eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,ntarg,targ,pottarg)
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -241,7 +241,7 @@ c
 
 
       call hfmm2d_st_d_g(eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -283,7 +283,7 @@ c
 
       call hfmm2d_st_d_h(eps,zk,nsrc,sources,dipstr,
      1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -327,7 +327,7 @@ c
 
 
       call hfmm2d_st_cd_p(eps,zk,nsrc,sources,charges,dipstr,
-     1        dipvec,pot,ntarg,targ,pottarg)
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
 c
 cc       test against exact potential
 c
@@ -367,7 +367,7 @@ c
 
 
       call hfmm2d_st_cd_g(eps,zk,nsrc,sources,charges,dipstr,
-     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -407,7 +407,7 @@ c
 
       call hfmm2d_st_cd_h(eps,zk,nsrc,sources,charges,dipstr,
      1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c

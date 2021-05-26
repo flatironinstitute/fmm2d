@@ -793,7 +793,7 @@ c
 c-------------------------------      
 
       subroutine hfmm2d_t_d_p(eps,zk,ns,sources,
-     1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
+     1            dipstr,dipvec,nt,targ,pottarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1104,7 +1104,7 @@ c
 c
 c
       subroutine hfmm2d_t_cd_h(eps,zk,ns,sources,charge,
-     1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
+     1            dipstr,dipvec,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:

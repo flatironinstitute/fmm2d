@@ -136,6 +136,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -172,6 +174,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -210,6 +214,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -254,6 +260,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -294,6 +302,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -336,6 +346,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c
 c
 c  Output arguments:
@@ -502,6 +514,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -542,6 +556,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -584,6 +600,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -632,6 +650,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -676,6 +696,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -722,6 +744,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -904,6 +928,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -946,6 +972,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -992,6 +1020,8 @@ c    -    source: double precision(3,nsource)
 c          Source locations, $x_{j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -1046,6 +1076,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -1092,6 +1124,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)
@@ -1142,6 +1176,8 @@ c    -    charge: double complex(nd,nsource)
 c          Charge strengths, $c_{\ell,j}$
 c    -    dipstr: double complex(nd,nsource)
 c          Dipole strengths, $v_{\ell,j}$
+c    -    dipvec: double precision(nd,2,nsource)
+c          Dipole orientation vectors, $d_{\ell,j}$
 c    -    ntarg: integer
 c          Number of targets
 c    -    targ: double precision(3,ntarg)

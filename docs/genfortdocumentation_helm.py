@@ -123,9 +123,11 @@ for i in range(3):
                 f1.writelines(sp1+charge_txt[0]+"\n"+sp2+charge_txt[1]+"\n")
             if(j==1):
                 f1.writelines(sp1+dipole_txt[0]+"\n"+sp2+dipole_txt[1]+"\n")
+                f1.writelines(sp1+dipvec_txt[0]+"\n"+sp2+dipvec_txt[1]+"\n")
             if(j==2):
                 f1.writelines(sp1+charge_txt[0]+"\n"+sp2+charge_txt[1]+"\n")
                 f1.writelines(sp1+dipole_txt[0]+"\n"+sp2+dipole_txt[1]+"\n")
+                f1.writelines(sp1+dipvec_txt[0]+"\n"+sp2+dipvec_txt[1]+"\n")
             if(i>0):
                 f1.writelines(sp1+nt_txt[0]+"\n"+sp2+nt_txt[1]+"\n")
                 f1.writelines(sp1+targ_txt[0]+"\n"+sp2+targ_txt[1]+"\n")
@@ -155,9 +157,11 @@ for i in range(3):
                 f1.writelines(sp1+charge_nd_txt[0]+"\n"+sp2+charge_nd_txt[1]+"\n")
             if(j==1):
                 f1.writelines(sp1+dipole_nd_txt[0]+"\n"+sp2+dipole_nd_txt[1]+"\n")
+                f1.writelines(sp1+dipvec_nd_txt[0]+"\n"+sp2+dipvec_nd_txt[1]+"\n")
             if(j==2):
                 f1.writelines(sp1+charge_nd_txt[0]+"\n"+sp2+charge_nd_txt[1]+"\n")
                 f1.writelines(sp1+dipole_nd_txt[0]+"\n"+sp2+dipole_nd_txt[1]+"\n")
+                f1.writelines(sp1+dipvec_nd_txt[0]+"\n"+sp2+dipvec_nd_txt[1]+"\n")
             f1.writelines("\n\n")
             f1.writelines(inp_returns+"\n\n")
             if(i==0 or i==2):
@@ -229,9 +233,11 @@ for i in range(3):
                 f1.writelines("c  "+sp1+charge_txt[0]+"\nc"+sp2+charge_txt[1]+"\n")
             if(j==1):
                 f1.writelines("c  "+sp1+dipole_txt[0]+"\nc"+sp2+dipole_txt[1]+"\n")
+                f1.writelines("c  "+sp1+dipvec_txt[0]+"\nc"+sp2+dipvec_txt[1]+"\n")
             if(j==2):
                 f1.writelines("c  "+sp1+charge_txt[0]+"\nc"+sp2+charge_txt[1]+"\n")
                 f1.writelines("c  "+sp1+dipole_txt[0]+"\nc"+sp2+dipole_txt[1]+"\n")
+                f1.writelines("c  "+sp1+dipvec_txt[0]+"\nc"+sp2+dipvec_txt[1]+"\n")
             if(i>0):
                 f1.writelines("c  "+sp1+nt_txt[0]+"\nc"+sp2+nt_txt[1]+"\n")
                 f1.writelines("c  "+sp1+targ_txt[0]+"\nc"+sp2+targ_txt[1]+"\n")
@@ -266,9 +272,11 @@ for i in range(3):
                 f2.writelines("c  "+sp1+charge_nd_txt[0]+"\nc"+sp2+charge_nd_txt[1]+"\n")
             if(j==1):
                 f2.writelines("c  "+sp1+dipole_nd_txt[0]+"\nc"+sp2+dipole_nd_txt[1]+"\n")
+                f2.writelines("c  "+sp1+dipvec_nd_txt[0]+"\nc"+sp2+dipvec_nd_txt[1]+"\n")
             if(j==2):
                 f2.writelines("c  "+sp1+charge_nd_txt[0]+"\nc"+sp2+charge_nd_txt[1]+"\n")
                 f2.writelines("c  "+sp1+dipole_nd_txt[0]+"\nc"+sp2+dipole_nd_txt[1]+"\n")
+                f2.writelines("c  "+sp1+dipvec_nd_txt[0]+"\nc"+sp2+dipvec_nd_txt[1]+"\n")
             if(i>0):
                 f2.writelines("c  "+sp1+nt_txt[0]+"\nc"+sp2+nt_txt[1]+"\n")
                 f2.writelines("c  "+sp1+targ_txt[0]+"\nc"+sp2+targ_txt[1]+"\n")

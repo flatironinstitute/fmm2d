@@ -10,7 +10,7 @@ Fast multipole methods in two dimensions (fmm2d)
     :width: 60%
     :align: center
 	    
-`FMM3D <https://github.com/flatironinstitute/FMM3D>`_ 
+`fmm2d <https://github.com/flatironinstitute/fmm2d>`_ 
 is a set of libraries to compute N-body interactions 
 governed by the Laplace and Helmholtz equations,
 to a specified precision, in three dimensions,

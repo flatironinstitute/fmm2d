@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# fmm3d documentation build configuration file, created by
+# fmm2d documentation build configuration file, created by
 # sphinx-quickstart on Wed Nov  1 16:19:13 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -243,7 +243,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'fmm2d.tex', u'fmm3d Documentation',
+    (master_doc, 'fmm2d.tex', u'fmm2d Documentation',
      u"Zydrunas Gimbutas \\and Leslie Greengard \\and Mike O'Neil \\and Manas Rachh \\and Vladimir Rokhlin", 'manual'),
 ]
 
@@ -273,7 +273,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'fmm3d', u'fmm3d Documentation',
+    (master_doc, 'fmm2d', u'fmm2d Documentation',
      [author], 1)
 ]
 

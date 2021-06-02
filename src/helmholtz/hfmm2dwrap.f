@@ -611,6 +611,11 @@ c
 
       subroutine hfmm2d_t_c_p(eps,zk,ns,sources,
      1            charge,nt,targ,pottarg,ier)
+cf2py  intent(in) eps
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested

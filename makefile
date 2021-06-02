@@ -129,7 +129,7 @@ TOBJS = $(COM)/hkrand.o $(COM)/dlaran.o
 
 OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) 
 
-.PHONY: usage install lib test all 
+.PHONY: usage install lib test all python 
 
 default: usage
 
@@ -214,6 +214,10 @@ test/lfmm2d:
 test/lfmm2d_vec:
 	$(FC) $(FFLAGS) test/laplace/test_lfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-lfmm2d-vec $(LIBS) 
 
+#python
+python: $(STATICLIB)
+	cd python && \
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e . 
 
 clean: objclean
 	rm -f lib-static/*.a lib/*.so lib/*.dll lib/*.lib

@@ -196,11 +196,11 @@ $(DYNAMICLIB): $(OBJS)
 #
 test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec 
 	(cd test/helmholtz; ./run_helmtest.sh)
-#	(cd test/laplace; ./run_laptest.sh)
+	(cd test/laplace; ./run_laptest.sh)
 	cat print_testreshelm.txt
-#	cat print_testreslap.txt
+	cat print_testreslap.txt
 	rm print_testreshelm.txt
-#	rm print_testreslap.txt
+	rm print_testreslap.txt
 
 test/hfmm2d:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d $(LIBS)

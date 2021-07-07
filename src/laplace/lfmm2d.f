@@ -79,7 +79,7 @@ cc      Tree variables
 c
       integer, allocatable :: itree(:)
       integer iptr(8)
-      integer iper,nlmin
+      integer iper,nlmin,nlmax,ifunif
       real *8, allocatable :: tcenters(:,:),boxsize(:)
       integer nexpc,ntj
       real *8 expc(2)
@@ -135,6 +135,8 @@ c
       ndiv = 20
       ltree = 0
       nlmin = 0
+      nlmax = 51
+      ifunif = 0
       iper = 0
 
       ifprint = 0
@@ -145,8 +147,8 @@ c       number of levels and length of tree
 c
 
       
-      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree)
+      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree)
 
 
       allocate(itree(ltree))
@@ -157,8 +159,8 @@ c
 c       call the tree code
 c
 
-      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
+      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
 
       allocate(isrc(ns),isrcse(2,nboxes))
       allocate(itarg(nt),itargse(2,nboxes),iexpcse(2,nboxes))

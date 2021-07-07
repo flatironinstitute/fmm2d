@@ -4,17 +4,13 @@
       complex *16, allocatable :: charges(:,:),dipstr(:,:)
       complex *16, allocatable :: pot(:,:),grad(:,:,:),hess(:,:,:)
       complex *16, allocatable :: pottarg(:,:),gradtarg(:,:,:),
-     1    hesstarg(:,:,:)
+     1   hesstarg(:,:,:)
+      character(len=72) str1
 
-      complex *16, allocatable :: potex(:,:),gradex(:,:,:),
-     1   hessex(:,:,:)
-      complex *16, allocatable :: pottargex(:,:),gradtargex(:,:,:),
-     1                             hesstargex(:,:,:)
-
-      real *8 expc(100),texps(100),scj(100)
+      integer ipass(27)
+      integer nd,idim
       
       complex *16 ima,zk
-      integer nd,idim
       data ima/(0.0d0,1.0d0)/
 
       call prini(6,13)
@@ -22,499 +18,1313 @@
       done = 1
       pi = atan(done)*4
 
-      call prin2('Enter n*',n,0)
-      read *, n
+      nsrc = 4000
+      ntarg = nsrc+10
 
-      nd = 1
-
-
-      nsrc = 100000
-      ntarg = nsrc
+      nd = 3
 
       allocate(sources(2,nsrc),charges(nd,nsrc),dipstr(nd,nsrc))
       allocate(targ(2,ntarg),dipvec(nd,2,nsrc))
       allocate(pot(nd,nsrc),grad(nd,2,nsrc),hess(nd,3,nsrc))
-      allocate(pottarg(nd,ntarg),gradtarg(nd,2,ntarg),
-     1   hesstarg(nd,3,ntarg))
+      allocate(pottarg(nd,ntarg),gradtarg(nd,2,ntarg))
+      allocate(hesstarg(nd,3,ntarg))
 
-      rin = 1.0d0
-      rwig = 0.1d0
-      nwig = 10
       do i=1,nsrc
+        sources(1,i) = hkrand(0)
+        sources(2,i) = hkrand(0)
 
-         thet = hkrand(0)*2*pi
+        do idim=1,nd
+          charges(idim,i) = hkrand(0) + ima*hkrand(0)
+          dipstr(idim,i) = hkrand(0) + ima*hkrand(0)
+ 
+          dipvec(idim,1,i) = hkrand(0)
+          dipvec(idim,2,i) = hkrand(0)
+        enddo
+      enddo
 
-cc         sources(1,i) = (rin + rwig*cos(thet))*cos(thet)
-cc         sources(2,i) = (rin + rwig*cos(thet))*sin(thet)
+      do i=1,ntarg
+        targ(1,i) = hkrand(0)
+        targ(2,i) = hkrand(0)
+      enddo
 
-         sources(1,i) = hkrand(0)
-         sources(2,i) = hkrand(0)
-         do idim=1,nd
+c
+cc      test low frequency mode
+c
+      zk = 0.5d0 + 0.1d0*ima
+      zk = 500.0d0
+      eps = 0.5d-6
 
-           charges(idim,i) = hkrand(0) + ima*hkrand(0)
-           dipstr(idim,i) = hkrand(0) + ima*hkrand(0)
-           dipvec(idim,1,i) = hkrand(0)
-           dipvec(idim,2,i) = hkrand(0)
+      write(*,*) "=========================================="
+      write(*,*) "Testing suite for hfmm2d_vec"
+      write(*,'(a,e11.4)') "Requested precision = ",eps
+      write(6,*)
+      write(6,*)
+
+      open(unit=33,file='print_testres.txt',access='append')
+
+      ntests = 27
+      do i=1,ntests
+        ipass(i) = 0
+      enddo
+
+      ntest = 20
+      nts = min(ntest,nsrc)
+      ntt = min(ntest,ntarg)
+      thresh = 2.0d0**(-51)
+
+
+c
+c
+cc      now test source to source, charge
+c       with potentials
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_s_c_p_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,ier)
+      
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 1
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(1) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source, charge
+c       with gradients
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_s_c_g_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,grad,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 2
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(2) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source, charge
+c       with hessians
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_s_c_h_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,grad,hess,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 3
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(3) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+c
+c
+cc      now test source to source, dipole
+c       with potentials
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_s_d_p_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,ier)
+
+
+c
+cc       test against exact potential
+c
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 1
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(4) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source, dipole
+c       with gradients
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_s_d_g_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,grad,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 2
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(5) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+cc      now test source to source, dipole
+c       with hessians
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_s_d_h_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,grad,hess,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 3
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(6) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+c
+c
+cc      now test source to source, charge + dipole
+c       with potentials
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_s_cd_p_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 1
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(7) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to source, charge + dipole
+c       with gradients
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_s_cd_g_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,grad,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 2
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(8) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to source, charge + dipole
+c       with hessians
+c
+      write(6,*) 'testing source to sources'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_s_cd_h_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,grad,hess,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 3
+      ifpghtarg = 0
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(9) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+cc      now test source to target, charge
+c       with potentials
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_t_c_p_vec(nd,eps,zk,nsrc,sources,charges,
+     1        ntarg,targ,pottarg,ier)
+      
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh =0 
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(10) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to target, charge
+c       with gradients
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_t_c_g_vec(nd,eps,zk,nsrc,sources,charges,
+     1        ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 0
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(11) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to target, charge
+c       with hessians
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_t_c_h_vec(nd,eps,zk,nsrc,sources,charges,
+     1        ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 0
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(12) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+c
+c
+cc      now test source to target, dipole
+c       with potentials
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_t_d_p_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,ntarg,targ,pottarg,ier)
+
+
+c
+cc       test against exact potential
+c
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(13) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to target, dipole
+c       with gradients
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_t_d_g_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(14) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+cc      now test source to target, dipole
+c       with hessians
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_t_d_h_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(15) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+c
+c
+cc      now test source to target, charge + dipole
+c       with potentials
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_t_cd_p_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,ntarg,targ,pottarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(16) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to target, charge + dipole
+c       with gradients
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_t_cd_g_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(17) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to target, charge + dipole
+c       with hessians
+c
+      write(6,*) 'testing source to targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_t_cd_h_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 0
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(18) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to source  + target, charge
+c       with potentials
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_st_c_p_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,ntarg,targ,pottarg,ier)
+      
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 1
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(19) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source  + target, charge
+c       with gradients
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_st_c_g_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 2
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(20) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source  + target, charge
+c       with hessians
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_st_c_h_vec(nd,eps,zk,nsrc,sources,charges,
+     1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 0
+      ifpgh = 3
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(21) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+c
+c
+cc      now test source to source  + target, dipole
+c       with potentials
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_st_d_p_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
+
+
+c
+cc       test against exact potential
+c
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 1
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(22) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+c
+c
+cc      now test source to source  + target, dipole
+c       with gradients
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_st_d_g_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 2
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(23) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+cc      now test source to source  + target, dipole
+c       with hessians
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_st_d_h_vec(nd,eps,zk,nsrc,sources,dipstr,
+     1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 0
+      ifdipole = 1
+      ifpgh = 3
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(24) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+
+c
+c
+c
+c
+cc      now test source to source  + target, charge + dipole
+c       with potentials
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_st_cd_p_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,ntarg,targ,pottarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 1
+      ifpghtarg = 1
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(25) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to source  + target, charge + dipole
+c       with gradients
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients'
+      write(6,*)
+      write(6,*)
+
+
+      call hfmm2d_st_cd_g_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 2
+      ifpghtarg = 2
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(26) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+c
+c
+cc      now test source to source  + target, charge + dipole
+c       with hessians
+c
+      write(6,*) 'testing source to source and targets'
+      write(6,*) 'interaction: charges + dipoles'
+      write(6,*) 'output: potentials + gradients + hessians'
+      write(6,*)
+      write(6,*)
+
+      call hfmm2d_st_cd_h_vec(nd,eps,zk,nsrc,sources,charges,dipstr,
+     1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
+     2        hesstarg,ier)
+c
+cc       test against exact potential
+c
+
+      ifcharge = 1
+      ifdipole = 1
+      ifpgh = 3
+      ifpghtarg = 3
+c      
+c   compute error 
+c
+
+      call comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,ifdipole,
+     1  dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
+     2  pottarg,gradtarg,hesstarg,ntest,erra)
+      
+
+      call prin2('l2 rel error=*',erra,1)
+      write(6,*)
+      write(6,*)
+      write(6,*) '====================='
+
+      if(erra.lt.eps) ipass(27) = 1
+      call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
+      if(erra.ge.eps) write(33,*) str1(1:len1)
+
+
+      isum = 0
+      do i=1,ntests
+        isum = isum+ipass(i)
+      enddo
+
+      write(*,'(a,i2,a,i2,a)') 'Successfully completed ',isum,
+     1   ' out of ',ntests,' tests in hfmm2d vec testing suite'
+      write(33,'(a,i2,a,i2,a)') 'Successfully completed ',isum,
+     1   ' out of ',ntests,' tests in hfmm2d vec testing suite'
+      close(33)
+      
+
+
+      stop
+      end
+c      
+c
+c
+c
+c
+      subroutine comperr_vec(nd,zk,nsrc,sources,ifcharge,charges,
+     1   ifdipole,dipstr,dipvec,ifpgh,pot,grad,hess,ntarg,targ,
+     2   ifpghtarg,pottarg,gradtarg,hesstarg,ntest,erra)
+      implicit real *8 (a-h,o-z)
+      complex *16 zk
+      real *8 sources(2,*),targ(2,*)
+      complex *16 charges(nd,*),dipstr(nd,*)
+      real *8 dipvec(nd,2,*)
+      integer ifcharge,ifdipole,ifpgh,ifpghtarg
+      complex *16 pot(nd,*),grad(nd,2,*),hess(nd,3,*),pottarg(nd,*)
+      complex *16 gradtarg(nd,2,*),hesstarg(nd,3,*)
+      real *8 erra
+
+      complex *16, allocatable :: potex(:,:),gradex(:,:,:)
+      complex *16, allocatable :: hessex(:,:,:)
+      complex *16, allocatable :: pottargex(:,:),gradtargex(:,:,:),
+     1                             hesstargex(:,:,:)
+
+
+      allocate(potex(nd,ntest),gradex(nd,2,ntest),hessex(nd,3,ntest))
+      allocate(pottargex(nd,ntest),gradtargex(nd,2,ntest),
+     1   hesstargex(nd,3,ntest))
+
+
+      nts = 0
+      ntt = 0
+      if(ifpgh.ge.1) nts = min(ntest,nsrc)
+      if(ifpghtarg.ge.1) ntt = min(ntest,ntarg)
+      
+      do i=1,nts
+        do idim=1,nd
+          if(ifpgh.ge.1) then
+            potex(idim,i) = 0
+          endif
+          if(ifpgh.ge.2) then
+            gradex(idim,1,i) = 0
+            gradex(idim,2,i) = 0
+          endif
+          if(ifpgh.ge.3) then
+            hessex(idim,1,i) = 0
+            hessex(idim,2,i) = 0
+            hessex(idim,3,i) = 0
+          endif
+        enddo
+      enddo
+
+      
+      do i=1,ntt
+        do idim=1,nd
+          if(ifpghtarg.ge.1) pottargex(idim,i) = 0
+          if(ifpghtarg.ge.2) then
+            gradtargex(idim,1,i) = 0
+            gradtargex(idim,2,i) = 0
+          endif
+          if(ifpghtarg.ge.3) then
+            hesstargex(idim,1,i) = 0
+            hesstargex(idim,2,i) = 0
+            hesstargex(idim,3,i) = 0
+          endif
         enddo
       enddo
 
 
 
-      do i=1,ntarg
-         targ(1,i) = hkrand(0)
-         targ(2,i) = hkrand(0)
-      enddo
-
-      nts = min(20,nsrc)
-      ntt = min(20,ntarg)
-
-      allocate(potex(nd,nts),gradex(nd,2,nts),hessex(nd,3,nts))
-      allocate(pottargex(nd,ntt),gradtargex(nd,2,ntt),
-     1   hesstargex(nd,3,ntt))
-
-
-c
-cc      test low frequency mode
-c
-      zk = 600.5d0 + 0.1d0*ima
-      zk = 300.0d0*ima
-      eps = 0.5d-14
-c
-c
-cc      now test source to source  + target, charge
-c       with potentials
-c
-      write(*,*) 'testing stost, charge, potentials'
-
-      call hfmm2dpartstostcp_vec(nd,eps,zk,nsrc,sources,charges,
-     1        pot,ntarg,targ,pottarg)
-
-
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 0
-
-      ifpgh = 1
-      thresh = 1.0d-16
-
+      thresh = 2.0d0**(-51)
+      
       call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
       call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
+     1       charges,ifdipole,dipstr,dipvec,targ,ifpghtarg,pottargex,
      2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-
-      errgs = 0
-      errgt = 0
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, charge
-c       with gradients
-c
-      write(*,*) 'testing stost, charge, gradients'
-
-      call hfmm2dpartstostcg_vec(nd,eps,zk,nsrc,sources,charges,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 0
-
-      ifpgh = 2
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, charge
-c       with hessians
-c
-
-
-
-      write(*,*) 'testing stost, charge, hessians'
-      call hfmm2dpartstostch_vec(nd,eps,zk,nsrc,sources,charges,
-     1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(hessex,6*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-      call dzero(hesstargex,6*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 0
-
-      ifpgh = 3
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(hessex,hess,6*nts*nd,errhs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-      call derr(hesstargex,hesstarg,6*nts*nd,errht)
-
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-c
-c
-cc      now test source to source  + target, dipole
-c       with potentials
-c
-      write(*,*) 'testing stost, dipole, potentials'
-
-      call hfmm2dpartstostdp_vec(nd,eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,ntarg,targ,pottarg)
-
-
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-
-      ifcharge = 0
-      ifdipole = 1
-
-      ifpgh = 1
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-
-  
-      errgs = 0
-      errgt = 0
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, dipole
-c       with gradients
-c
-      write(*,*) 'testing stost, dipole, gradients'
-
-      call hfmm2dpartstostdg_vec(nd,eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-
-      ifcharge = 0
-      ifdipole = 1
-
-      ifpgh = 2
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, dipole
-c       with hessians
-c
-
-
-
-      write(*,*) 'testing stost, dipole, hessians'
-      call hfmm2dpartstostdh_vec(nd,eps,zk,nsrc,sources,dipstr,
-     1        dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(hessex,6*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-      call dzero(hesstargex,6*ntt*nd)
-
-      ifcharge = 0
-      ifdipole = 1
-
-      ifpgh = 3
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(hessex,hess,6*nts*nd,errhs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-      call derr(hesstargex,hesstarg,6*nts*nd,errht)
-
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-c
-c
-c
-c
-cc      now test source to source  + target, charge + dipole
-c       with potentials
-c
-      write(*,*) 'testing stost, charge + dipole, potentials'
-
-      call hfmm2dpartstostcdp_vec(nd,eps,zk,nsrc,sources,charges,
-     1     dipstr,dipvec,pot,ntarg,targ,pottarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 1
-
-      ifpgh = 1
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-
-  
-      errgs = 0
-      errgt = 0
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, charge + dipole
-c       with gradients
-c
-      write(*,*) 'testing stost, charge + dipole, gradients'
-
-      call hfmm2dpartstostcdg_vec(nd,eps,zk,nsrc,sources,charges,
-     1    dipstr,dipvec,pot,grad,ntarg,targ,pottarg,gradtarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 1
-
-      ifpgh = 2
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-
-      errhs = 0
-      errht = 0
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-
-c
-c
-cc      now test source to source  + target, charge + dipole
-c       with hessians
-c
-
-
-
-      write(*,*) 'testing stost, charge + dipole, hessians'
-      call hfmm2dpartstostcdh_vec(nd,eps,zk,nsrc,sources,charges,
-     1    dipstr,dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
-c
-cc       test against exact potential
-c
-      call dzero(potex,2*nts*nd)
-      call dzero(gradex,4*nts*nd)
-      call dzero(hessex,6*nts*nd)
-      call dzero(pottargex,2*ntt*nd)
-      call dzero(gradtargex,4*ntt*nd)
-      call dzero(hesstargex,6*ntt*nd)
-
-      ifcharge = 1
-      ifdipole = 1
-
-      ifpgh = 3
-      thresh = 1.0d-16
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,nts,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
-
-      call hfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,zk,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
-     2       gradtargex,hesstargex,thresh)
-
-      call derr(potex,pot,2*nts*nd,errps)
-      call derr(gradex,grad,4*nts*nd,errgs)
-      call derr(hessex,hess,6*nts*nd,errhs)
-      call derr(pottargex,pottarg,2*ntt*nd,errpt)
-      call derr(gradtargex,gradtarg,4*ntt*nd,errgt)
-      call derr(hesstargex,hesstarg,6*nts*nd,errht)
-
-      call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
-      stop
-      end
-c-----------------------------------------------------     
-      subroutine dzero(vec,n)
-      implicit real *8 (a-h,o-z)
-      real *8 vec(*)
-
-      do i=1,n
-         vec(i) = 0
-      enddo
-
-      return
-      end
-c------------------------------------
-      subroutine derr(vec1,vec2,n,erra)
-      implicit real *8 (a-h,o-z)
-      real *8 vec1(*),vec2(*)
-
-      ra = 0
       erra = 0
-      do i=1,n
-         ra = ra + vec1(i)**2
-         erra = erra + (vec1(i)-vec2(i))**2
+      ra = 0
+
+
+      do i=1,nts
+        do idim=1,nd
+          if(ifpgh.ge.1) then
+            erra = erra + abs(pot(idim,i) - potex(idim,i))**2
+            ra = ra + abs(potex(idim,i))**2
+          endif
+          if(ifpgh.ge.2) then
+            erra = erra + abs(grad(idim,1,i)-gradex(idim,1,i))**2
+            erra = erra + abs(grad(idim,2,i)-gradex(idim,2,i))**2
+            ra = ra + abs(gradex(idim,1,i))**2
+            ra = ra + abs(gradex(idim,2,i))**2
+          endif
+          if(ifpgh.ge.3) then
+            erra = erra + abs(hess(idim,1,i)-hessex(idim,1,i))**2
+            erra = erra + abs(hess(idim,2,i)-hessex(idim,2,i))**2
+            erra = erra + abs(hess(idim,3,i)-hessex(idim,3,i))**2
+            ra = ra + abs(hessex(idim,1,i))**2
+            ra = ra + abs(hessex(idim,2,i))**2
+            ra = ra + abs(hessex(idim,3,i))**2
+          endif
+        enddo
+      enddo
+
+
+      do i=1,ntt
+        do idim=1,nd
+          if(ifpghtarg.ge.1) then
+            erra = erra + abs(pottarg(idim,i) - pottargex(idim,i))**2
+            ra = ra + abs(pottargex(idim,i))**2
+          endif
+          if(ifpghtarg.ge.2) then
+            erra = erra+abs(gradtarg(idim,1,i)-gradtargex(idim,1,i))**2
+            erra = erra+abs(gradtarg(idim,2,i)-gradtargex(idim,2,i))**2
+            ra = ra + abs(gradtargex(idim,1,i))**2
+            ra = ra + abs(gradtargex(idim,2,i))**2
+          endif
+          if(ifpghtarg.ge.3) then
+            erra = erra+abs(hesstarg(idim,1,i)-hesstargex(idim,1,i))**2
+            erra = erra+abs(hesstarg(idim,2,i)-hesstargex(idim,2,i))**2
+            erra = erra+abs(hesstarg(idim,3,i)-hesstargex(idim,3,i))**2
+            ra = ra + abs(hesstargex(idim,1,i))**2
+            ra = ra + abs(hesstargex(idim,2,i))**2
+            ra = ra + abs(hesstargex(idim,3,i))**2
+          endif
+        enddo
       enddo
 
       erra = sqrt(erra/ra)
 
       return
       end
-c----------------------------------
-      subroutine errprint(errps,errgs,errhs,errpt,errgt,errht)
-      implicit real *8 (a-h,o-z)
- 1100 format(3(2x,e11.5))
-
-
-      write(*,*) 'error in sources'
-      write(*,*) 'pot err, grad err, hess err' 
-      write(*,1100) errps,errgs,errhs
-      write(*,*) 
-      write(*,*)
-      write(*,* ) 'error in targets'
-      write(*,*) 'pot err, grad err, hess err' 
-      write(*,1100) errpt,errgt,errht
-      write(*,*)
-      write(*,*)
-      write(*,*)'==================='
-
-      return
-      end
-      

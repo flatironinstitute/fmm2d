@@ -1,0 +1,2736 @@
+.. _hscp:
+
+hfmm2d_s_c_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_p(eps,zk,nsource,source,charge,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_p_vec(nd,eps,zk,nsource,source,charge,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hscg:
+
+hfmm2d_s_c_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_g(eps,zk,nsource,source,charge,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_g_vec(nd,eps,zk,nsource,source,charge,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hsch:
+
+hfmm2d_s_c_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_h(eps,zk,nsource,source,charge,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_c_h_vec(nd,eps,zk,nsource,source,charge,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hsdp:
+
+hfmm2d_s_d_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_p(eps,zk,nsource,source,dipstr,dipvec,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_p_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hsdg:
+
+hfmm2d_s_d_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_g(eps,zk,nsource,source,dipstr,dipvec,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_g_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hsdh:
+
+hfmm2d_s_d_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_h(eps,zk,nsource,source,dipstr,dipvec,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_d_h_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hscdp:
+
+hfmm2d_s_cd_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_p(eps,zk,nsource,source,charge,dipstr,dipvec,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_p_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hscdg:
+
+hfmm2d_s_cd_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_g(eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_g_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hscdh:
+
+hfmm2d_s_cd_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_h(eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_s_cd_h_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,hess,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source locations $x=x_{j}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htcp:
+
+hfmm2d_t_c_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_p(eps,zk,nsource,source,charge,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_p_vec(nd,eps,zk,nsource,source,charge,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htcg:
+
+hfmm2d_t_c_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_g(eps,zk,nsource,source,charge,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_g_vec(nd,eps,zk,nsource,source,charge,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htch:
+
+hfmm2d_t_c_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_h(eps,zk,nsource,source,charge,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_c_h_vec(nd,eps,zk,nsource,source,charge,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htdp:
+
+hfmm2d_t_d_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_p(eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_p_vec(nd,eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htdg:
+
+hfmm2d_t_d_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_g(eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_g_vec(nd,eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htdh:
+
+hfmm2d_t_d_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_h(eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_d_h_vec(nd,eps,zk,nsource,source,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htcdp:
+
+hfmm2d_t_cd_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_p(eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_p_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htcdg:
+
+hfmm2d_t_cd_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_g(eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_g_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _htcdh:
+
+hfmm2d_t_cd_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_h(eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_t_cd_h_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the target locations $x=t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstcp:
+
+hfmm2d_st_c_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_p(eps,zk,nsource,source,charge,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_p_vec(nd,eps,zk,nsource,source,charge,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstcg:
+
+hfmm2d_st_c_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_g(eps,zk,nsource,source,charge,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_g_vec(nd,eps,zk,nsource,source,charge,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstch:
+
+hfmm2d_st_c_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_h(eps,zk,nsource,source,charge,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_c_h_vec(nd,eps,zk,nsource,source,charge,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstdp:
+
+hfmm2d_st_d_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_p(eps,zk,nsource,source,dipstr,dipvec,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_p_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstdg:
+
+hfmm2d_st_d_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_g(eps,zk,nsource,source,dipstr,dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_g_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstdh:
+
+hfmm2d_st_d_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_h(eps,zk,nsource,source,dipstr,dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = -\sum_{j=1}^{N} v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_d_h_vec(nd,eps,zk,nsource,source,dipstr,dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = -\sum_{j=1}^{N} v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstcdp:
+
+hfmm2d_st_cd_p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_p(eps,zk,nsource,source,charge,dipstr,dipvec,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_p_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,ntarg,targ,pottarg,ier)
+
+This subroutine evaluates the potential 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstcdg:
+
+hfmm2d_st_cd_g
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential and Gradient
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_g(eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_g_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
+
+This subroutine evaluates the potential and its gradient 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+
+.. _hstcdh:
+
+hfmm2d_st_cd_h
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Evaluation points: Sources and Targets
+- Interaction kernel: Charges and Dipoles
+- Outputs requested: Potential, Gradient and Hessian
+
+-------------------------------------
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_h(eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    eps: double precision
+          precision requested
+  -    zk: double complex
+          Helmholtz parameter, k
+  -    nsource: integer
+          Number of sources
+  -    source: double precision(3,nsource)
+          Source locations, $x_{j}$
+  -    charge: double complex(nsource)
+          Charge strengths, $c_{j}$
+  -    dipstr: double complex(nsource)
+          Dipole strengths, $v_{j}$
+  -    dipvec: double precision(2,nsource)
+          Dipole orientation vectors, $d_{j}$
+  -    ntarg: integer
+          Number of targets
+  -    targ: double precision(3,ntarg)
+          Target locations, $t_{i}$
+
+
+Output arguments:
+
+  -    pot: double complex(nsource)
+          Potential at source locations, $u(x_{j})$
+  -    grad: double complex(2,nsource)
+          Gradient at source locations, $\nabla u(x_{j})$
+  -    hess: double complex(3,nsource)
+          Hessian at source locations, $\nabla \nabla u(x_{j})$
+  -    pottarg: double complex(ntarg)
+          Potential at target locations, $u(t_{i})$
+  -    gradtarg: double complex(2,ntarg)
+          Gradient at target locations, $\nabla u(t_{i})$
+  -    hesstarg: double complex(3,ntarg)
+          Hessian at target locations, $\nabla \nabla u(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+--------------------------------
+
+Vectorized version: 
+
+.. code:: fortran
+
+  subroutine hfmm2d_st_cd_h_vec(nd,eps,zk,nsource,source,charge,dipstr,dipvec,pot,grad,hess,ntarg,targ,pottarg,gradtarg,hesstarg,ier)
+
+This subroutine evaluates the potential, its gradient, and its hessian 
+
+
+  .. math::
+
+      u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla \left( H_{0}^{(1)}(k\|x-x_{j}\|)\right)
+
+at the source and target locations $x=x_{j},t_{i}$. When $x=x_{j}$, the term corresponding to $x_{j}$ is dropped from the sum.
+
+Input arguments:
+
+  -    nd: integer
+          number of densities
+  -    charge: double complex(nd,nsource)
+          Charge strengths, $c_{\ell,j}$
+  -    dipstr: double complex(nd,nsource)
+          Dipole strengths, $v_{\ell,j}$
+  -    dipvec: double precision(nd,2,nsource)
+          Dipole orientation vectors, $d_{\ell,j}$
+
+
+Output arguments:
+
+  -    pot: double complex(nd,nsource)
+          Potential at source locations, $u_{\ell}(x_{j})$
+  -    grad: double complex(nd,2,nsource)
+          Gradient at source locations, $\nabla u_{\ell}(x_{j})$
+  -    hess: double complex(nd,3,nsource)
+          Hessian at source locations, $\nabla \nabla u_{\ell}(x_{j})$
+  -    pottarg: double complex(nd,ntarg)
+          Potential at target locations, $u_{\ell}(t_{i})$
+  -    gradtarg: double complex(nd,2,ntarg)
+          Gradient at target locations, $\nabla u_{\ell}(t_{i})$
+  -    hesstarg: double complex(nd,3,ntarg)
+          Hessian at target locations, $\nabla u_{\ell}(t_{i})$
+  -    ier: integer
+          Error flag; ier=0 implies successful execution, and ier=4/8 implies insufficient memory  
+
+
+.. container:: rttext
+
+  `Back to Helmholtz FMM <fortran-c.html#helm>`__
+
+.. container:: rttext
+
+  `Back to top <fortran-c.html#fcexmp>`__
+
+

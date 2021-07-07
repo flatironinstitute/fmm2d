@@ -33,11 +33,11 @@ COM = ../../src/common
 
 
 OBJECTS =  test_hfmm2d.o \
-  $(COM)/prini_new.o \
+  $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree2d.o \
-  $(COM)/tree_routs.o \
+  $(COM)/tree_routs2d.o \
   $(COM)/cumsum.o \
   $(HFMM)/hfmm2d.o \
   $(HFMM)/hfmm2dwrap.o \
@@ -48,7 +48,7 @@ OBJECTS =  test_hfmm2d.o \
   $(COM)/next235.o \
   $(HFMM)/helmrouts2d.o \
   $(HFMM)/helmkernels2d.o \
-  $(HFMM)/hank103.o \
+  $(COM)/hank103.o \
   $(HFMM)/h2dcommon.o \
   $(HFMM)/wideband2d.o \
   $(HFMM)/h2dterms.o 

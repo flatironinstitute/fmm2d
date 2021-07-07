@@ -16,10 +16,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c    $Date$
 c    $Revision$
-      subroutine hfmm2dpart(nd,eps,zk,ns,sources,ifcharge,charge,
+      subroutine hfmm2d(nd,eps,zk,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -58,6 +58,7 @@ c   hess(nd,3,*)    : hessian at the source locations
 c   pottarg(nd,*)   : potential at the target locations
 c   gradtarg(nd,2,*): gradient at the target locations
 c   hesstarg(nd,3,*): hessian at the target locations
+c   ier             : error code
 c
 
 
@@ -69,7 +70,7 @@ c
       integer iper
       real *8 eps
       complex *16 zk
-      integer ns,nt
+      integer ns,nt,ier
       real *8 sources(2,ns),targ(2,nt)
       real *8 dipvec(nd,2,*)
       complex *16 charge(nd,*),dipstr(nd,*)
@@ -82,7 +83,7 @@ cc      Tree variables
 c
       integer, allocatable :: itree(:)
       integer iptr(8)
-      integer nlmin
+      integer nlmin,nlmax,ifunif
       real *8, allocatable :: tcenters(:,:),boxsize(:)
       integer nexpc,ntj
       real *8 expc(2)
@@ -121,8 +122,8 @@ c
 cc      temporary variables
 c
       integer i,ilev,lmptmp,nmax,idim
-      integer ifcharge,ifdipole,ier
-      integer ifpgh,ifpghtarg,ifprint
+      integer ifcharge,ifdipole
+      integer ifpgh,ifpghtarg,ifprint,iert
       real *8 time1,time2,pi,done
       real *8 omp_get_wtime
 
@@ -138,6 +139,8 @@ c
       ndiv = 20
       ltree = 0
       nlmin = 0
+      nlmax = 51
+      ifunif = 0
       iper = 0
 
       ifprint = 0
@@ -149,8 +152,8 @@ c       number of levels and length of tree
 c
 
       
-      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree)
+      call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree)
 
 
       allocate(itree(ltree))
@@ -161,8 +164,8 @@ c
 c       call the tree code
 c
 
-      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,iper,
-     1  nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
+      call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
+     1  ifunif,iper,nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
 
       allocate(isrc(ns),isrcse(2,nboxes))
       allocate(itarg(nt),itargse(2,nboxes),iexpcse(2,nboxes))
@@ -348,7 +351,15 @@ c
      1    nterms)
       if(ifprint .eq. 1) call prinf(' lmptot is *',lmptot,1)
 
-      allocate(rmlexp(lmptot),stat=ier)
+      ier = 0
+      allocate(rmlexp(lmptot),stat=iert)
+      if(iert.ne.0) then
+         print *, "Cannot allocate mpole expansion workspace"
+         print *, "lmptot=", lmptot
+         ier = 4
+         return
+      endif
+
 
 
 c
@@ -371,11 +382,12 @@ C$      time1=omp_get_wtime()
      $   isrcse,itargse,iexpcse,nterms,ntj,
      $   ifpgh,potsort,gradsort,hesssort,
      $   ifpghtarg,pottargsort,gradtargsort,
-     $   hesstargsort,jexps,scj)
+     $   hesstargsort,jexps,scj,ier)
       call cpu_time(time2)
 C$        time2=omp_get_wtime()
       if( ifprint .eq. 1 ) call prin2('time in fmm main=*',
      1   time2-time1,1)
+      if(ier.ne.0) return
 
 
 c
@@ -432,7 +444,7 @@ cc      stop
      $     isrcse,itargse,iexpcse,nterms,ntj,
      $     ifpgh,pot,grad,hess,
      $     ifpghtarg,pottarg,gradtarg,hesstarg,
-     $     jsort,scjsort)
+     $     jsort,scjsort,ier)
 c   Helmholtz FMM in R^2: evaluate all pairwise particle
 c   interactions (ignoring self-interaction) 
 c   and interactions with targets.
@@ -577,7 +589,7 @@ c------------------------------------------------------------------
       complex *16 zk
       real *8 zi
 
-      integer nsource,ntarget,nexpc
+      integer nsource,ntarget,nexpc,ier
       integer ndiv,nlevels,ntj
 
       integer ifcharge,ifdipole
@@ -659,7 +671,7 @@ c     Suppressed if ifprint=0.
 c     Prints timing breakdown and other things if ifprint=1.
 c     Prints timing breakdown, list information, and other things if ifprint=2.
 c      
-        ifprint=1
+        ifprint=0
 
         pi = 4*atan(1.0d0)
 c
@@ -984,7 +996,7 @@ C$OMP END PARALLEL DO
          endif
 
          if(boxlam.gt.8.0d0) then
-           print *, "Doing mpmp using hf"
+           if(ifprint.ge.1) print *, "Doing mpmp using hf"
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
               do i=1,nchild

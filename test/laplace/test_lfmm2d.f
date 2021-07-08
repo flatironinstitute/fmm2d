@@ -14,7 +14,15 @@
       complex *16 ima
       data ima/(0.0d0,1.0d0)/
 
+      integer ipass(27)
+
       call prini(6,13)
+
+      ntests=9
+
+      do i = 1,ntests
+         ipass(i) = 0
+      enddo
 
       done = 1
       pi = atan(done)*4
@@ -101,6 +109,10 @@ c
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
 
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(1) = 1
+
 
 c
 cc      now test source to source  + target, charge
@@ -140,6 +152,11 @@ c
       errhs = 0
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(2) = 1
+      
 
 c
 c
@@ -186,6 +203,9 @@ c
 
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(3) = 1
 
 c
 c
@@ -229,6 +249,9 @@ c
       errhs = 0
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(4) = 1
 
 
 c
@@ -270,6 +293,9 @@ c
       errhs = 0
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(5) = 1
 
 c
 c
@@ -315,6 +341,9 @@ c
       call derr(hesstargex,hesstarg,3*2*nts,errht)
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(6) = 1
 c
 c
 c
@@ -356,6 +385,9 @@ c
       errhs = 0
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(7) = 1
 
 
 c
@@ -397,7 +429,10 @@ c
       errhs = 0
       errht = 0
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
-
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(8) = 1
+      
 c
 c
 cc      now test source to source  + target, charge + dipole
@@ -442,6 +477,20 @@ c
       call derr(hesstargex,hesstarg,3*2*nts,errht)
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
+      if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
+     1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
+     1     ipass(9) = 1
+
+      npass = 0
+      do i = 1,ntests
+         npass = npass + ipass(i)
+      enddo
+
+      open(unit=33,file='print_testres.txt',access='append')
+      write(33,'(a,i2,a,i2,a)') 'Successfully completed ',npass,
+     1   ' out of ',ntests,' tests in lfmm2d testing suite'
+      close(33)
+      
 
       stop
       end

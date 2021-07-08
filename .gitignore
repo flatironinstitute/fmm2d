@@ -17,3 +17,5 @@ int2
 *int2*
 *.mex*
 *debug*
+*~
+lib-static/*.a

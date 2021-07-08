@@ -19,14 +19,12 @@ cc 2021/07/07: convert to proper Laplace FMM, calls Cauchy FMM
 cc                   Travis Askham
 c
 c
-c     This is the Laplace FMM with complex-valued charges and
-c     dipole strengths. It is kept mostly for historical purposes
-c     as its function can also be accomplished with a vectorized
-c     rfmm2d call
+c     This is the Laplace FMM with real-valued charges and
+c     dipole strengths. 
 c
 c      
       
-      subroutine lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      subroutine rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
      3     hesstarg)
@@ -79,17 +77,17 @@ c
       real *8 eps
       integer ns,nt,iper
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,*),dipstr(nd,*)
+      real *8 charge(nd,*),dipstr(nd,*)
       real *8 dipvec(nd,2,*)
 
-      complex *16 pot(nd,*),grad(nd,2,*),hess(nd,3,*)
-      complex *16 pottarg(nd,*),gradtarg(nd,2,*),hesstarg(nd,3,*)
+      real *8 pot(nd,*),grad(nd,2,*),hess(nd,3,*)
+      real *8 pottarg(nd,*),gradtarg(nd,2,*),hesstarg(nd,3,*)
 
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg,ifprint,ier
       real *8 time1,time2,pi,done
 
-      complex *16, allocatable, dimension(:,:,:) :: pot1,grad1,hess1,
+      complex *16, allocatable, dimension(:,:) :: pot1,grad1,hess1,
      1     pottarg1,gradtarg1,hesstarg1,charge1,dipstr1
 
       integer i,j,nd2
@@ -100,37 +98,37 @@ c
 c     allocate variables for cfmm call
       
       if (ifcharge .eq. 1) then
-         allocate(charge1(2,nd,ns))
+         allocate(charge1(nd,ns))
       else
-         allocate(charge1(2,nd,1))
+         allocate(charge1(nd,1))
       endif
 
       if (ifdipole .eq. 1) then
-         allocate(dipstr1(2,nd,ns))
+         allocate(dipstr1(nd,ns))
       else
-         allocate(dipstr1(2,nd,1))
+         allocate(dipstr1(nd,1))
       endif
 
       if (ifpgh .eq. 1) then
-         allocate(pot1(2,nd,ns),grad1(2,nd,1),hess1(2,nd,1))
+         allocate(pot1(nd,ns),grad1(nd,1),hess1(nd,1))
       endif
       if (ifpgh .eq. 2) then
-         allocate(pot1(2,nd,ns),grad1(2,nd,ns),hess1(2,nd,1))
+         allocate(pot1(nd,ns),grad1(nd,ns),hess1(nd,1))
       endif
       if (ifpgh .eq. 3) then
-         allocate(pot1(2,nd,ns),grad1(2,nd,ns),hess1(2,nd,ns))
+         allocate(pot1(nd,ns),grad1(nd,ns),hess1(nd,ns))
       endif
 
       if (ifpghtarg .eq. 1) then
-         allocate(pottarg1(2,nd,ns),gradtarg1(2,nd,1),hesstarg1(2,nd,1))
+         allocate(pottarg1(nd,ns),gradtarg1(nd,1),hesstarg1(nd,1))
       endif
       if (ifpghtarg .eq. 2) then
-         allocate(pottarg1(2,nd,ns),gradtarg1(2,nd,ns),
-     1        hesstarg1(2,nd,1))
+         allocate(pottarg1(nd,ns),gradtarg1(nd,ns),
+     1        hesstarg1(nd,1))
       endif
       if (ifpghtarg .eq. 3) then
-         allocate(pottarg1(2,nd,ns),gradtarg1(2,nd,ns),
-     1        hesstarg1(2,nd,ns))
+         allocate(pottarg1(nd,ns),gradtarg1(nd,ns),
+     1        hesstarg1(nd,ns))
       endif
 
 c     real and complex parts must be split
@@ -138,8 +136,7 @@ c     real and complex parts must be split
       if (ifcharge .eq. 1) then
          do i = 1,ns
             do j = 1,nd
-               charge1(1,j,i) = dble(charge(j,i))
-               charge1(2,j,i) = imag(charge(j,i))
+               charge1(j,i) = charge(j,i)
             enddo
          enddo
       endif
@@ -148,16 +145,14 @@ c     real and complex parts must be split
          do i = 1,ns
             do j = 1,nd
                ztmp = -(dipvec(j,1,i)+eye*dipvec(j,2,i))
-               dipstr1(1,j,i) = dble(dipstr(j,i))*ztmp
-               dipstr1(2,j,i) = imag(dipstr(j,i))*ztmp
+               dipstr1(j,i) = dipstr(j,i)*ztmp
             enddo
          enddo
       endif
 
 c     cfmm does the work
 
-      nd2 = 2*nd
-      call cfmm2d(nd2,eps,ns,sources,ifcharge,charge1,
+      call cfmm2d(nd,eps,ns,sources,ifcharge,charge1,
      1     ifdipole,dipstr1,iper,ifpgh,pot1,grad1,hess1,
      2     nt,targ,ifpghtarg,pottarg1,gradtarg1,
      3     hesstarg1)
@@ -168,23 +163,23 @@ c     combine real and imaginary parts
       if (ifpgh .eq. 1 .or. ifpgh .eq. 2 .or. ifpgh .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               pot(j,i) = dble(pot1(1,j,i))+eye*dble(pot1(2,j,i))
+               pot(j,i) = dble(pot1(j,i))
             enddo
          enddo
       endif
       if (ifpgh .eq. 2 .or. ifpgh .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               grad(j,1,i) = dble(grad1(1,j,i))+eye*dble(grad1(2,j,i))
-               grad(j,2,i) = -imag(grad1(1,j,i))-eye*imag(grad1(2,j,i))
+               grad(j,1,i) = dble(grad1(j,i))
+               grad(j,2,i) = -imag(grad1(j,i))
             enddo
          enddo
       endif
       if (ifpgh .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               hess(j,1,i) = dble(hess1(1,j,i))+eye*dble(hess1(2,j,i))
-               hess(j,2,i) = -imag(hess1(1,j,i))-eye*imag(hess1(2,j,i))
+               hess(j,1,i) = dble(hess1(j,i))
+               hess(j,2,i) = -imag(hess1(j,i))
                hess(j,3,i) = -hess(j,1,i)
             enddo
          enddo
@@ -194,28 +189,23 @@ c     combine real and imaginary parts
      1     .or. ifpghtarg .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               pottarg(j,i) = dble(pottarg1(1,j,i))
-     1              +eye*dble(pottarg1(2,j,i))
+               pottarg(j,i) = dble(pottarg1(j,i))
             enddo
          enddo
       endif
       if (ifpghtarg .eq. 2 .or. ifpghtarg .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               gradtarg(j,1,i) = dble(gradtarg1(1,j,i))
-     1              +eye*dble(gradtarg1(2,j,i))
-               gradtarg(j,2,i) = -imag(gradtarg1(1,j,i))
-     1              -eye*imag(gradtarg1(2,j,i))
+               gradtarg(j,1,i) = dble(gradtarg1(j,i))
+               gradtarg(j,2,i) = -imag(gradtarg1(j,i))
             enddo
          enddo
       endif
       if (ifpghtarg .eq. 3) then
          do i = 1,ns
             do j = 1,nd
-               hesstarg(j,1,i) = dble(hesstarg1(1,j,i))
-     1              +eye*dble(hesstarg1(2,j,i))
-               hesstarg(j,2,i) = -imag(hesstarg1(1,j,i))
-     1              -eye*imag(hesstarg1(2,j,i))
+               hesstarg(j,1,i) = dble(hesstarg1(j,i))
+               hesstarg(j,2,i) = -imag(hesstarg1(j,i))
                hesstarg(j,3,i) = -hesstarg(j,1,i)
             enddo
          enddo
@@ -227,7 +217,7 @@ c
 c
 c
 c------------------------------------------------------------------
-      subroutine lfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
+      subroutine rfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
      $     source,ifcharge,charge,ifdipole,dipstr,dipvec,
      $     targ,ifpgh,pot,grad,hess,thresh)
 c--------------------------------------------------------------------
@@ -267,7 +257,7 @@ c     flag for including expansions due to charges
 c     The expansion due to charges will be included
 c     if ifcharge == 1
 c     
-c     charge       in: complex *16
+c     charge       in: real *8
 c     Charge at the source locations
 c     
 c     ifdipole     in: Integer
@@ -275,7 +265,7 @@ c     flag for including expansions due to dipoles
 c     The expansion due to dipoles will be included
 c     if ifdipole == 1
 c     
-c     dipstr        in: complex *16(ns)
+c     dipstr        in: real *8(ns)
 c     dipole strengths at the source locations
 c
 c     dipvec        in: real *8 (nd,2,ns)
@@ -313,37 +303,37 @@ c
 
 
       real *8 source(2,*)
-      complex *16 charge(nd,*),dipstr(nd,*)
+      real *8 charge(nd,*),dipstr(nd,*)
       real *8 dipvec(nd,2,*)
 
       integer ifpgh
       real *8 targ(2,*),thresh
       
 c     
-      complex *16 pot(nd,*)
-      complex *16 grad(nd,2,*)
-      complex *16 hess(nd,3,*)
+      real *8 pot(nd,*)
+      real *8 grad(nd,2,*)
+      real *8 hess(nd,3,*)
 
 c     
       ns = iend - istart + 1
       if(ifcharge.eq.1.and.ifdipole.eq.0) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directcp_vec(nd,source(1,istart),ns,
+               call r2d_directcp_vec(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),thresh)
             enddo
          endif
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directcg_vec(nd,source(1,istart),ns,
+               call r2d_directcg_vec(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
             enddo
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directch_vec(nd,source(1,istart),ns,
+               call r2d_directch_vec(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)
             enddo
@@ -353,7 +343,7 @@ c
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directdp_vec(nd,source(1,istart),ns,
+               call r2d_directdp_vec(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),
      2              targ(1,j),pot(1,j),thresh)
             enddo
@@ -361,7 +351,7 @@ c
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directdg_vec(nd,source(1,istart),ns,
+               call r2d_directdg_vec(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),
      2              targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
@@ -369,7 +359,7 @@ c
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directdh_vec(nd,source(1,istart),ns,
+               call r2d_directdh_vec(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),targ(1,j),
      2              pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)
@@ -380,7 +370,7 @@ c
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directcdp_vec(nd,source(1,istart),ns,
+               call r2d_directcdp_vec(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),thresh)
             enddo
@@ -388,7 +378,7 @@ c
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directcdg_vec(nd,source(1,istart),ns,
+               call r2d_directcdg_vec(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
@@ -396,7 +386,7 @@ c
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directcdh_vec(nd,source(1,istart),ns,
+               call r2d_directcdh_vec(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)

@@ -1,4 +1,4 @@
-PROJECT = int2-lfmm2d
+PROJECT = int2-lfmm2d-vec
 
 HOST = gcc
 HOST = gcc-openmp

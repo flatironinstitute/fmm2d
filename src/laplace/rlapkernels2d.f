@@ -1,11 +1,11 @@
 c
 c     Laplace interactions
 c      
-c     complex-valued charge, dipstr, pot, grad, hess
+c     real-valued charge, dipstr, pot, grad, hess
 c     real-valued dipvec
 c      
 c**********************************************************************
-      subroutine l2d_directcp_vec(nd,sources,ns,charge,
+      subroutine r2d_directcp_vec(nd,sources,ns,charge,
      $           targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -34,13 +34,13 @@ c     thresh        :   threshold for computing potential
 c---------------------------------------------------------------------
 c     OUTPUT:
 c
-c     pot(nd)   (complex *16)      : potential is incremented
+c     pot(nd)   (real *8)      : potential is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2),xdiff,ydiff,rr,r
       real *8 thresh,rtmp,thresh2
-      complex *16 pot(nd)
-      complex *16 charge(nd,ns)
+      real *8 pot(nd)
+      real *8 charge(nd,ns)
 
       thresh2 = thresh*thresh
 c
@@ -64,7 +64,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcg_vec(nd,sources,ns,charge,targ,pot,
+      subroutine r2d_directcg_vec(nd,sources,ns,charge,targ,pot,
      1             grad,thresh)
       implicit none
 c**********************************************************************
@@ -96,15 +96,15 @@ c     thresh        :   threshold for computing potential and gradient
 c---------------------------------------------------------------------
 c     OUTPUT:
 c
-c     pot(nd)     (complex *16)      : potential is incremented
-c     grad(nd,2)  (complex *16)      : gradient is incremented
+c     pot(nd)     (real *8)      : potential is incremented
+c     grad(nd,2)  (real *8)      : gradient is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh,rtmp,thresh2
-      complex *16 pot(nd),grad(nd,2)
+      real *8 pot(nd),grad(nd,2)
       real *8 dx,dy
-      complex *16 charge(nd,ns)
+      real *8 charge(nd,ns)
 
       thresh2 = thresh*thresh
 c
@@ -136,7 +136,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directch_vec(nd,sources,ns,charge,targ,
+      subroutine r2d_directch_vec(nd,sources,ns,charge,targ,
      1           pot,grad,hess,thresh)
       implicit none
 c**********************************************************************
@@ -177,10 +177,10 @@ c---------------------------------------------------------------------
       integer i,ns,ifexpon,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh,thresh2
-      complex *16 pot(nd),grad(nd,2),hess(nd,3)
+      real *8 pot(nd),grad(nd,2),hess(nd,3)
       real *8 rtmp, xdiff2, ydiff2
       real *8 rr2, dx, dy, dxx, dxy, dyy
-      complex *16 charge(nd,ns)
+      real *8 charge(nd,ns)
 
       thresh2 = thresh*thresh
 
@@ -221,7 +221,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdp_vec(nd,sources,ns,dipstr,dipvec,
+      subroutine r2d_directdp_vec(nd,sources,ns,dipstr,dipvec,
      $           targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -252,13 +252,13 @@ c     thresh        :   threshold for computing potential
 c---------------------------------------------------------------------
 c     OUTPUT:
 c
-c     pot(nd)   (complex *16)      : potential is incremented
+c     pot(nd)   (real *8)      : potential is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2),xdiff,ydiff,rr,r
       real *8 thresh,thresh2,p1,p2
-      complex *16 pot(nd)
-      complex *16 dipstr(nd,ns)
+      real *8 pot(nd)
+      real *8 dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
 c
       thresh2 = thresh*thresh
@@ -287,8 +287,8 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdg_vec(nd,sources,ns,dipstr,dipvec,targ,pot,
-     1             grad,thresh)
+      subroutine r2d_directdg_vec(nd,sources,ns,dipstr,dipvec,
+     1     targ,pot,grad,thresh)
       implicit none
 c**********************************************************************
 c
@@ -326,8 +326,8 @@ c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh,rtmp
-      complex *16 pot(nd),grad(nd,2)
-      complex *16 dipstr(nd,ns),d1,d2
+      real *8 pot(nd),grad(nd,2)
+      real *8 dipstr(nd,ns),d1,d2
       real *8 dx1,dx2,dy1,dy2
       real *8 dipvec(nd,2,ns)
       real *8 xdiff2,ydiff2,p1,p2,thresh2,rr2
@@ -374,7 +374,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdh_vec(nd,sources,ns,dipstr,dipvec,targ,
+      subroutine r2d_directdh_vec(nd,sources,ns,dipstr,dipvec,targ,
      1           pot,grad,hess,thresh)
       implicit none
 c**********************************************************************
@@ -416,9 +416,9 @@ c---------------------------------------------------------------------
       integer i,ns,ifexpon,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh
-      complex *16 pot(nd),grad(nd,2),hess(nd,3)
+      real *8 pot(nd),grad(nd,2),hess(nd,3)
       real *8 rtmp
-      complex *16 dipstr(nd,ns),d1,d2
+      real *8 dipstr(nd,ns),d1,d2
       real *8 dipvec(nd,2,ns),dx1,dx2,dy1,dy2
       real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
       real *8 rr2,rr3,thresh2
@@ -473,7 +473,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdp_vec(nd,sources,ns,charge,
+      subroutine r2d_directcdp_vec(nd,sources,ns,charge,
      $           dipstr,dipvec,targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -511,9 +511,9 @@ c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2),xdiff,ydiff,rr,r
       real *8 thresh,rtmp,thresh2
-      complex *16 pot(nd)
+      real *8 pot(nd)
       real *8 dipvec(nd,2,ns)
-      complex *16 charge(nd,ns),dipstr(nd,ns)
+      real *8 charge(nd,ns),dipstr(nd,ns)
       real *8 xdiff2,ydiff2,p1,p2
 
       thresh2 = thresh*thresh
@@ -544,7 +544,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdg_vec(nd,sources,ns,charge,dipstr,dipvec,
+      subroutine r2d_directcdg_vec(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,pot,grad,thresh)
       implicit none
 c**********************************************************************
@@ -585,9 +585,9 @@ c---------------------------------------------------------------------
       integer i,ns,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh,rtmp,thresh2
-      complex *16 pot(nd),grad(nd,2)
-      complex *16 charge(nd,ns),dipstr(nd,ns)
-      complex *16 d1,d2
+      real *8 pot(nd),grad(nd,2)
+      real *8 charge(nd,ns),dipstr(nd,ns)
+      real *8 d1,d2
       real *8 dipvec(nd,2,ns)
       real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
       real *8 rr2,rr3,dx,dy,dx1,dx2,dy1,dy2
@@ -643,7 +643,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdh_vec(nd,sources,ns,charge,dipstr,dipvec,
+      subroutine r2d_directcdh_vec(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,pot,grad,hess,thresh)
       implicit none
 c**********************************************************************
@@ -687,9 +687,9 @@ c---------------------------------------------------------------------
       integer i,ns,ifexpon,ii,nd
       real *8 sources(2,ns),targ(2)
       real *8 xdiff,ydiff,rr,r,thresh,thresh2
-      complex *16 pot(nd),grad(nd,2),hess(nd,3)
+      real *8 pot(nd),grad(nd,2),hess(nd,3)
       real *8 rtmp
-      complex *16 charge(nd,ns),dipstr(nd,ns),d1,d2
+      real *8 charge(nd,ns),dipstr(nd,ns),d1,d2
       real *8 dipvec(nd,2,ns),dx1,dx2,dy1,dy2
       real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
       real *8 rr2,rr3,dxx,dxy,dyy,dx,dy

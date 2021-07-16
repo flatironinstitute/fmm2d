@@ -2,6 +2,7 @@ PROJECT = int2-hfmm2d
 
 HOST = gcc
 HOST = gcc-openmp
+HOST = intel
 
 # FC - fortran compiler
 # FFLAGS - fortran compiler flags
@@ -14,6 +15,11 @@ endif
 ifeq ($(HOST),gcc-openmp)
     FC = gfortran 
     FFLAGS=-fPIC -O3 -funroll-loops -march=native -fopenmp -std=legacy
+endif
+
+ifeq ($(HOST),intel)
+    FC = ifort
+    FFLAGS=-fPIC -O2 -qopenmp
 endif
 
 # Test objects

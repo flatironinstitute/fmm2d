@@ -13,7 +13,10 @@ cc details. You should have received a copy of the GNU General Public
 cc License along with this program; 
 cc if not, see <http://www.gnu.org/licenses/>.
 
-
+c
+c     2021/07/08 : search/replace for real valued version
+c                         (Travis Askham)
+c
 
 c       
 c   Laplace FMM in R^2: evaluate all pairwise particle
@@ -23,14 +26,14 @@ c
 c   We use log(r) for the Green's function.
 c   Self-interactions are not included
 c
-c   l2d: charge and dipstr are complex valued, x in \R^2
+c   l2d: charge and dipstr are real-valued, x in \R^2
 c
 c   \phi(x_i) = \sum_{j\ne i} charge_j log|x_i-x_j}
 c   + dipstr_j/x_i - x_j
 c
 c
 
-      subroutine lfmm2d_st_c_p_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_c_p_vec(nd,eps,ns,sources,
      1            charge,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -56,17 +59,17 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns)
+      real *8 charge(nd,ns)
 
-      complex *16 pot(nd,ns)
-      complex *16 pottarg(nd,nt)
+      real *8 pot(nd,ns)
+      real *8 pottarg(nd,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      complex *16 grad(nd,2),gradtarg(nd,2)
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 dipstr(nd)
+      real *8 grad(nd,2),gradtarg(nd,2)
+      real *8 hess(nd,3),hesstarg(nd,3)
       real *8 dipvec(nd,2)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
@@ -77,7 +80,7 @@ c
       ifpgh = 1
       ifpghtarg = 1
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -86,7 +89,7 @@ c
 c------------------------------
 
 
-      subroutine lfmm2d_st_c_g_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_c_g_vec(nd,eps,ns,sources,
      1            charge,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -114,17 +117,17 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns)
+      real *8 charge(nd,ns)
 
-      complex *16 pot(nd,ns),grad(nd,2,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
+      real *8 dipstr(nd)
       real *8 dipvec(nd,2)
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -134,7 +137,7 @@ c
       ifpgh = 2
       ifpghtarg = 2
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -146,7 +149,7 @@ c
 c
 c
 c
-      subroutine lfmm2d_st_c_h_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_c_h_vec(nd,eps,ns,sources,
      1            charge,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -177,15 +180,15 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns)
+      real *8 charge(nd,ns)
 
-      complex *16 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
+      real *8 dipstr(nd)
       real *8 dipvec(nd,2)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
@@ -196,7 +199,7 @@ c
       ifpgh = 3
       ifpghtarg = 3
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -206,7 +209,7 @@ c
 
 c-------------------------------      
 
-      subroutine lfmm2d_st_d_p_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_d_p_vec(nd,eps,ns,sources,
      1            dipstr,dipvec,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -233,18 +236,18 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 dipstr(nd,ns)
+      real *8 dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
 
-      complex *16 pot(nd,ns)
-      complex *16 pottarg(nd,nt)
+      real *8 pot(nd,ns)
+      real *8 pottarg(nd,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
-      complex *16 grad(nd,2),gradtarg(nd,2)
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 charge(nd)
+      real *8 grad(nd,2),gradtarg(nd,2)
+      real *8 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -254,7 +257,7 @@ c
       ifpgh = 1
       ifpghtarg = 1
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -263,7 +266,7 @@ c
 c------------------------------
 
 
-      subroutine lfmm2d_st_d_g_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_d_g_vec(nd,eps,ns,sources,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -293,17 +296,17 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 dipstr(nd,ns)
+      real *8 dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)      
 
-      complex *16 pot(nd,ns),grad(nd,2,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 charge(nd)
+      real *8 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -313,7 +316,7 @@ c
       ifpgh = 2
       ifpghtarg = 2
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -325,7 +328,7 @@ c
 c
 c
 c
-      subroutine lfmm2d_st_d_h_vec(nd,eps,ns,sources,
+      subroutine rfmm2d_st_d_h_vec(nd,eps,ns,sources,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -358,15 +361,15 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 dipstr(nd,ns)
+      real *8 dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
-      complex *16 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      real *8 charge(nd)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -376,7 +379,7 @@ c
       ifpgh = 3
       ifpghtarg = 3
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -386,7 +389,7 @@ c
 
 c-------------------------------      
 
-      subroutine lfmm2d_st_cd_p_vec(nd,eps,ns,sources,charge,
+      subroutine rfmm2d_st_cd_p_vec(nd,eps,ns,sources,charge,
      1            dipstr,dipvec,pot,nt,targ,pottarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -415,16 +418,16 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns),dipstr(nd,ns)
+      real *8 charge(nd,ns),dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
-      complex *16 pot(nd,ns)
-      complex *16 pottarg(nd,nt)
+      real *8 pot(nd,ns)
+      real *8 pottarg(nd,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 grad(nd,2),gradtarg(nd,2)
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 grad(nd,2),gradtarg(nd,2)
+      real *8 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -434,7 +437,7 @@ c
       ifpgh = 1
       ifpghtarg = 1
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -443,7 +446,7 @@ c
 c------------------------------
 
 
-      subroutine lfmm2d_st_cd_g_vec(nd,eps,ns,sources,charge,
+      subroutine rfmm2d_st_cd_g_vec(nd,eps,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -473,15 +476,15 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns),dipstr(nd,ns)
+      real *8 charge(nd,ns),dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
-      complex *16 pot(nd,ns),grad(nd,2,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt)
 
 c
 cc     temporary variables
 c
-      complex *16 hess(nd,3),hesstarg(nd,3)
+      real *8 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -491,7 +494,7 @@ c
       ifpgh = 2
       ifpghtarg = 2
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
@@ -503,7 +506,7 @@ c
 c
 c
 c
-      subroutine lfmm2d_st_cd_h_vec(nd,eps,ns,sources,charge,
+      subroutine rfmm2d_st_cd_h_vec(nd,eps,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg)
 c----------------------------------------------
@@ -537,10 +540,10 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns),dipstr(nd,ns)
+      real *8 charge(nd,ns),dipstr(nd,ns)
       real *8 dipvec(nd,2,ns)
-      complex *16 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
+      real *8 pot(nd,ns),grad(nd,2,ns),hess(nd,3,ns)
+      real *8 pottarg(nd,nt),gradtarg(nd,2,nt),hesstarg(nd,3,nt)
 
 c
 cc     temporary variables
@@ -554,7 +557,7 @@ c
       ifpgh = 3
       ifpghtarg = 3
 
-      call lfmm2d(nd,eps,ns,sources,ifcharge,charge,
+      call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)

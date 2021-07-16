@@ -1,4 +1,4 @@
-PROJECT = int2-lfmm2d
+PROJECT = int2-cfmm2d-vec
 
 HOST = gcc
 HOST = gcc-openmp
@@ -26,19 +26,19 @@ COM = ../../src/common
 .PHONY: all clean list
 
 
-OBJECTS =  test_lfmm2d.o \
+OBJECTS =  test_cfmm2d_vec.o \
   $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree2d.o \
   $(COM)/tree_routs2d.o \
   $(COM)/cumsum.o \
-  $(LFMM)/lfmm2d.o \
-  $(LFMM)/lfmm2dwrap.o \
-  $(LFMM)/lfmm2dwrap_vec.o \
   $(LFMM)/cfmm2d.o \
   $(LFMM)/cfmm2dwrap.o \
   $(LFMM)/cfmm2dwrap_vec.o \
+  $(LFMM)/lfmm2d.o \
+  $(LFMM)/lfmm2dwrap.o \
+  $(LFMM)/lfmm2dwrap_vec.o \
   $(COM)/fmmcommon2d.o \
   $(LFMM)/laprouts2d.o \
   $(LFMM)/lapkernels2d.o \

@@ -1,25 +1,25 @@
       implicit real *8 (a-h,o-z)
       real *8, allocatable :: sources(:,:),targ(:,:)
-      real *8, allocatable :: dipvec(:,:,:)
-      complex *16, allocatable :: charges(:,:),dipstr(:,:)
-      complex *16, allocatable :: pot(:,:),grad(:,:,:),hess(:,:,:)
-      complex *16, allocatable :: pottarg(:,:),gradtarg(:,:,:),
-     1     hesstarg(:,:,:)
+      real *8, allocatable :: dipvec(:,:)
+      real *8, allocatable :: charges(:),dipstr(:)
+      real *8, allocatable :: pot(:),grad(:,:),hess(:,:)
+      real *8, allocatable :: pottarg(:),gradtarg(:,:),hesstarg(:,:)
 
-      complex *16, allocatable :: potex(:,:),gradex(:,:,:),hessex(:,:,:)
-      complex *16, allocatable :: pottargex(:,:),gradtargex(:,:,:),
-     1                             hesstargex(:,:,:)
+      real *8, allocatable :: potex(:),gradex(:,:),hessex(:,:)
+      real *8, allocatable :: pottargex(:),gradtargex(:,:),
+     1                             hesstargex(:,:)
 
       real *8 expc(100),texps(100),scj(100)
+
+      integer ipass(27)
       
       complex *16 ima
       data ima/(0.0d0,1.0d0)/
 
-      integer ipass(27)
-      
       call prini(6,13)
 
       ntests=9
+
       do i = 1,ntests
          ipass(i) = 0
       enddo
@@ -30,28 +30,27 @@
       nsrc = 10000
       ntarg = nsrc
 
-      nd = 3
+      nd1 = 1
+      i1 = 1
 
-      allocate(sources(2,nsrc),charges(nd,nsrc),dipstr(nd,nsrc),
-     1     dipvec(nd,2,nsrc))
+      allocate(sources(2,nsrc),charges(nsrc),dipstr(nsrc),
+     1     dipvec(2,nsrc))
       allocate(targ(2,ntarg))
-      allocate(pot(nd,nsrc),grad(nd,2,nsrc),hess(nd,3,nsrc))
-      allocate(pottarg(nd,ntarg),gradtarg(nd,2,ntarg),
-     1     hesstarg(nd,3,ntarg))
+      allocate(pot(nsrc),grad(2,nsrc),hess(3,nsrc))
+      allocate(pottarg(ntarg),gradtarg(2,ntarg),hesstarg(3,ntarg))
 
       do i=1,nsrc
+
          sources(1,i) = hkrand(0)
          sources(2,i) = hkrand(0)
 
-         do j = 1,nd
+         charges(i) = hkrand(0)
 
-            charges(j,i) = hkrand(0) + ima*hkrand(0)
+         dipstr(i) = hkrand(0) 
 
-            dipstr(j,i) = hkrand(0) + ima*hkrand(0)
+         dipvec(1,i) = hkrand(0)
+         dipvec(2,i) = hkrand(0)
 
-            dipvec(j,1,i) = hkrand(0)
-            dipvec(j,2,i) = hkrand(0)
-         enddo
       enddo
 
 
@@ -64,31 +63,36 @@
       nts = min(20,nsrc)
       ntt = min(20,ntarg)
 
-      allocate(potex(nd,nts),gradex(nd,2,nts),hessex(nd,3,nts))
-      allocate(pottargex(nd,ntt),gradtargex(nd,2,ntt),
-     1     hesstargex(nd,3,ntt))
+      allocate(potex(nts))
+      allocate(gradex(2,nts))
+      allocate(hessex(3,nts))
+      allocate(pottargex(ntt))
+      allocate(gradtargex(2,ntt))
+      allocate(hesstargex(3,ntt))
 
 
 c
 cc      test low frequency mode
 c
       eps = 0.5d-6
-c
+
+
+
 c
 cc      now test source to source  + target, charge
 c       with potentials
 c
       write(6,*) 'testing stost, charge, potentials'
 
-      call lfmm2d_st_c_p_vec(nd,eps,nsrc,sources,charges,
+      call rfmm2d_st_c_p(eps,nsrc,sources,charges,
      1        pot,ntarg,targ,pottarg)
 
 
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(pottargex,ntt)
 
       ifcharge = 1
       ifdipole = 0
@@ -96,16 +100,16 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2     gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
       
       errgs = 0
       errgt = 0
@@ -124,15 +128,15 @@ c       with gradients
 c
       write(6,*) 'testing stost, charge, gradients'
 
-      call lfmm2d_st_c_g_vec(nd,eps,nsrc,sources,charges,
+      call rfmm2d_st_c_g(eps,nsrc,sources,charges,
      1        pot,grad,ntarg,targ,pottarg,gradtarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
 
       ifcharge = 1
       ifdipole = 0
@@ -140,18 +144,18 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
 
       errhs = 0
       errht = 0
@@ -169,18 +173,18 @@ c
 
 
       write(6,*) 'testing stost, charge, hessians'
-      call lfmm2d_st_c_h_vec(nd,eps,nsrc,sources,charges,
+      call rfmm2d_st_c_h(eps,nsrc,sources,charges,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
      2        hesstarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(hessex,3*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
-      call dzero(hesstargex,3*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(hessex,3*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
+      call dzero(hesstargex,3*ntt)
 
       ifcharge = 1
       ifdipole = 0
@@ -188,20 +192,20 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(hessex,hess,3*2*nd*nts,errhs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
-      call derr(hesstargex,hesstarg,3*2*nd*nts,errht)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(hessex,hess,3*nts,errhs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
+      call derr(hesstargex,hesstarg,3*nts,errht)
 
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
@@ -218,15 +222,15 @@ c       with potentials
 c
       write(6,*) 'testing stost, dipole, potentials'
 
-      call lfmm2d_st_d_p_vec(nd,eps,nsrc,sources,dipstr,dipvec,
+      call rfmm2d_st_d_p(eps,nsrc,sources,dipstr,dipvec,
      1     pot,ntarg,targ,pottarg)
 
 
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(pottargex,ntt)
 
       ifcharge = 0
       ifdipole = 1
@@ -234,16 +238,16 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
   
       errgs = 0
       errgt = 0
@@ -255,23 +259,21 @@ c
      1     errpt .lt. eps .and. errgt .lt. eps .and. errht .lt. eps)
      1     ipass(4) = 1
 
-
-c
 c
 cc      now test source to source  + target, dipole
 c       with gradients
 c
       write(6,*) 'testing stost, dipole, gradients'
 
-      call lfmm2d_st_d_g_vec(nd,eps,nsrc,sources,dipstr,dipvec,
+      call rfmm2d_st_d_g(eps,nsrc,sources,dipstr,dipvec,
      1        pot,grad,ntarg,targ,pottarg,gradtarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
 
       ifcharge = 0
       ifdipole = 1
@@ -279,18 +281,19 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
-     1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
+     1     charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
+     2     gradex,hessex,thresh)
+
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
 
       errhs = 0
       errht = 0
@@ -300,7 +303,6 @@ c
      1     ipass(5) = 1
 
 c
-c
 cc      now test source to source  + target, dipole
 c       with hessians
 c
@@ -308,18 +310,18 @@ c
 
 
       write(6,*) 'testing stost, dipole, hessians'
-      call lfmm2d_st_d_h_vec(nd,eps,nsrc,sources,dipstr,dipvec,
+      call rfmm2d_st_d_h(eps,nsrc,sources,dipstr,dipvec,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
      2        hesstarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(hessex,3*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
-      call dzero(hesstargex,3*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(hessex,3*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
+      call dzero(hesstargex,3*ntt)
 
       ifcharge = 0
       ifdipole = 1
@@ -327,20 +329,20 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(hessex,hess,3*2*nd*nts,errhs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
-      call derr(hesstargex,hesstarg,3*2*nd*nts,errht)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(hessex,hess,3*nts,errhs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
+      call derr(hesstargex,hesstarg,3*nts,errht)
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
       if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
@@ -355,13 +357,13 @@ c       with potentials
 c
       write(6,*) 'testing stost, charge + dipole, potentials'
 
-      call lfmm2d_st_cd_p_vec(nd,eps,nsrc,sources,charges,dipstr,dipvec,
+      call rfmm2d_st_cd_p(eps,nsrc,sources,charges,dipstr,dipvec,
      1        pot,ntarg,targ,pottarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(pottargex,ntt)
 
       ifcharge = 1
       ifdipole = 1
@@ -369,16 +371,16 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
 
   
       errgs = 0
@@ -399,15 +401,15 @@ c       with gradients
 c
       write(6,*) 'testing stost, charge + dipole, gradients'
 
-      call lfmm2d_st_cd_g_vec(nd,eps,nsrc,sources,charges,dipstr,dipvec,
+      call rfmm2d_st_cd_g(eps,nsrc,sources,charges,dipstr,dipvec,
      1        pot,grad,ntarg,targ,pottarg,gradtarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
 
       ifcharge = 1
       ifdipole = 1
@@ -415,18 +417,18 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
 
       errhs = 0
       errht = 0
@@ -444,18 +446,18 @@ c
 
 
       write(6,*) 'testing stost, charge + dipole, hessians'
-      call lfmm2d_st_cd_h_vec(nd,eps,nsrc,sources,charges,dipstr,dipvec,
+      call rfmm2d_st_cd_h(eps,nsrc,sources,charges,dipstr,dipvec,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
      2        hesstarg)
 c
 cc       test against exact potential
 c
-      call dzero(potex,2*nd*nts)
-      call dzero(gradex,2*2*nd*nts)
-      call dzero(hessex,3*2*nd*nts)
-      call dzero(pottargex,2*nd*ntt)
-      call dzero(gradtargex,2*2*nd*ntt)
-      call dzero(hesstargex,3*2*nd*ntt)
+      call dzero(potex,nts)
+      call dzero(gradex,2*nts)
+      call dzero(hessex,3*nts)
+      call dzero(pottargex,ntt)
+      call dzero(gradtargex,2*ntt)
+      call dzero(hesstargex,3*ntt)
 
       ifcharge = 1
       ifdipole = 1
@@ -463,20 +465,20 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call lfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call rfmm2dpart_direct_vec(nd1,i1,nsrc,i1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
-      call derr(potex,pot,2*nd*nts,errps)
-      call derr(pottargex,pottarg,2*nd*ntt,errpt)
-      call derr(gradex,grad,2*2*nd*nts,errgs)
-      call derr(hessex,hess,3*2*nd*nts,errhs)
-      call derr(gradtargex,gradtarg,2*2*nd*ntt,errgt)
-      call derr(hesstargex,hesstarg,3*2*nd*nts,errht)
+      call derr(potex,pot,nts,errps)
+      call derr(pottargex,pottarg,ntt,errpt)
+      call derr(gradex,grad,2*nts,errgs)
+      call derr(hessex,hess,3*nts,errhs)
+      call derr(gradtargex,gradtarg,2*ntt,errgt)
+      call derr(hesstargex,hesstarg,3*nts,errht)
 
       call errprint(errps,errgs,errhs,errpt,errgt,errht)
       if (errps .lt. eps .and. errgs .lt. eps .and. errhs .lt. eps .and.
@@ -490,7 +492,7 @@ c
 
       open(unit=33,file='print_testres.txt',access='append')
       write(33,'(a,i2,a,i2,a)') 'Successfully completed ',npass,
-     1   ' out of ',ntests,' tests in lfmm2d vec testing suite'
+     1     ' out of ',ntests,' tests in rfmm2d testing suite'
       close(33)
       
       stop

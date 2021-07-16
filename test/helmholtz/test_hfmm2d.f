@@ -677,6 +677,10 @@ c
 
 
 
+
+cccc      nsrc = n
+cccc      ntarg = nsrc
+
 c
 c
 c
@@ -689,6 +693,7 @@ c
       write(6,*) 'output: potentials'
       write(6,*)
       write(6,*)
+
 
 
       call hfmm2d_t_cd_p(eps,zk,nsrc,sources,charges,dipstr,

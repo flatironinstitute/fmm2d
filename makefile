@@ -112,9 +112,15 @@ LAP = src/laplace
 LOBJS = $(LAP)/l2dterms.o \
 	$(LAP)/laprouts2d.o $(LAP)/lfmm2d.o $(LAP)/lfmm2dwrap.o \
 	$(LAP)/lfmm2dwrap_vec.o \
+	$(LAP)/cfmm2d.o $(LAP)/cfmm2dwrap.o \
+	$(LAP)/cfmm2dwrap_vec.o \
+	$(LAP)/rfmm2d.o $(LAP)/rfmm2dwrap.o \
+	$(LAP)/rfmm2dwrap_vec.o 
 
 ifneq ($(FAST_KER),ON)
 LOBJS += $(LAP)/lapkernels2d.o
+LOBJS += $(LAP)/rlapkernels2d.o
+LOBJS += $(LAP)/cauchykernels2d.o
 HOBJS += $(HELM)/helmkernels2d.o
 endif
 
@@ -194,13 +200,14 @@ $(DYNAMICLIB): $(OBJS)
 
 # testing routines
 #
-test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec 
+test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
+		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec
 	(cd test/helmholtz; ./run_helmtest.sh)
-#	(cd test/laplace; ./run_laptest.sh)
+	(cd test/laplace; ./run_laptest.sh)
 	cat print_testreshelm.txt
-#	cat print_testreslap.txt
+	cat print_testreslap.txt
 	rm print_testreshelm.txt
-#	rm print_testreslap.txt
+	rm print_testreslap.txt
 
 test/hfmm2d:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d $(LIBS)
@@ -217,7 +224,19 @@ test/lfmm2d_vec:
 #python
 python: $(STATICLIB)
 	cd python && \
-	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e . 
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e .
+
+test/cfmm2d:
+	$(FC) $(FFLAGS) test/laplace/test_cfmm2d.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-cfmm2d $(LIBS)
+
+test/cfmm2d_vec:
+	$(FC) $(FFLAGS) test/laplace/test_cfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-cfmm2d-vec $(LIBS) 
+
+test/rfmm2d:
+	$(FC) $(FFLAGS) test/laplace/test_rfmm2d.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-rfmm2d $(LIBS)
+
+test/rfmm2d_vec:
+	$(FC) $(FFLAGS) test/laplace/test_rfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-rfmm2d-vec $(LIBS) 
 
 clean: objclean
 	rm -f lib-static/*.a lib/*.so lib/*.dll lib/*.lib

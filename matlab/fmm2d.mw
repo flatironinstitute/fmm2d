@@ -1,0 +1,12 @@
+@function [pottarg] = hfmm2d(eps,zk,srcinfo,targ)
+    charges = srcinfo.charges;
+    dipstr = srcinfo.dipstr;
+    dipvec = srcinfo.dipvec;
+    sources = srcinfo.sources;
+    [~,ns] = size(sources);
+    [~,nt] = size(targ);
+    pottarg = complex(zeros(nt,1));
+    ier = 0;
+    # FORTRAN hfmm2d_t_cd_p(double[1] eps, dcomplex[1] zk, int[1] ns, double[2,ns] sources, dcomplex[ns] charges, dcomplex[ns] dipstr, double[2,ns] dipvec, int[1] nt, double[2,nt] targ, inout dcomplex[nt] pottarg, inout int[1] ier);
+
+end

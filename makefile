@@ -238,6 +238,22 @@ test/rfmm2d:
 test/rfmm2d_vec:
 	$(FC) $(FFLAGS) test/laplace/test_rfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-rfmm2d-vec $(LIBS) 
 
+
+# matlab..
+MWRAPFILE = fmm2d
+GATEWAY = $(MWRAPFILE)
+
+matlab:	$(STATICLIB) matlab/$(GATEWAY).c 
+	$(MEX) matlab/$(GATEWAY).c lib-static/$(STATICLIB) $(MFLAGS) \
+	-output matlab/fmm2d $(MEXLIBS) 
+
+
+mex:  $(STATICLIB)
+	cd matlab; $(MWRAP) $(MWFLAGS) -list -mex $(GATEWAY) -mb $(MWRAPFILE).mw;\
+	$(MWRAP) $(MWFLAGS) -mex $(GATEWAY) -c $(GATEWAY).c $(MWRAPFILE).mw;\
+	$(MEX) $(GATEWAY).c ../lib-static/$(STATICLIB) $(MFLAGS) -output $(MWRAPFILE) \
+	$(MEXLIBS); \
+
 clean: objclean
 	rm -f lib-static/*.a lib/*.so lib/*.dll lib/*.lib
 	rm -f test/laplace/int2-*

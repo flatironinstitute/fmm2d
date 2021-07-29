@@ -1,11 +1,3 @@
-mbhevalRouts:
-  -
-    out: p
-  -
-    out: g
-  -
-    out: h
-
 mbhDirectRouts:
   -
     name: mbh2d_directcp_vec

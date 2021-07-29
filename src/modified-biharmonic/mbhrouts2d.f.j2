@@ -89,8 +89,8 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 c     global variables
-      integer ns, nterms, ifcharge, ifdipole, ifquad, ifoct
-      real *8 beta, source(2,*), charge(nd,*), dipstr(nd,*)
+      integer ns, nterms, ifcharge, ifdipole, ifquad, ifoct, nd
+      real *8 beta, charge(nd,*), dipstr(nd,*)
       real *8 dipvec(nd,2,*)
       real *8 quadstr(nd,*), quadvec(nd,3,*), octstr(nd,*)
       real *8 octvec(nd,4,*)
@@ -129,8 +129,8 @@ c
      1              quadvec(j,2,i)*ima -
      2              quadvec(j,3,i))/(4.0d0*pi)
                ympole(j,0,i) = ympole(j,0,i) +
-     1              quadstr(j,i)*(quadvec(j,1,iii) +
-     1              quadvec(j,3,iii))/(4.0d0*pi)
+     1              quadstr(j,i)*(quadvec(j,1,i) +
+     1              quadvec(j,3,i))/(4.0d0*pi)
             enddo
          endif
 
@@ -187,8 +187,8 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 c     global
-      complex *16 mbhmpole(0:nterms), ympole(0:nterms)
-      real *8 rscale, center(2), ztarg(2), beta
+      complex *16 mbhmpole(nd,0:nterms), ympole(nd,0:nterms)
+      real *8 rscale, center(2), ztarg(2,ntarg), beta
       {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
       real *8 pot(nd,ntarg)
       {%- endif %}
@@ -198,7 +198,7 @@ c     global
       {%- if rout.out == "h" %}
       real *8 hess(nd,3,ntarg)
       {%- endif %}
-      integer nterms, ntarg, nd, ifgrad, ifhess
+      integer nterms, ntarg, nd
 c     local
       real *8 zdiff(2), r, theta
       real *8 ders(0:1), pih
@@ -283,15 +283,15 @@ c
       enddo
 
       do j = 1,nd
-         ympolexx(j,1) = -beta/1.0d0/rscale*dreal(j,ympolex(j,0))
-         ympolexy(j,1) = -beta/1.0d0/rscale*dreal(j,ympolex(j,0))*eye
-         ympoleyy(j,1) = -beta/1.0d0/rscale*dreal(j,ympoley(j,0))*eye
+         ympolexx(j,1) = -beta/1.0d0/rscale*dreal(ympolex(j,0))
+         ympolexy(j,1) = -beta/1.0d0/rscale*dreal(ympolex(j,0))*eye
+         ympoleyy(j,1) = -beta/1.0d0/rscale*dreal(ympoley(j,0))*eye
 
-         mbhmpolexx(j,1) = -beta/1.0d0/rscale*dreal(j,mbhmpolex(j,0))
+         mbhmpolexx(j,1) = -beta/1.0d0/rscale*dreal(mbhmpolex(j,0))
          mbhmpolexy(j,1) = 
-     1        -beta/1.0d0/rscale*dreal(j,mbhmpolex(j,0))*eye
+     1        -beta/1.0d0/rscale*dreal(mbhmpolex(j,0))*eye
          mbhmpoleyy(j,1) = 
-     1        -beta/1.0d0/rscale*dreal(j,mbhmpoley(j,0))*eye
+     1        -beta/1.0d0/rscale*dreal(mbhmpoley(j,0))*eye
       enddo
       
       do i=1,nterms+1
@@ -325,12 +325,12 @@ c
       enddo
       {%- endif %}
 
-      allocate(mptemp1(0:nterms+2),mptemp2(0:nterms+2),
-     1     diffs(0:nterms+2),allocate(kvec(0:nterms+2)))
+      allocate(mptemp1(0:nterms+6),mptemp2(0:nterms+6),
+     1     diffs(0:nterms+6),kvec(0:nterms+6))
 
       do i = 1,ntarg
-         zdiff(1) = ztarg(1)-center(1)
-	 zdiff(2) = ztarg(2)-center(2)
+         zdiff(1) = ztarg(1,i)-center(1)
+	 zdiff(2) = ztarg(2,i)-center(2)
       	 call h2cart2polar(zdiff,r,theta)
          
 c     get values of difference functions
@@ -357,8 +357,10 @@ c     evaluate
             pot(j,i) = pot(j,i) +
      1           dreal(mptemp1(0))*dreal(mbhmpole(j,0)) +
      1           dreal(mptemp2(0))*dreal(ympole(j,0))
+         enddo
             
-            do l = 1,nterms
+         do l = 1,nterms
+            do j=1,nd
                pot(j,i) = pot(j,i) +
      1              dreal(mptemp1(l))*dreal(mbhmpole(j,l)) +
      1              dimag(mptemp1(l))*dimag(mbhmpole(j,l))
@@ -377,8 +379,9 @@ c     evaluate
             grad(j,2,i) = grad(j,2,i) + 
      1           dreal(mptemp1(0))*dreal(mbhmpoley(j,0)) +
      1           dreal(mptemp2(0))*dreal(ympoley(j,0))
-            
-            do l = 1,nterms+1
+         enddo
+         do l = 1,nterms+1
+            do j = 1,nd
                grad(j,1,i) = grad(j,1,i) +
      1              dreal(mptemp1(l))*dreal(mbhmpolex(j,l)) +
      1              dimag(mptemp1(l))*dimag(mbhmpolex(j,l))
@@ -405,8 +408,9 @@ c     evaluate
             hess(j,3,i) = hess(j,3,i) +
      1           dreal(mptemp1(0))*dreal(mbhmpoleyy(j,0)) +
      1           dreal(mptemp2(0))*dreal(ympoleyy(j,0))
-
-            do l = 1,nterms+1
+         enddo
+         do l = 1,nterms+1
+            do j = 1,nd
                hess(j,1,i) = hess(j,1,i) +
      1              dreal(mptemp1(l))*dreal(mbhmpolexx(j,l)) +
      1              dimag(mptemp1(l))*dimag(mbhmpolexx(j,l))
@@ -469,7 +473,7 @@ c     global
       complex *16 mbhloc(nd,0:nterms), lloc(nd,0:nterms)
       real *8 rscale, center(2), ztarg(2,ntarg), beta
       real *8 pot(nd,ntarg), grad(nd,2,ntarg), hess(nd,3,ntarg)
-      integer nterms
+      integer nterms, ntarg, nd
 c     local
       real *8 zdiff(2), r, theta, ivec(0:200)
       real *8 pih, ders(0:1)
@@ -503,8 +507,8 @@ c     local
          llocy(j,1) = dreal(mbhloc(j,0))*beta*dtemp*rscale*eye
       enddo
       do i=1,nterms
+         dtemp = dtemp/(2*(i+1))
          do j = 1,nd
-            dtemp = dtemp/(2*(i+1))
             mbhlocx(j,i-1)=mbhlocx(j,i-1)+beta/2/rscale*mbhloc(j,i)
             mbhlocx(j,i+1)=mbhlocx(j,i+1)+beta/2*rscale*mbhloc(j,i)
             mbhlocy(j,i-1)=mbhlocy(j,i-1) -
@@ -520,13 +524,14 @@ c     local
      1           beta/2*(eye)*rscale*mbhloc(j,i)*dtemp
          enddo
       enddo
+
       {%- endif %}
       {%- if rout.out == "h" %}
 c
-      allocate(mbhlocxx(nd,0:nterms+1),mbhlocxy(nd,0:nterms+1),
-     1     mbhlocyy(nd,0:nterms+1),
-     1     llocxx(nd,0:nterms+1),llocxy(nd,0:nterms+1),
-     1     llocyy(nd,0:nterms+1))
+      allocate(mbhlocxx(nd,0:nterms+2),mbhlocxy(nd,0:nterms+2),
+     1     mbhlocyy(nd,0:nterms+2),
+     1     llocxx(nd,0:nterms+2),llocxy(nd,0:nterms+2),
+     1     llocyy(nd,0:nterms+2))
       
       do i=0,nterms+2
          do j = 1,nd
@@ -551,8 +556,8 @@ c
       enddo
       
       do i=1,nterms+1
+         dtemp = dtemp/(2*(i+1))
          do j = 1,nd
-            dtemp = dtemp/(2*(i+1))
             mbhlocxx(j,i-1)=mbhlocxx(j,i-1)+beta/2/rscale*mbhlocx(j,i)
             mbhlocxx(j,i+1)=mbhlocxx(j,i+1)+beta/2*rscale*mbhlocx(j,i)
             mbhlocxy(j,i-1)=mbhlocxy(j,i-1)-
@@ -577,9 +582,9 @@ c
       enddo
       {%- endif %}
 
-      allocate(pow(0:nterms+2),dpow(0:nterms+2))
-      allocate(mptemp1(0:nterms+2),mptemp2(0:nterms+2))
-      allocate(diffs(0:nterms+2))
+      allocate(pow(0:nterms+6),dpow(0:nterms+6))
+      allocate(mptemp1(0:nterms+6),mptemp2(0:nterms+6))
+      allocate(diffs(0:nterms+6))
 
 c     evaluate
 
@@ -617,7 +622,7 @@ c     get values of difference functions
             do j = 1,nd
                pot(j,i) = pot(j,i) +
      1              dreal(mptemp1(l))*dreal(mbhloc(j,l)) +
-     1              dimag(mptemp1(l))*dimag(mbhloc(j))
+     1              dimag(mptemp1(l))*dimag(mbhloc(j,l))
                pot(j,i) = pot(j,i) +
      1              dreal(mptemp2(l))*dreal(lloc(j,l)) +
      1              dimag(mptemp2(l))*dimag(lloc(j,l))
@@ -630,7 +635,7 @@ c     get values of difference functions
             grad(j,1,i) = grad(j,1,i) +
      1           dreal(mptemp1(0))*dreal(mbhlocx(j,0)) +
      1           dreal(mptemp2(0))*dreal(llocx(j,0))
-            grad(2,j,i) = grad(2,j,i) +
+            grad(j,2,i) = grad(j,2,i) +
      1           dreal(mptemp1(0))*dreal(mbhlocy(j,0)) +
      1           dreal(mptemp2(0))*dreal(llocy(j,0))
          enddo
@@ -638,17 +643,17 @@ c     get values of difference functions
          do l = 1,nterms+1
             do j = 1,nd
                grad(j,1,i) = grad(j,1,i) +
-     1              dreal(mptemp1(j))*dreal(mbhlocx(j,l)) +
-     1              dimag(mptemp1(j))*dimag(mbhlocx(j,l))
+     1              dreal(mptemp1(l))*dreal(mbhlocx(j,l)) +
+     1              dimag(mptemp1(l))*dimag(mbhlocx(j,l))
                grad(j,1,i) = grad(j,1,i) +
-     1              dreal(mptemp2(j))*dreal(llocx(j,l)) +
-     1              dimag(mptemp2(j))*dimag(llocx(j,l))
+     1              dreal(mptemp2(l))*dreal(llocx(j,l)) +
+     1              dimag(mptemp2(l))*dimag(llocx(j,l))
                grad(j,2,i) = grad(j,2,i) +
-     1              dreal(mptemp1(j))*dreal(mbhlocy(j,l)) +
-     1              dimag(mptemp1(j))*dimag(mbhlocy(j,l))
+     1              dreal(mptemp1(l))*dreal(mbhlocy(j,l)) +
+     1              dimag(mptemp1(l))*dimag(mbhlocy(j,l))
                grad(j,2,i) = grad(j,2,i) +
-     1              dreal(mptemp2(j))*dreal(llocy(j,l)) +
-     1              dimag(mptemp2(j))*dimag(llocy(j,l))
+     1              dreal(mptemp2(l))*dreal(llocy(j,l)) +
+     1              dimag(mptemp2(l))*dimag(llocy(j,l))
             enddo
          enddo
 
@@ -668,23 +673,23 @@ c     get values of difference functions
          do l = 1,nterms+1
             do j = 1,nd
                hess(j,1,i) = hess(j,1,i) +
-     1              dreal(mptemp1(j))*dreal(mbhlocxx(j,l)) +
-     1              dimag(mptemp1(j))*dimag(mbhlocxx(j,l))
+     1              dreal(mptemp1(l))*dreal(mbhlocxx(j,l)) +
+     1              dimag(mptemp1(l))*dimag(mbhlocxx(j,l))
                hess(j,1,i) = hess(j,1,i) +
-     1              dreal(mptemp2(j))*dreal(llocxx(j,l)) +
-     1              dimag(mptemp2(j))*dimag(llocxx(j,l))
+     1              dreal(mptemp2(l))*dreal(llocxx(j,l)) +
+     1              dimag(mptemp2(l))*dimag(llocxx(j,l))
                hess(j,2,i) = hess(j,2,i) +
-     1              dreal(mptemp1(j))*dreal(mbhlocxy(j,l)) +
-     1              dimag(mptemp1(j))*dimag(mbhlocxy(j,l))
+     1              dreal(mptemp1(l))*dreal(mbhlocxy(j,l)) +
+     1              dimag(mptemp1(l))*dimag(mbhlocxy(j,l))
                hess(j,2,i) = hess(j,2,i) +
-     1              dreal(mptemp2(j))*dreal(llocxy(j,l)) +
-     1              dimag(mptemp2(j))*dimag(llocxy(j,l))
+     1              dreal(mptemp2(l))*dreal(llocxy(j,l)) +
+     1              dimag(mptemp2(l))*dimag(llocxy(j,l))
                hess(j,3,i) = hess(j,3,i) +
-     1              dreal(mptemp1(j))*dreal(mbhlocyy(j,l)) +
-     1              dimag(mptemp1(j))*dimag(mbhlocyy(j,l))
+     1              dreal(mptemp1(l))*dreal(mbhlocyy(j,l)) +
+     1              dimag(mptemp1(l))*dimag(mbhlocyy(j,l))
                hess(j,3,i) = hess(j,3,i) +
-     1              dreal(mptemp2(j))*dreal(llocyy(j,l)) +
-     1              dimag(mptemp2(j))*dimag(llocyy(j,l))
+     1              dreal(mptemp2(l))*dreal(llocyy(j,l)) +
+     1              dimag(mptemp2(l))*dimag(llocyy(j,l))
             enddo
          enddo
          {%- endif %}
@@ -723,22 +728,41 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 c     global variables
-      integer ns, ntermsrc, nterms
+      integer ns, ntermsrc, nterms, nd
       real *8 beta, rscale, source(2,*)
       real *8 center(2)
       complex *16 mbhmpolesrc(nd,0:ntermsrc,ns),
      1     ympolesrc(nd,0:ntermsrc,ns)
       complex *16 mbhmpole(nd,0:nterms), ympole(nd,0:nterms)
 c     local variables
-      real *8 rscale1
-      integer i
+      real *8 rscale1,rsc
+      integer i,j,l
 c     
-      rscale1=1
+      rscale1=rscale
 
       do i = 1,ns
+
+         rsc=1
+         do j = 0,ntermsrc
+            do l = 1,nd
+               mbhmpolesrc(l,j,i)=mbhmpolesrc(l,j,i)/rsc
+               ympolesrc(l,j,i)=ympolesrc(l,j,i)/rsc               
+            enddo
+            rsc=rsc*rscale1
+         enddo
          call mbh2dmpmp_vec(nd,beta,rscale1,source(1,i),
      1        mbhmpolesrc(1,0,i),ympolesrc(1,0,i),ntermsrc,
      2        rscale,center,mbhmpole,ympole,nterms)
+         
+         rsc=1
+         do j = 0,ntermsrc
+            do l = 1,nd
+               mbhmpolesrc(l,j,i)=mbhmpolesrc(l,j,i)/rsc
+               ympolesrc(l,j,i)=ympolesrc(l,j,i)/rsc               
+            enddo
+            rsc=rsc/rscale1
+         enddo
+         
       enddo
       
 
@@ -774,22 +798,42 @@ c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 c     global variables
-      integer ns, ntermsrc, nterms
+      integer ns, ntermsrc, nterms, nd
       real *8 beta, rscale, source(2,*)
       real *8 center(2)
       complex *16 mbhmpolesrc(nd,0:ntermsrc,ns),
      1     ympolesrc(nd,0:ntermsrc,ns)
       complex *16 mbhloc(nd,0:nterms), lloc(nd,0:nterms)
 c     local variables
-      integer i
-      real *8 rscale1
+      integer i, j, l
+      real *8 rscale1,rsc
 
-      rscale1=1
+      rscale1=rscale
       
       do i = 1,ns
+
+         rsc=1
+         do j = 0,ntermsrc
+            do l = 1,nd
+               mbhmpolesrc(l,j,i)=mbhmpolesrc(l,j,i)/rsc
+               ympolesrc(l,j,i)=ympolesrc(l,j,i)/rsc               
+            enddo
+            rsc=rsc*rscale1
+         enddo
+         
          call mbh2dmploc_vec(nd,beta,rscale1,source(1,i),
      1        mbhmpolesrc(1,0,i),ympolesrc(1,0,i),ntermsrc,
-     2        rscale,center,mbhloc,lloc,nterms,carray,ldc)
+     2        rscale,center,mbhloc,lloc,nterms)
+
+         rsc=1
+         do j = 0,ntermsrc
+            do l = 1,nd
+               mbhmpolesrc(l,j,i)=mbhmpolesrc(l,j,i)/rsc
+               ympolesrc(l,j,i)=ympolesrc(l,j,i)/rsc               
+            enddo
+            rsc=rsc/rscale1
+         enddo
+         
       enddo
 
       return
@@ -825,10 +869,10 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 c     global
       real *8 rscale1, center1(2), beta
-      real *8 rscale2, center2(2), carray(0:ldc,0:ldc)
+      real *8 rscale2, center2(2)
       complex *16 mbhmpole1(nd,0:nterms1), ympole1(nd,0:nterms1)
       complex *16 mbhmpole2(nd,0:nterms2), ympole2(nd,0:nterms2)
-      integer nterms1, nterms2, ldc
+      integer nterms1, nterms2, nd
 c     local
       integer i, j, ifder, nterms, m, l
       real *8 zdiff(2), r, theta, pi, ders(0:1)
@@ -845,10 +889,10 @@ c     local
 
       nterms = nterms1+nterms2
 
-      allocate(jtemp(0:nterms+3),difftemp(0:nterms+3),
-     1     powtemp(0:nterms+3),
-     2     diffs(0:nterms+3),ival(0:nterms+3),pow(0:nterms+3),
-     3     dpow(0:nterms+3))
+      allocate(jtemp(0:nterms+6),difftemp(0:nterms+6),
+     1     powtemp(0:nterms+6),
+     2     diffs(0:nterms+6),ival(0:nterms+6),pow(0:nterms+6),
+     3     dpow(0:nterms+6))
 
 
 c     get local difference and BesselI vals
@@ -884,9 +928,11 @@ c     shift the expansion
 
       rsj = rscale1
 
-      ympole2(0) = ympole2(0) + dreal(ympole1(0))*jtemp(0)
-      ympole2(0) = ympole2(0) + dreal(mbhmpole1(0))*difftemp(0)
-      mbhmpole2(0) = mbhmpole2(0) + dreal(mbhmpole1(0))
+      do l=1,nd
+         ympole2(l,0) = ympole2(l,0) + dreal(ympole1(l,0))*jtemp(0)
+         ympole2(l,0) = ympole2(l,0) + dreal(mbhmpole1(l,0))*difftemp(0)
+         mbhmpole2(l,0) = mbhmpole2(l,0) + dreal(mbhmpole1(l,0))
+      enddo
 
       do j = 1,nterms1
          do l = 1,nd
@@ -902,7 +948,7 @@ c     shift the expansion
 
 c     
       rsi=rscale1
-      rsi7=rscale2
+
       rsi5=rscale1/rscale2
       do i = 1,nterms2
          do l = 1,nd
@@ -983,7 +1029,6 @@ c
             fs2=fs2*rscale1**2
          enddo
          rsi=rsi*rscale1
-         rsi7=rsi7*rscale2
          rsi5=rsi5*rscale1/rscale2
       enddo
 
@@ -1021,7 +1066,7 @@ c     global
       complex *16 mbhmpole(nd,0:nterms1), ympole(nd,0:nterms1)
       complex *16 mbhloc(nd,0:nterms2), lloc(nd,0:nterms2)
       real *8 rscale1, rscale2, center1(2), center2(2), beta
-      integer nterms1, nterms2
+      integer nterms1, nterms2, nd
 c     local
       real *8 zdiff(2), r, theta, pi, rsi, rsj, rsi5, rsi7, rsj2
       real *8 rsi52, rsi2, ders(0:1)
@@ -1037,9 +1082,9 @@ c     local
 
       nterms = nterms1+nterms2
 
-      allocate(diffs(0:nterms+5),kvec(0:nterms+5),pow(0:nterms+5),
-     1     dpow(0:nterms+5),dfac2(0:nterms+5),ktemp(0:nterms+5),
-     2     difftemp(0:nterms+5),powtemp(0:nterms+5))
+      allocate(diffs(0:nterms+6),kvec(0:nterms+6),pow(0:nterms+6),
+     1     dpow(0:nterms+6),dfac2(0:nterms+6),ktemp(0:nterms+6),
+     2     difftemp(0:nterms+6),powtemp(0:nterms+6))
       
 
       dfac2(0) = 1.0d0
@@ -1194,7 +1239,7 @@ c
      2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i+j))
      3              -dimag(ympole(l,j))*dreal(ktemp(i+j))))
                lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(j))*dreal(ktemp(j-i))
+     1              (dreal(mbhmpole(l,j))*dreal(ktemp(j-i))
      1              +dimag(mbhmpole(l,j))*dimag(ktemp(j-i))
      2              -ima*(dreal(mbhmpole(l,j))*dimag(ktemp(j-i))
      3              -dimag(mbhmpole(l,j))*dreal(ktemp(j-i))))*rsi2*
@@ -1259,10 +1304,10 @@ c     global
       complex *16 mbhloc2(nd,0:nterms2), lloc2(nd,0:nterms2)
       real *8 carray(0:ldc,0:ldc)
       integer ldc
-      integer nterms1, nterms2
+      integer nterms1, nterms2, nd
 c     local
       complex *16 z,ima, zmul,zinv,ztemp1,ztemp2
-      complex *16, allocatble :: jtemp(:), difftemp(:), powtemp(:)
+      complex *16, allocatable :: jtemp(:), difftemp(:), powtemp(:)
       real *8 zdiff(2), r, theta, pi, done
       real *8 rsj, rsi, rsi7, rsi5, fs2, ders(0:1)
       real *8, allocatable :: ival(:), diffs(:), pow(:), dpow(:),
@@ -1277,14 +1322,14 @@ c
       nterms = nterms1+nterms2
 c
 
-      allocate(jtemp(0:nterms+5),difftemp(0:nterms+5),
-     1     powtemp(0:nterms+5),ival(0:nterms+5),diffs(0:nterms+5),
-     1     pow(0:nterms+5),dpow(0:nterms+5),pow2(0:nterms+5),
-     1     dfac2(0:nterms+5))
+      allocate(jtemp(0:nterms+6),difftemp(0:nterms+6),
+     1     powtemp(0:nterms+6),ival(0:nterms+6),diffs(0:nterms+6),
+     1     pow(0:nterms+6),dpow(0:nterms+6),pow2(0:nterms+6),
+     1     dfac2(0:nterms+6))
       
       zdiff(1)=center2(1)-center1(1)
       zdiff(2)=center2(2)-center1(2)
-      call y2cart2polar(zdiff,r,theta)
+      call h2cart2polar(zdiff,r,theta)
       theta=theta-pi
 
       ifder = 0

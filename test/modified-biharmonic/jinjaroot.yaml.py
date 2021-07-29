@@ -3,14 +3,6 @@ fname="jinjaroot.yaml"
 
 file = open(fname,"w")
 
-file.write("mbhevalRouts:\n")
-file.write("  -\n")
-file.write("    out: p\n")
-file.write("  -\n")
-file.write("    out: g\n")
-file.write("  -\n")
-file.write("    out: h\n\n")
-
 file.write("mbhDirectRouts:\n")
 
 outs=["p","g","h"]

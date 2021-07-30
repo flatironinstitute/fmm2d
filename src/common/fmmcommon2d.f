@@ -116,3 +116,24 @@ c-------------------------------------------------------
 
       return
       end
+
+c
+c
+c
+        subroutine init_carray(carray,ldc)
+        implicit real *8 (a-h,o-z)
+        real *8 carray(0:ldc,0:ldc)
+
+        do l = 0,ldc
+        carray(l,0) = 1.0d0
+        enddo
+        do m=1,ldc
+        carray(m,m) = 1.0d0
+        do l=m+1,ldc
+            carray(l,m)=carray(l-1,m)+carray(l-1,m-1)
+        enddo
+        enddo
+c
+        return
+        end
+        

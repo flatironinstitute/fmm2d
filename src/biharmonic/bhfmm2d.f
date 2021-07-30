@@ -2,8 +2,6 @@ cc Copyright (C) 2018-2019: Leslie Greengard, Zydrunas Gimbutas,
 cc and Manas Rachh
 c     c Contact: greengard@cims.nyu.edu
 cc
-cc    convert to Cauchy FMM - Travis Askham 2021/07/07
-cc      
 cc 
 cc This program is free software; you can redistribute it and/or modify 
 cc it under the terms of the GNU General Public License as published by 
@@ -20,9 +18,10 @@ c
 c    $Date$
 c    $Revision$
 
-      subroutine cfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
-     2            nt,targ,ifpghtarg,pottarg,gradtarg,
+      subroutine bhfmm2d(nd,eps,ns,sources,ifcharge,charge,
+     1            ifdipole,dip1,dip2,iper,ifpgh,pot,grad,gradaa,
+     2            hess,
+     2            nt,targ,ifpghtarg,pottarg,gradatarg,gradaatarg,
      3            hesstarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -37,7 +36,8 @@ c   charge(nd,ns)    : charge strengths
 c   ifdipole      : flag for including dipole interactions
 c                   dipole interactions included if ifcharge =1
 c                   not included otherwise
-c   dipstr(nd,ns)    : dipole strengths
+c   dip1(nd,ns)   : dipole-1 strengths
+c   dip2(nd,ns)   : dipole-2 strengths
 c   iper          : flag for periodic implmentations. Currently unused
 c   ifpgh         : flag for computing pot/grad/hess
 c                   ifpgh = 1, only potential is computed
@@ -54,12 +54,14 @@ c                   ifpghtarg = 3, potential, gradient, and hessian are
 c                   computed at targets
 c
 c   OUTPUT PARAMETERS
-c   pot(nd,*)       : potential at the source locations
-c   grad(nd,*)    : gradients (d/dz) at the source locations
-c   hess(nd,*)    : hessian (d^2/dz^2) at the source locations
+c   pot(nd,*)       : velocity at the source locations
+c   grada(nd,*)    : gradients (d/dz) at the source locations
+c   gradaa(nd,*)    : gradients (d/d\conjg{z}) at the source locations
+c   hess(nd,3,*)    : hessian  at the source locations
 c   pottarg(nd,*)   : potential at the target locations
-c   gradtarg(nd,*): gradient (d/dz) at the target locations
-c   hesstarg(nd,*): hessian (d^2/dz^2) at the target locations
+c   gradatarg(nd,*): gradient (d/dz) at the target locations
+c   gradaatarg(nd,*): gradient (d/d\conjg{z}) at the target locations
+c   hesstarg(nd,3,*): hessian at the target locations
 c
 
 
@@ -72,10 +74,11 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,*),dipstr(nd,*)
+      complex *16 charge(nd,*),dip1(nd,*),dip2(nd,*)
 
-      complex *16 pot(nd,*),grad(nd,*),hess(nd,*)
-      complex *16 pottarg(nd,*),gradtarg(nd,*),hesstarg(nd,*)
+      complex *16 pot(nd,*),grada(nd,*),gradaa(nd,*), hess(nd,3,*)
+      complex *16 pottarg(nd,*),gradatarg(nd,*),gradaatarg(nd,*)
+      complex *16 hesstarg(nd,3,*)
 
 c
 cc      Tree variables
@@ -98,11 +101,13 @@ c
       integer, allocatable :: itarg(:),itargse(:,:),iexpcse(:,:)
       real *8, allocatable :: sourcesort(:,:)
       real *8, allocatable :: targsort(:,:)
-      complex *16, allocatable :: chargesort(:,:),dipstrsort(:,:)
-      complex *16, allocatable :: potsort(:,:),gradsort(:,:),
-     1                             hesssort(:,:)
-      complex *16, allocatable :: pottargsort(:,:),gradtargsort(:,:),
-     1                              hesstargsort(:,:)
+      complex *16, allocatable :: chargesort(:,:),dip1sort(:,:)
+      complex *16, allocatable :: dip2sort(:,:)
+      complex *16, allocatable :: potsort(:,:),gradasort(:,:),
+     1                             hesssort(:,:,:),gradaasort(:,:)
+      complex *16, allocatable :: pottargsort(:,:),gradatargsort(:,:),
+     1                            hesstargsort(:,:,:),
+     2                            gradaatargsort(:,:) 
 
 c
 cc     additional fmm variables
@@ -128,7 +133,7 @@ c
       nexpc = 0
 
 c
-c    Need to fix ndiv in Laplace FMM
+c    Need to fix ndiv in biharmonic FMM
 c   
 c
 
@@ -186,38 +191,42 @@ C$OMP END PARALLEL DO
 
 
       if(ifcharge.eq.1.and.ifdipole.eq.0) then
-        allocate(chargesort(nd,ns),dipstrsort(nd,1))
+        allocate(chargesort(nd,ns),dip1sort(nd,1),dip2sort(nd,1))
       endif
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,1),dipstrsort(nd,ns))
+        allocate(chargesort(nd,1),dip1sort(nd,ns),dip2sort(nd,ns))
       endif
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,ns),dipstrsort(nd,ns))
+        allocate(chargesort(nd,ns),dip1sort(nd,ns),dip2sort(nd,ns))
       endif
 
       if(ifpgh.eq.1) then
-        allocate(potsort(nd,ns),gradsort(nd,1),hesssort(nd,1))
+        allocate(potsort(nd,ns),gradasort(nd,1),hesssort(nd,3,1))
+        allocate(gradaasort(nd,1))
       else if(ifpgh.eq.2) then
-        allocate(potsort(nd,ns),gradsort(nd,ns),hesssort(nd,1))
+        allocate(potsort(nd,ns),gradasort(nd,ns),hesssort(nd,3,1))
+        allocate(gradaasort(nd,ns))
       else if(ifpgh.eq.3) then
-        allocate(potsort(nd,ns),gradsort(nd,ns),hesssort(nd,ns))
+        allocate(potsort(nd,ns),gradasort(nd,ns),hesssort(nd,3,ns))
+        allocate(gradaasort(nd,ns))
       else
-        allocate(potsort(nd,1),gradsort(nd,1),hesssort(nd,1))
+        allocate(potsort(nd,1),gradasort(nd,1),hesssort(nd,3,1))
+        allocate(gradaasort(nd,1))
       endif
 
       
       if(ifpghtarg.eq.1) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,1),
-     1     hesstargsort(nd,1))
+        allocate(pottargsort(nd,nt),gradatargsort(nd,1),
+     1     hesstargsort(nd,3,1),gradaatargsort(nd,1))
       else if(ifpghtarg.eq.2) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,nt),
-     1      hesstargsort(nd,1))
+        allocate(pottargsort(nd,nt),gradatargsort(nd,nt),
+     1      hesstargsort(nd,3,1),gradaatargsort(nd,nt))
       else if(ifpghtarg.eq.3) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,nt),
-     1     hesstargsort(nd,nt))
+        allocate(pottargsort(nd,nt),gradatargsort(nd,nt),
+     1     hesstargsort(nd,3,nt),gradaatargsort(nd,nt))
       else
-        allocate(pottargsort(nd,1),gradtargsort(nd,1),
-     1     hesstargsort(nd,1))
+        allocate(pottargsort(nd,1),gradatargsort(nd,1),
+     1     hesstargsort(nd,1),gradaatargsort(nd,1))
       endif
       
 c
@@ -237,7 +246,8 @@ c
         do i=1,ns
           do idim=1,nd
             potsort(idim,i) = 0
-            gradsort(idim,i) = 0
+            gradasort(idim,i) = 0
+            gradaasort(idim,i) = 0
           enddo
         enddo
       endif
@@ -246,8 +256,11 @@ c
         do i=1,ns
           do idim=1,nd
             potsort(idim,i) = 0
-            gradsort(idim,i) = 0
-            hesssort(idim,i) = 0
+            gradasort(idim,i) = 0
+            gradaasort(idim,i) = 0
+            hesssort(idim,1,i) = 0
+            hesssort(idim,2,i) = 0
+            hesssort(idim,3,i) = 0
           enddo
         enddo
       endif
@@ -266,8 +279,8 @@ c
         do i=1,nt
           do idim=1,nd
             pottargsort(idim,i) = 0
-            gradtargsort(idim,i) = 0
-            gradtargsort(idim,i) = 0
+            gradatargsort(idim,i) = 0
+            gradaatargsort(idim,i) = 0
           enddo
         enddo
       endif
@@ -276,8 +289,11 @@ c
         do i=1,nt
           do idim=1,nd
             pottargsort(idim,i) = 0
-            gradtargsort(idim,i) = 0
-            hesstargsort(idim,i) = 0
+            gradatargsort(idim,i) = 0
+            gradaatargsort(idim,i) = 0
+            hesstargsort(idim,1,i) = 0
+            hesstargsort(idim,2,i) = 0
+            hesstargsort(idim,3,i) = 0
           enddo
         enddo
       endif
@@ -312,7 +328,7 @@ c
 
       allocate(iaddr(2,nboxes))
 
-      lmptmp = (nmax+1)*nd
+      lmptmp = (nmax+1)*nd*5
       allocate(mptemp(lmptmp))
 
 c     reorder sources
@@ -321,7 +337,7 @@ c
       if(ifcharge.eq.1) 
      1     call dreorderf(2*nd,ns,charge,chargesort,isrc)
       if(ifdipole.eq.1) then
-         call dreorderf(2*nd,ns,dipstr,dipstrsort,isrc)
+         call dreorderf(2*nd,ns,dip1,dip1sort,isrc)
       endif
 
 c
@@ -337,7 +353,7 @@ c     allocate memory need by multipole, local expansions at all
 c     levels
 c     irmlexp is pointer for workspace need by various fmm routines,
 c
-      call l2dmpalloc(nd,itree,iaddr,nlevels,lmptot,
+      call bh2dmpalloc(nd,itree,iaddr,nlevels,lmptot,
      1     nterms)
       if(ifprint .eq. 1) call prinf(' lmptot is *',lmptot,1)
 
@@ -353,17 +369,17 @@ c     Call main fmm routine
 c
       call cpu_time(time1)
 C$      time1=omp_get_wtime()
-      call cfmm2dmain(nd,eps,
+      call bhfmm2dmain(nd,eps,
      $   ns,sourcesort,
      $   ifcharge,chargesort,
-     $   ifdipole,dipstrsort,
+     $   ifdipole,dip1sort,dip2sort,
      $   nt,targsort,nexpc,expc,
      $   iaddr,rmlexp,mptemp,lmptmp,
      $   itree,ltree,iptr,ndiv,nlevels,
      $   nboxes,iper,boxsize,rscales,tcenters,itree(iptr(1)),
      $   isrcse,itargse,iexpcse,nterms,ntj,
-     $   ifpgh,potsort,gradsort,hesssort,
-     $   ifpghtarg,pottargsort,gradtargsort,
+     $   ifpgh,potsort,gradasort,gradaasort,hesssort,
+     $   ifpghtarg,pottargsort,gradatargsort,gradaatargsort,
      $   hesstargsort,jexps,scj)
       call cpu_time(time2)
 C$        time2=omp_get_wtime()
@@ -381,33 +397,32 @@ c
 
       if(ifpgh.eq.2) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(2*nd,ns,gradsort,grad,isrc)
+        call dreorderi(2*nd,ns,gradasort,grada,isrc)
+        call dreorderi(2*nd,ns,gradaasort,gradaa,isrc)
       endif
 
       if(ifpgh.eq.3) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(2*nd,ns,gradsort,grad,isrc)
-        call dreorderi(2*nd,ns,hesssort,hess,isrc)
+        call dreorderi(2*nd,ns,gradasort,grada,isrc)
+        call dreorderi(2*nd,ns,gradaasort,gradaa,isrc)
+        call dreorderi(6*nd,ns,hesssort,hess,isrc)
       endif
 
-cc      call prini(6,13)
-cc      call prin2('eps = *', eps, 1)
-cc      call prin2('after lfmm2dmain, pottargsort = *', pottargsort, 30)
-cc      stop
-      
       if(ifpghtarg.eq.1) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
       endif
 
       if(ifpghtarg.eq.2) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(2*nd,nt,gradtargsort,gradtarg,itarg)
+        call dreorderi(2*nd,nt,gradatargsort,gradatarg,itarg)
+        call dreorderi(2*nd,nt,gradaatargsort,gradaatarg,itarg)
       endif
 
       if(ifpghtarg.eq.3) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(2*nd,nt,gradtargsort,gradtarg,itarg)
-        call dreorderi(2*nd,nt,hesstargsort,hesstarg,itarg)
+        call dreorderi(2*nd,nt,gradatargsort,gradatarg,itarg)
+        call dreorderi(2*nd,nt,gradaatargsort,gradaatarg,itarg)
+        call dreorderi(6*nd,nt,hesstargsort,hesstarg,itarg)
       endif
 
 
@@ -418,32 +433,59 @@ c
 c
 c
 c
-      subroutine cfmm2dmain(nd,eps,
+      subroutine bhfmm2dmain(nd,eps,
      $     nsource,sourcesort,
      $     ifcharge,chargesort,
-     $     ifdipole,dipstrsort,
+     $     ifdipole,dip1sort,dip2sort,
      $     ntarget,targetsort,nexpc,expcsort,
      $     iaddr,rmlexp,mptemp,lmptmp,
      $     itree,ltree,iptr,ndiv,nlevels, 
      $     nboxes,iper,boxsize,rscales,centers,laddr,
      $     isrcse,itargse,iexpcse,nterms,ntj,
-     $     ifpgh,pot,grad,hess,
-     $     ifpghtarg,pottarg,gradtarg,hesstarg,
+     $     ifpgh,pot,grada,gradaa,hess,
+     $     ifpghtarg,pottarg,gradatarg,gradaatarg,hesstarg,
      $     jsort,scjsort)
 c
 c
-c   Laplace FMM in R^2: evaluate all pairwise particle
-c   interactions (ignoring self-interaction) 
-c   and interactions with targets.
+c              
+c   Generalized biharmonic FMM in R^2: evaluate all pairwise particle
+c   interactions (ignoring self-interaction). 
+c   
+c   bhfmm2d: charge and dipstr are complex valued, z are complex numbers.
 c
-c   We use log for the Green's function.
-c   Self-interactions are not included
+c   bhfmm2d: charge and dip1,dip2 are complex valued,
+c   z are complex numbers. The complex velocity for stokes/
+c   displacement for stokes/elasticity problem take the general form 
 c
-c   l2d: charge and dipstr are complex valued, x in \R^2
+c   Stokes:
+c   vel(z_i) = \sum_{j \neq i} charge_j *\log|z_i-z_j| + 
+c                (charge_j)_bar (z_i-z_j)/(z_i-z_j)_bar+
+c                dip1/(z_i-z_j) + dip2/(z_i-z_j)_bar-
+c                dip1_bar (z_i-z_j)/(z_i-z_j)^2_bar
 c
-c   \phi(x_i) = \sum_{j\ne i} charge_j log(x_i-x_j)
-c   + dipstr_j/(x_i - x_j)
+c   The velocity for stokes is related to the goursat functions
+c   as vel = \phi(z) + z (d/dz (\phi))_bar+\psi(z)
+c 
+c   The goursat functions are given by
 c
+c   \phi(z_i) = \sum_{j\neq i} charge_j log(z_i-z_j)+
+c                     dip1/(z_i-z_j)
+c
+c   \psi(z_i) = \sum_{j\neq i} dippar2_bar/(z_i-z_j)+
+c               z_j_bar dippar1/(z_i-z_j)^2 +
+c               charge_j_bar log(z_i-z_j)- z_j_bar charge_j/(z_i-z_j)
+c
+c   For stokes and elasticity problems the following derivatives are
+c   relevant to physical quantities such as pressure and vorticity 
+c   for stokes and stresses for elasticity
+c
+c   1) Analytic gradient (grada) 
+c      =  \frac{\partial \phi(z_i)}{\partial z}
+c
+c   2) Anti analytic gradient (gradaa)
+c       = z \frac{\partial^2 \phi_(z_i)} {\partial^2 z}_bar +
+c         \frac{\partial \psi_(z_i)} {\partial z}
+c 
 c
 c   All the source/target/expansion center related quantities
 c   are assumed to be tree-sorted
@@ -466,7 +508,8 @@ c
 c   ifdipole:  dipole computation flag
 c              ifdipole = 1   =>  include dipole contribution
 c                                     otherwise do not
-c   dipstrsort: complex *16 (nsource): dipole strengths
+c   dip1sort: complex *16 (nsource): dipole strengths 1
+c   dip2sort: complex *16 (nsource): dipole strengths 2
 c   ntarget: integer:  number of targets
 c   targetsort: real *8 (2,ntarget):  target locations
 c   nexpc: number of expansion centers
@@ -556,12 +599,14 @@ c   jexps : coeffs for local expansion
 c   scj: scaling parameter for the expansions
 c
 c   pot: potential at the source locations
-c   grad: gradient at the source locations
-c   hess: gradient at the source locations
+c   grada: analytic gradient at the source locations
+c   gradaa: conjugate analytic gradient (d/dzbar) at the source locations
+c   hess: hessian at the source locations
 c  
 c   pottarg: potential at the target locations
-c   gradtarg: gradient at the target locations
-c   hesstarg: gradient at the target locations
+c   gradatarg: analytic gradient at the target locations
+c   gradaatarg: conjugate analytic gradient (d/dzbar) at the target locations
+c   hesstarg: hessian at the target locations
 c------------------------------------------------------------------
 
       implicit none
@@ -580,20 +625,22 @@ c------------------------------------------------------------------
       real *8 sourcesort(2,nsource)
 
       complex *16 chargesort(nd,*)
-      complex *16 dipstrsort(nd,*)
+      complex *16 dip1sort(nd,*),dip2sort(nd,*)
 
       real *8 targetsort(2,ntarget)
-      complex *16 jsort(nd,0:ntj,*)
+      complex *16 jsort(nd,5,0:ntj,*)
 
       real *8 expcsort(2,*)
 
       complex *16 pot(nd,*)
-      complex *16 grad(nd,*)
-      complex *16 hess(nd,*)
+      complex *16 grada(nd,*)
+      complex *16 gradaa(nd,*)
+      complex *16 hess(nd,3,*)
 
       complex *16 pottarg(nd,*)
-      complex *16 gradtarg(nd,*)
-      complex *16 hesstarg(nd,*)
+      complex *16 gradatarg(nd,*)
+      complex *16 gradaatarg(nd,*)
+      complex *16 hesstarg(nd,3,*)
 
       integer iaddr(2,nboxes),lmptmp
       real *8 rmlexp(*)
@@ -685,7 +732,11 @@ C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(idim,i,j)
       do i=1,nexpc
          do j = 0,ntj
            do idim=1,nd
-             jsort(idim,j,i)=0
+             jsort(idim,1,j,i)=0
+             jsort(idim,2,j,i)=0
+             jsort(idim,3,j,i)=0
+             jsort(idim,4,j,i)=0
+             jsort(idim,5,j,i)=0
            enddo
          enddo
       enddo
@@ -702,8 +753,8 @@ c
 C$OMP PARALLEL DO DEFAULT (SHARED)
 C$OMP$PRIVATE(ibox)
          do ibox = laddr(1,ilev),laddr(2,ilev)
-            call l2dmpzero_vec(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
-            call l2dmpzero_vec(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
+            call bh2dmpzero_vec(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
+            call bh2dmpzero_vec(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
          enddo
 C$OMP END PARALLEL DO         
        enddo
@@ -748,7 +799,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                 call l2dformmpc_vec(nd,rscales(ilev),
+                 call bh2dformmpc_vec(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
      2             centers(1,ibox),nterms(ilev),
      3             rmlexp(iaddr(1,ibox)))
@@ -768,9 +819,9 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call l2dformmpd_vec(nd,rscales(ilev),
-     1          sourcesort(1,istart),npts,dipstrsort(1,istart),
-     2          centers(1,ibox),
+                call bh2dformmpd_vec(nd,rscales(ilev),
+     1          sourcesort(1,istart),npts,dip1sort(1,istart),
+     2          dip2sort(1,istart),centers(1,ibox),
      3          nterms(ilev),rmlexp(iaddr(1,ibox))) 
              endif
           enddo
@@ -788,9 +839,9 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c             Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call l2dformmpcd_vec(nd,rscales(ilev),
+                call bh2dformmpcd_vec(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
-     2             dipstrsort(1,istart),
+     2             dip1sort(1,istart),dip2sort(1,istart),
      3             centers(1,ibox),
      4             nterms(ilev),rmlexp(iaddr(1,ibox))) 
              endif
@@ -838,7 +889,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call l2dformtac_vec(nd,rscales(ilev),
+                    call bh2dformtac_vec(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   chargesort(1,istart),centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
@@ -876,9 +927,9 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
 
-                    call l2dformtad_vec(nd,rscales(ilev),
+                    call bh2dformtad_vec(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   dipstrsort(1,istart),
+     2                   dip1sort(1,istart),dip2sort(1,istart),
      3                   centers(1,ibox),nterms(ilev),
      4                   rmlexp(iaddr(2,ibox)))
                  enddo
@@ -915,10 +966,10 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call l2dformtacd_vec(nd,rscales(ilev),
+                    call bh2dformtacd_vec(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   chargesort(1,istart),dipstrsort(1,istart),
-     3                   centers(1,ibox),
+     2                   chargesort(1,istart),dip1sort(1,istart),
+     3                   dip2sort(1,istart),centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
                  enddo
               endif
@@ -951,7 +1002,7 @@ C$OMP$SCHEDULE(DYNAMIC)
             iend = isrcse(2,jbox)
             npts = iend-istart+1
             if(npts.gt.0) then
-              call l2dmpmp_vec(nd,rscales(ilev+1),
+              call bh2dmpmp_vec(nd,rscales(ilev+1),
      1             centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2             nterms(ilev+1),rscales(ilev),centers(1,ibox),
      3             rmlexp(iaddr(1,ibox)),nterms(ilev),carray,ldc)
@@ -998,7 +1049,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nlist2s(ibox)
               jbox = list2(i,ibox) 
-              call l2dmploc_vec(nd,rscales(ilev),
+              call bh2dmploc_vec(nd,rscales(ilev),
      $          centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev),
      2          rscales(ilev),centers(1,ibox),rmlexp(iaddr(2,ibox)),
      3          nterms(ilev),carray,ldc)
@@ -1044,7 +1095,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nchild
               jbox = itree(iptr(5)+4*(ibox-1)+i-1)
-              call l2dlocloc_vec(nd,rscales(ilev),centers(1,ibox),
+              call bh2dlocloc_vec(nd,rscales(ilev),centers(1,ibox),
      1          rmlexp(iaddr(2,ibox)),nterms(ilev),rscales(ilev+1),
      2          centers(1,jbox),rmlexp(iaddr(2,jbox)),nterms(ilev+1),
      3          carray,ldc)
@@ -1071,17 +1122,6 @@ C$OMP$PRIVATE(ibox,nlist3,istart,iend,npts,j,i,mptemp)
 C$OMP$PRIVATE(jbox)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox=laddr(1,ilev),laddr(2,ilev)
-          do j=iexpcse(1,ibox),iexpcse(2,ibox)
-            do i=1,nlist3s(ibox)
-              jbox = list3(i,ibox)
-c                 shift multipole expansion directly to box
-c                 for all expansion centers
-              call l2dmploc_vec(nd,rscales(ilev+1),
-     $          centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev+1),
-     2          scjsort(j),expcsort(1,j),jsort(1,0,j),ntj,carray,ldc)
-            enddo
-          enddo
-
 c              evalute multipole expansion at all targets
           istart = itargse(1,ibox)
           iend = itargse(2,ibox) 
@@ -1091,7 +1131,7 @@ c              evalute multipole expansion at all targets
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
                   
-              call l2dmpevalp_vec(nd,rscales(ilev+1),
+              call bh2dmpevalp_vec(nd,rscales(ilev+1),
      1         centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2         nterms(ilev+1),targetsort(1,istart),npts,
      3         pottarg(1,istart))
@@ -1100,21 +1140,11 @@ c              evalute multipole expansion at all targets
           if(ifpghtarg.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox)
-              call l2dmpevalg_vec(nd,rscales(ilev+1),
+              call bh2dmpevalg_vec(nd,rscales(ilev+1),
      1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2          nterms(ilev+1),targetsort(1,istart),npts,
-     3          pottarg(1,istart),gradtarg(1,istart))
-            enddo
-          endif
-          if(ifpghtarg.eq.3) then
-            do i=1,nlist3s(ibox)
-              jbox = list3(i,ibox)
-
-              call l2dmpevalh_vec(nd,rscales(ilev+1),
-     1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
-     2          nterms(ilev+1),targetsort(1,istart),npts,
-     3          pottarg(1,istart),
-     3          gradtarg(1,istart),hesstarg(1,istart))
+     3          pottarg(1,istart),gradatarg(1,istart),
+     4          gradaatarg(1,istart))
             enddo
           endif
 
@@ -1128,7 +1158,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.1) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call l2dmpevalp_vec(nd,rscales(ilev+1),
+              call bh2dmpevalp_vec(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart))
@@ -1137,19 +1167,10 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call l2dmpevalg_vec(nd,rscales(ilev+1),
+              call bh2dmpevalg_vec(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
-     3           pot(1,istart),grad(1,istart))
-            enddo
-          endif
-          if(ifpgh.eq.3) then
-            do i=1,nlist3s(ibox)
-              jbox = list3(i,ibox) 
-              call l2dmpevalh_vec(nd,rscales(ilev+1),
-     1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
-     2           nterms(ilev+1),sourcesort(1,istart),npts,
-     3           pot(1,istart),grad(1,istart),hess(1,istart))
+     3           pot(1,istart),grada(1,istart),gradaa(1,istart))
             enddo
           endif
 
@@ -1178,14 +1199,6 @@ C$OMP$SCHEDULE(DYNAMIC)
         do ibox = laddr(1,ilev),laddr(2,ilev)
           nchild = itree(iptr(4)+ibox-1)
           if(nchild.eq.0) then
-            istart = iexpcse(1,ibox)
-            iend = iexpcse(2,ibox)
-            do i=istart,iend
-              call l2dlocloc_vec(nd,rscales(ilev),
-     $          centers(1,ibox),
-     1          rmlexp(iaddr(2,ibox)),nterms(ilev),scjsort(i),
-     2          expcsort(1,i),jsort(1,0,i),ntj,carray,ldc)
-            enddo
 c
 cc               evaluate local expansion
 c                at targets
@@ -1193,23 +1206,17 @@ c                at targets
             iend = itargse(2,ibox)
             npts = iend-istart + 1
             if(ifpghtarg.eq.1) then
-              call l2dtaevalp_vec(nd,rscales(ilev),
+              call bh2dtaevalp_vec(nd,rscales(ilev),
      1              centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2              nterms(ilev),targetsort(1,istart),npts,
      3              pottarg(1,istart))
             endif
             if(ifpghtarg.eq.2) then
-              call l2dtaevalg_vec(nd,rscales(ilev),
+              call bh2dtaevalg_vec(nd,rscales(ilev),
      1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2          nterms(ilev),targetsort(1,istart),npts,
-     3          pottarg(1,istart),gradtarg(1,istart))
-            endif
-            if(ifpghtarg.eq.3) then
-              call l2dtaevalh_vec(nd,rscales(ilev),
-     1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
-     2          nterms(ilev),targetsort(1,istart),npts,
-     3          pottarg(1,istart),gradtarg(1,istart),
-     4          hesstarg(1,istart))
+     3          pottarg(1,istart),gradatarg(1,istart),
+     4          gradaatarg(1,istart))
             endif
 
 c
@@ -1219,22 +1226,16 @@ cc                evaluate local expansion at sources
             iend = isrcse(2,ibox)
             npts = iend-istart+1
             if(ifpgh.eq.1) then
-              call l2dtaevalp_vec(nd,rscales(ilev),
+              call bh2dtaevalp_vec(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart))
             endif
             if(ifpgh.eq.2) then
-              call l2dtaevalg_vec(nd,rscales(ilev),
+              call bh2dtaevalg_vec(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
-     3           pot(1,istart),grad(1,istart))
-            endif
-            if(ifpgh.eq.3) then
-              call l2dtaevalh_vec(nd,rscales(ilev),
-     1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
-     2           nterms(ilev),sourcesort(1,istart),npts,
-     3           pot(1,istart),grad(1,istart),hess(1,istart))
+     3           pot(1,istart),grada(1,istart),gradaa(1,istart))
             endif
           endif
         enddo
@@ -1254,7 +1255,6 @@ c      |r| < thresh
 c
       thresh = boxsize(0)*2.0d0**(-51)
 
-cc      call prin2('thresh=*',thresh,1)
 c
 cc
       call cpu_time(time1)
@@ -1282,20 +1282,15 @@ C$OMP$SCHEDULE(DYNAMIC)
                jstart = isrcse(1,jbox)
                jend = isrcse(2,jbox)
 
-               call cfmm2dexpc_direct_vec(nd,jstart,jend,istarte,
-     1         iende,rscales,nlevels, 
-     2         sourcesort,ifcharge,chargesort,ifdipole,dipstrsort,
-     3         expcsort,jsort,scjsort,ntj)
-
                 
-               call cfmm2dpart_direct_vec(nd,jstart,jend,istartt,
+               call bhfmm2dpart_direct_vec(nd,jstart,jend,istartt,
      1         iendt,sourcesort,ifcharge,chargesort,ifdipole,
-     2         dipstrsort,targetsort,ifpghtarg,pottarg,
-     3         gradtarg,hesstarg,thresh)
+     2         dip1sort,dip2sort,targetsort,ifpghtarg,pottarg,
+     3         gradatarg,gradaatarg,hesstarg,thresh)
          
-               call cfmm2dpart_direct_vec(nd,jstart,jend,istarts,iends,
+               call bhfmm2dpart_direct_vec(nd,jstart,jend,istarts,iends,
      1         sourcesort,ifcharge,chargesort,ifdipole,
-     2         dipstrsort,sourcesort,ifpgh,pot,grad,hess,
+     2         dip1sort,dip2sort,sourcesort,ifpgh,pot,grada,gradaa,hess,
      3         thresh)
             enddo   
          enddo
@@ -1317,116 +1312,14 @@ C$    time2=omp_get_wtime()
       return
       end
 c
-      subroutine cfmm2dexpc_direct_vec(nd,istart,iend,jstart,jend,
-     $     rscales,nlevels,source,ifcharge,charge,ifdipole,dipstr,
-     $     targ,jexps,scj,ntj)
-c--------------------------------------------------------------------
-c     This subroutine adds the local expansions due to sources
-c     istart to iend in the source array at the expansion centers
-c     jstart to jend in the target array to the existing local
-c     expansions
 c
-c     INPUT arguments
-c-------------------------------------------------------------------
-c     nd           in: integer
-c                   number of expansions
 c
-c     istart       in:Integer
-c                  Starting index in source array whose expansions
-c                  we wish to add
 c
-c     iend         in:Integer
-c                  Last index in source array whose expansions
-c                  we wish to add
 c
-c     jstart       in: Integer
-c                  First index in target array at which we
-c                  wish to compute the expansions
-c 
-c     jend         in:Integer
-c                  Last index in target array at which we wish
-c                  to compute the expansions
-c 
-c     rscales       in: real*8(0:nlevels)
-c                  Scale of expansions formed at all levels
-c
-c     nlevels      in:Integer
-c                  Number of levels in the tree structure
-c
-c     source       in: real *8(2,ns)
-c                  Source locations
-c
-c     ifcharge     in: Integer
-c                  flag for including expansions due to charges
-c                  The expansion due to charges will be included
-c                  if ifcharge == 1
-c
-c     charge       in: complex *16
-c                  Charge at the source locations
-c
-c     ifdipole     in: Integer
-c                 flag for including expansions due to dipoles
-c                 The expansion due to dipoles will be included
-c                 if ifdipole == 1
-c
-c     dipstr        in: complex *16(ns)
-c                   dip strengths at the source locations
-c
-c     targ        in: real *8(2,nexpc)
-c                 Expansion center locations
-c
-c     scj         in: real *8(nexpc)
-c                 scaling parameter for expansions
-c
-c     ntj         in: Integer
-c                 Number of terms in expansion
-c------------------------------------------------------------
-c     OUTPUT
-c
-c   Updated expansions at the targets
-c   jexps : coeffs for local expansions
-c-------------------------------------------------------               
-        implicit none
-c
-        integer istart,iend,jstart,jend,ns,j
-        integer ifcharge,ifdipole,ier,nd
-        real *8 source(2,*)
-        real *8 rscales(0:nlevels)
-        complex *16 charge(nd,*),dipstr(nd,*)
-        real *8 targ(2,*)
-        real *8 scj(*)
-
-        integer nlevels,ntj
-c
-        complex *16 jexps(nd,0:ntj,*)
-        
-c
-        ns = iend - istart + 1
-        do j=jstart,jend
-           if(ifcharge.eq.1.and.ifdipole.eq.0) then
-              call l2dformtac_vec(nd,scj(j),
-     1        source(1,istart),charge(1,istart),ns,targ(1,j),
-     2        ntj,jexps(1,0,j))
-           endif
-
-           if(ifdipole.eq.1.and.ifcharge.eq.0) then
-               call l2dformtad_vec(nd,scj(j),
-     1         source(1,istart),dipstr(1,istart),
-     2         ns,targ(1,j),ntj,jexps(1,0,j))
-           endif        
-           if(ifdipole.eq.1.and.ifcharge.eq.1) then
-               call l2dformtacd_vec(nd,scj(j),
-     1         source(1,istart),charge(1,istart),dipstr(1,istart),
-     2         ns,targ(1,j),ntj,jexps(1,0,j))
-           endif        
-        enddo
-c
-        return
-        end
 c------------------------------------------------------------------     
-      subroutine cfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
-     $     source,ifcharge,charge,ifdipole,dipstr,
-     $     targ,ifpgh,pot,grad,hess,thresh)
+      subroutine bhfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
+     $     source,ifcharge,charge,ifdipole,dip1,dip2
+     $     targ,ifpgh,pot,grada,gradaa,hess,thresh)
 c--------------------------------------------------------------------
 c     This subroutine adds the contribuition due to sources
 c     istart to iend in the source array at the expansion centers
@@ -1472,8 +1365,11 @@ c                 flag for including expansions due to dipoles
 c                 The expansion due to dipoles will be included
 c                 if ifdipole == 1
 c
-c     dipstr        in: complex *16(ns)
-c                 dipole strengths at the source locations
+c     dip1        in: complex *16(ns)
+c                 dipole strengths - 1 at the source locations
+c
+c     dip2        in: complex *16(ns)
+c                 dipole strengths - 2 at the source locations
 c
 c     targ        in: real *8(2,nt)
 c                 target locations
@@ -1495,7 +1391,8 @@ c     OUTPUT
 c
 c   Updated velocity and gradients at the targets
 c   pot : potential at the targets
-c   grad: gradient at the targets
+c   grada: analytic gradient at the targets
+c   gradaa: conjugate analytic (d/dzbar) gradient at the targets
 c   hess: Hessian at the targets
 c-------------------------------------------------------               
         implicit none
@@ -1508,38 +1405,32 @@ c
 
 
         real *8 source(2,*)
-        complex *16 charge(nd,*),dipstr(nd,*)
+        complex *16 charge(nd,*),dip1(nd,*),dip2(nd,*)
 
         integer ifpgh
         real *8 targ(2,*),thresh
         
 c
         complex *16 pot(nd,*)
-        complex *16 grad(nd,*)
-        complex *16 hess(nd,*)
+        complex *16 grada(nd,*)
+        complex *16 gradaa(nd,*)
+        complex *16 hess(nd,3,*)
 
 c
         ns = iend - istart + 1
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directcp_vec(nd,source(1,istart),ns,
+               call bh2d_directcp_vec(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),thresh)
              enddo
           endif
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directcg_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
-     2            thresh)
-             enddo
-          endif
-          if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directch_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
+               call bh2d_directcg_vec(nd,source(1,istart),ns,
+     1            charge(1,istart),targ(1,j),pot(1,j),grada(1,j),
+     2            gradaa(1,j),thresh)
              enddo
           endif
         endif
@@ -1547,26 +1438,18 @@ c
         if(ifcharge.eq.0.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directdp_vec(nd,source(1,istart),ns,
-     1            dipstr(1,istart),
+               call bh2d_directdp_vec(nd,source(1,istart),ns,
+     1            dip1(1,istart),dip2(1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
           endif
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directdg_vec(nd,source(1,istart),ns,
-     1            dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
+               call bh2d_directdg_vec(nd,source(1,istart),ns,
+     1            dip1(1,istart),dip2(1,istart),
+     2            targ(1,j),pot(1,j),grada(1,j),gradaa(1,j),
      2            thresh)
-             enddo
-          endif
-          if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directdh_vec(nd,source(1,istart),ns,
-     1            dipstr(1,istart),targ(1,j),
-     2            pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
              enddo
           endif
         endif
@@ -1574,26 +1457,18 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directcdp_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
+               call bh2d_directcdp_vec(nd,source(1,istart),ns,
+     1            charge(1,istart),dip1(1,istart),dip2(1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
           endif
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directcdg_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
+               call bh2d_directcdg_vec(nd,source(1,istart),ns,
+     1            charge(1,istart),dip1(1,istart),dip2(1,istart),
+     2            targ(1,j),pot(1,j),grada(1,j),gradaa(1,j),
      2            thresh)
-             enddo
-          endif
-          if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directcdh_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
              enddo
           endif
         endif
@@ -1603,7 +1478,7 @@ c
         return
         end
 c------------------------------------------------------------------    
-      subroutine l2dmpalloc(nd,laddr,iaddr,nlevels,lmptot,
+      subroutine bh2dmpalloc(nd,laddr,iaddr,nlevels,lmptot,
      1                          nterms)
 c     This subroutine determines the size of the array
 c     to be allocated for the multipole expansions
@@ -1644,7 +1519,7 @@ c
       istart = 1
       do i = 0,nlevels
 
-         nn = (nterms(i)+1)*2*nd
+         nn = (nterms(i)+1)*2*nd*5
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,itmp)
          do ibox = laddr(1,i),laddr(2,i)
@@ -1660,7 +1535,7 @@ c
 c            Allocate memory for the local expansion
 c
        do i=0,nlevels
-         nn = (nterms(i)+1)*2*nd
+         nn = (nterms(i)+1)*2*nd*5
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,itmp)
          do ibox = laddr(1,i),laddr(2,i)

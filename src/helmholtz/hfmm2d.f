@@ -1377,7 +1377,7 @@ c
 cc     set threshold for ignoring interactions with 
 c      |r| < thresh
 c
-      thresh = abs(zk)*boxsize(0)*1.0d-16
+      thresh = abs(zk)*boxsize(0)*2.0d0**(-51)
 cc      call prin2('thresh=*',thresh,1)
 c
 cc

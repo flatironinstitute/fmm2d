@@ -1,0 +1,181 @@
+mbhDirectRouts:
+  -
+    name: mbh2d_directcp_vec
+    ker: c
+    out: p
+  -
+    name: mbh2d_directdp_vec
+    ker: d
+    out: p
+  -
+    name: mbh2d_directcdp_vec
+    ker: cd
+    out: p
+  -
+    name: mbh2d_directqp_vec
+    ker: q
+    out: p
+  -
+    name: mbh2d_directcqp_vec
+    ker: cq
+    out: p
+  -
+    name: mbh2d_directdqp_vec
+    ker: dq
+    out: p
+  -
+    name: mbh2d_directcdqp_vec
+    ker: cdq
+    out: p
+  -
+    name: mbh2d_directop_vec
+    ker: o
+    out: p
+  -
+    name: mbh2d_directcop_vec
+    ker: co
+    out: p
+  -
+    name: mbh2d_directdop_vec
+    ker: do
+    out: p
+  -
+    name: mbh2d_directcdop_vec
+    ker: cdo
+    out: p
+  -
+    name: mbh2d_directqop_vec
+    ker: qo
+    out: p
+  -
+    name: mbh2d_directcqop_vec
+    ker: cqo
+    out: p
+  -
+    name: mbh2d_directdqop_vec
+    ker: dqo
+    out: p
+  -
+    name: mbh2d_directcdqop_vec
+    ker: cdqo
+    out: p
+  -
+    name: mbh2d_directcg_vec
+    ker: c
+    out: g
+  -
+    name: mbh2d_directdg_vec
+    ker: d
+    out: g
+  -
+    name: mbh2d_directcdg_vec
+    ker: cd
+    out: g
+  -
+    name: mbh2d_directqg_vec
+    ker: q
+    out: g
+  -
+    name: mbh2d_directcqg_vec
+    ker: cq
+    out: g
+  -
+    name: mbh2d_directdqg_vec
+    ker: dq
+    out: g
+  -
+    name: mbh2d_directcdqg_vec
+    ker: cdq
+    out: g
+  -
+    name: mbh2d_directog_vec
+    ker: o
+    out: g
+  -
+    name: mbh2d_directcog_vec
+    ker: co
+    out: g
+  -
+    name: mbh2d_directdog_vec
+    ker: do
+    out: g
+  -
+    name: mbh2d_directcdog_vec
+    ker: cdo
+    out: g
+  -
+    name: mbh2d_directqog_vec
+    ker: qo
+    out: g
+  -
+    name: mbh2d_directcqog_vec
+    ker: cqo
+    out: g
+  -
+    name: mbh2d_directdqog_vec
+    ker: dqo
+    out: g
+  -
+    name: mbh2d_directcdqog_vec
+    ker: cdqo
+    out: g
+  -
+    name: mbh2d_directch_vec
+    ker: c
+    out: h
+  -
+    name: mbh2d_directdh_vec
+    ker: d
+    out: h
+  -
+    name: mbh2d_directcdh_vec
+    ker: cd
+    out: h
+  -
+    name: mbh2d_directqh_vec
+    ker: q
+    out: h
+  -
+    name: mbh2d_directcqh_vec
+    ker: cq
+    out: h
+  -
+    name: mbh2d_directdqh_vec
+    ker: dq
+    out: h
+  -
+    name: mbh2d_directcdqh_vec
+    ker: cdq
+    out: h
+  -
+    name: mbh2d_directoh_vec
+    ker: o
+    out: h
+  -
+    name: mbh2d_directcoh_vec
+    ker: co
+    out: h
+  -
+    name: mbh2d_directdoh_vec
+    ker: do
+    out: h
+  -
+    name: mbh2d_directcdoh_vec
+    ker: cdo
+    out: h
+  -
+    name: mbh2d_directqoh_vec
+    ker: qo
+    out: h
+  -
+    name: mbh2d_directcqoh_vec
+    ker: cqo
+    out: h
+  -
+    name: mbh2d_directdqoh_vec
+    ker: dqo
+    out: h
+  -
+    name: mbh2d_directcdqoh_vec
+    ker: cdqo
+    out: h

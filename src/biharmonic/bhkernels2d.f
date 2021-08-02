@@ -80,8 +80,8 @@ c
 c
 c
 
-      subroutine bh2d_directcg_vec(nd,sources,ns,charges,dippar1,
-     1         dippar2,targ,vel,grada,gradaa,thresh)
+      subroutine bh2d_directcg_vec(nd,sources,ns,charges,
+     1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -125,8 +125,7 @@ c      targ         : target location
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
-c      grada        : Complex analytic gradient 
-c      gradaa       : Complex analytic antigradient
+c      grad         : Complex gradient (d/dz, d/dzbar)
 c
 c--------------------------------------------------------------------
 
@@ -136,7 +135,7 @@ c--------------------------------------------------------------------
       complex *16 vel(nd),zs,zt,zdis
       complex *16 charges(nd,ns)
       complex *16 zdis1,zdis2
-      complex *16 grada(nd),gradaa(nd),eye
+      complex *16 grad(nd,2),eye
 
       eye = dcmplx(0,1.0d0)
       zt = dcmplx(targ(1),targ(2))
@@ -150,9 +149,9 @@ c--------------------------------------------------------------------
            vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           grada(idim)=grada(idim)+charges(idim,i)*zdis1
-           gradaa(idim)=gradaa(idim)+charges(idim,i)*dconjg(zdis1)
-           gradaa(idim)=gradaa(idim)-dconjg(charges(idim,i)*zdis2)*zdis
+           grad(idim,1)=grad(idim,1)+charges(idim,i)*zdis1
+           grad(idim,2)=grad(idim,2)+charges(idim,i)*dconjg(zdis1)
+           grad(idim,2)=grad(idim,2)-dconjg(charges(idim,i)*zdis2)*zdis
         enddo
  1111 continue
       enddo
@@ -167,8 +166,8 @@ c
 c
 c
 
-      subroutine bh2d_directdp_vec(nd,sources,ns,dippar1,
-     1         dippar2,targ,vel,thresh)
+      subroutine bh2d_directdp_vec(nd,sources,ns,dippar,
+     1         targ,vel,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
 c      at the
@@ -207,9 +206,7 @@ c      INPUT parameters
 c      nd           : number of densities
 c      sources(2,ns): location of the sources
 c      ns           : number of sources
-c      dippar1      : dipole parameter 1 (corresponding to c2 in
-c                     above expression)
-c      dippar2      : dipole parameter 2 (corresponding to c3 in
+c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
 c--------------------------------------------------------------------
@@ -222,7 +219,7 @@ c--------------------------------------------------------------------
       integer ns
       real *8 sources(2,ns), targ(2)
       complex *16 vel(nd),zs,zt,zdis
-      complex *16 dippar1(nd,ns),dippar2(nd,ns)
+      complex *16 dippar(nd,2,ns)
       complex *16 zdis1,zdis2
       complex *16 eye
 
@@ -235,9 +232,9 @@ c--------------------------------------------------------------------
          zdis1 = 1.0d0/zdis
          zdis2=zdis1**2
          do idim=1,nd
-           vel(idim)=vel(idim)+dippar1(idim,i)*zdis1 + 
-     1         dippar2(idim,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar1(idim,i)*zdis2)*zdis
+           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+     1         dippar(idim,2,i)*dconjg(zdis1)
+           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
         enddo
  1111 continue
       enddo
@@ -250,8 +247,8 @@ c
 c
 c
 
-      subroutine bh2d_directdg_vec(nd,sources,ns,charges,dippar1,
-     1         dippar2,targ,vel,grada,gradaa,thresh)
+      subroutine bh2d_directdg_vec(nd,sources,ns,charges,dippar,
+     1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -290,16 +287,13 @@ c      INPUT parameters
 c      nd           : number of densities
 c      sources(2,ns): location of the sources
 c      ns           : number of sources
-c      dippar1      : dipole parameter 1 (corresponding to c2 in
-c                     above expression)
-c      dippar2      : dipole parameter 2 (corresponding to c3 in
+c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
-c      grada        : Complex analytic gradient 
-c      gradaa       : Complex analytic antigradient
+c      grad         : Complex gradient (d/dz, d/dzbar)
 c
 c--------------------------------------------------------------------
 
@@ -307,9 +301,9 @@ c--------------------------------------------------------------------
       integer ns
       real *8 sources(2,ns), targ(2)
       complex *16 vel(nd),zs,zt,zdis
-      complex *16 dippar1(nd,ns),dippar2(nd,ns)
+      complex *16 dippar(nd,2,ns)
       complex *16 zdis1,zdis2
-      complex *16 grada(nd),gradaa(nd),eye
+      complex *16 grad(nd,2),eye
 
       eye = dcmplx(0,1.0d0)
       zt = dcmplx(targ(1),targ(2))
@@ -320,13 +314,13 @@ c--------------------------------------------------------------------
          zdis1 = 1.0d0/zdis
          zdis2=zdis1**2
          do idim=1,nd
-           vel(idim)=vel(idim)+dippar1(idim,i)*zdis1 + 
-     1         dippar2(idim,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar1(idim,i)*zdis2)*zdis
-           grada(idim)=grada(idim)-dippar1(idim,i)*(zdis2)
-           gradaa(idim)=gradaa(idim)-dippar2(idim,i)*dconjg(zdis2)
-           gradaa(idim)=gradaa(idim)+
-     1         2*dconjg(dippar1(idim,i)*zdis2*zdis1)*zdis
+           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+     1         dippar(idim,2,i)*dconjg(zdis1)
+           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+           grad(idim,1)=grad(idim,1)-dippar(idim,1,i)*(zdis2)
+           grad(idim,2)=grad(idim,2)-dippar(idim,2,i)*dconjg(zdis2)
+           grad(idim,2)=grad(idim,2)+
+     1         2*dconjg(dippar(idim,1,i)*zdis2*zdis1)*zdis
         enddo
  1111 continue
       enddo
@@ -338,8 +332,8 @@ c
 c
 c
 
-      subroutine bh2d_directcdp_vec(nd,sources,ns,charges,dippar1,
-     1         dippar2,targ,vel,thresh)
+      subroutine bh2d_directcdp_vec(nd,sources,ns,charges,dippar,
+     1         targ,vel,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
 c      at the
@@ -379,9 +373,7 @@ c      nd           : number of densities
 c      sources(2,ns): location of the sources
 c      ns           : number of sources
 c      charges      : charge strength
-c      dippar1      : dipole parameter 1 (corresponding to c2 in
-c                     above expression)
-c      dippar2      : dipole parameter 2 (corresponding to c3 in
+c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
 c--------------------------------------------------------------------
@@ -394,7 +386,7 @@ c--------------------------------------------------------------------
       integer ns
       real *8 sources(2,ns), targ(2)
       complex *16 vel(nd),zs,zt,zdis
-      complex *16 charges(nd,ns),dippar1(nd,ns),dippar2(nd,ns)
+      complex *16 charges(nd,ns),dippar(nd,2,ns)
       complex *16 zdis1,zdis2
       complex *16 eye
 
@@ -410,9 +402,9 @@ c--------------------------------------------------------------------
            vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           vel(idim)=vel(idim)+dippar1(idim,i)*zdis1 + 
-     1         dippar2(idim,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar1(idim,i)*zdis2)*zdis
+           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+     1         dippar(idim,2,i)*dconjg(zdis1)
+           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
         enddo
  1111 continue
       enddo
@@ -425,8 +417,8 @@ c
 c
 c
 
-      subroutine bh2d_directcdg_vec(nd,sources,ns,charges,dippar1,
-     1         dippar2,targ,vel,grada,gradaa,thresh)
+      subroutine bh2d_directcdg_vec(nd,sources,ns,charges,dippar,
+     1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -466,16 +458,13 @@ c      nd           : number of densities
 c      sources(2,ns): location of the sources
 c      ns           : number of sources
 c      charges      : charge strength
-c      dippar1      : dipole parameter 1 (corresponding to c2 in
-c                     above expression)
-c      dippar2      : dipole parameter 2 (corresponding to c3 in
+c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
-c      grada        : Complex analytic gradient 
-c      gradaa       : Complex analytic antigradient
+c      grad         : Complex gradient (d/dz, d/dzbar)
 c
 c--------------------------------------------------------------------
 
@@ -483,9 +472,9 @@ c--------------------------------------------------------------------
       integer ns
       real *8 sources(2,ns), targ(2)
       complex *16 vel(nd),zs,zt,zdis
-      complex *16 charges(nd,ns),dippar1(nd,ns),dippar2(nd,ns)
+      complex *16 charges(nd,ns),dippar(nd,2,ns)
       complex *16 zdis1,zdis2
-      complex *16 grada(nd),gradaa(nd),eye
+      complex *16 grad(nd,2),eye
 
       eye = dcmplx(0,1.0d0)
       zt = dcmplx(targ(1),targ(2))
@@ -499,16 +488,16 @@ c--------------------------------------------------------------------
            vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           vel(idim)=vel(idim)+dippar1(idim,i)*zdis1 + 
-     1         dippar2(idim,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar1(idim,i)*zdis2)*zdis
-           grada(idim)=grada(idim)+charges(idim,i)*zdis1
-           grada(idim)=grada(idim)-dippar1(idim,i)*(zdis2)
-           gradaa(idim)=gradaa(idim)+charges(idim,i)*dconjg(zdis1)
-           gradaa(idim)=gradaa(idim)-dconjg(charges(idim,i)*zdis2)*zdis
-           gradaa(idim)=gradaa(idim)-dippar2(idim,i)*dconjg(zdis2)
-           gradaa(idim)=gradaa(idim)+
-     1         2*dconjg(dippar1(idim,i)*zdis2*zdis1)*zdis
+           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+     1         dippar(idim,2,i)*dconjg(zdis1)
+           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+           grad(idim,1)=grad(idim,1)+charges(idim,i)*zdis1
+           grad(idim,1)=grad(idim,1)-dippar(idim,1,i)*(zdis2)
+           grad(idim,2)=grad(idim,2)+charges(idim,i)*dconjg(zdis1)
+           grad(idim,2)=grad(idim,2)-dconjg(charges(idim,i)*zdis2)*zdis
+           grad(idim,2)=grad(idim,2)-dippar(idim,2,i)*dconjg(zdis2)
+           grad(idim,2)=grad(idim,2)+
+     1         2*dconjg(dippar(idim,1,i)*zdis2*zdis1)*zdis
         enddo
  1111 continue
       enddo

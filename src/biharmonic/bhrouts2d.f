@@ -147,7 +147,7 @@ c
 c
 
       subroutine bh2dmpevalg_vec(nd,rscale,center,mpole,nterms,
-     1                     ztarg,ntarg,vel,grada,gradaa)
+     1                     ztarg,ntarg,vel,grad)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
 c     the "center" due to the multipole expansion
@@ -187,8 +187,7 @@ c      ntarg         : number of targets
 c---------------------------------------------------------------------
 c     OUTPUT
 c     vel - Complex velocity
-c     grada - gradient of analytic component 
-c     gradaa - gradient of anti analytic component
+c     grad(1:2) - gradient of analytic component  (d/dz and d/dzbar)
 c*********************************************************************
 
       implicit real *8 (a-h,o-z)
@@ -196,7 +195,7 @@ c*********************************************************************
       real *8 rscale,center(2),ztarg(2,ntarg)
       complex *16 zc,zt,zdis,eye
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 vel(nd,ntarg),grada(nd,ntarg),gradaa(nd,ntarg)
+      complex *16 vel(nd,ntarg),grad(nd,2,ntarg)
       complex *16 ztemp,ztemp1
       complex *16 zdisinv,zpow(1:1000)
 
@@ -217,9 +216,9 @@ c*********************************************************************
         do idim=1,nd
           vel(idim,k) = vel(idim,k)+
      1        (mpole(idim,4,0)+eye*mpole(idim,5,0))*log(cdabs(zdis))
-          grada(idim,k) = grada(idim,k) + 
+          grad(idim,1,k) = grad(idim,1,k) + 
      1        0.5d0*(mpole(idim,4,0)+eye*mpole(idim,5,0))*zpow(1)*rinv
-          gradaa(idim,k)= gradaa(idim,k) + 
+          grad(idim,2,k)= grad(idim,2,k) + 
      1       0.5d0*(mpole(idim,4,0)+eye*mpole(idim,5,0))*
      2       dconjg(zpow(1))*rinv
         enddo
@@ -233,19 +232,19 @@ c*********************************************************************
             vel(idim,k) = vel(idim,k) + 
      1        dreal(mpole(idim,4,i)*zpow(i))+
      2         eye*dreal(mpole(idim,5,i)*zpow(i))
-            grada(idim,k) = grada(idim,k) - 
+            grad(idim,1,k) = grad(idim,1,k) - 
      1         mpole(idim,1,i)*zpow(i+1)*i*rinv
-            grada(idim,k) = grada(idim,k) - 
+            grad(idim,1,k) = grad(idim,1,k) - 
      1         0.5*mpole(idim,4,i)*i*zpow(i+1)*rinv
-            grada(idim,k) = grada(idim,k) - 
+            grad(idim,1,k) = grad(idim,1,k) - 
      1         eye*0.5*mpole(idim,5,i)*i*zpow(i+1)*rinv
-            gradaa(idim,k) = gradaa(idim,k) - 
+            grad(idim,2,k) = grad(idim,2,k) - 
      1         mpole(idim,2,i)*dconjg(zpow(i+1))*i*rinv
-            gradaa(idim,k) = gradaa(idim,k) - 
+            grad(idim,2,k) = grad(idim,2,k) - 
      1         zdis*mpole(idim,3,i)*dconjg(zpow(i+1))*i*rinv
-            gradaa(idim,k) = gradaa(idim,k) - 
+            grad(idim,2,k) = grad(idim,2,k) - 
      1         dconjg(0.5*mpole(idim,4,i)*i*zpow(i+1))*rinv
-            gradaa(idim,k) = gradaa(idim,k) + 
+            grad(idim,2,k) = grad(idim,2,k) + 
      1         dconjg(eye*0.5*mpole(idim,5,i)*i*zpow(i+1))*rinv
           enddo
         enddo
@@ -342,7 +341,7 @@ c
 c
 c********************************************************************
       subroutine bh2dtaevalg_vec(nd,rscale,center,mpole,nterms,
-     1                      ztarg,ntarg,vel,grada,gradaa)
+     1                      ztarg,ntarg,vel,grad)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
 c     the "center" due to the local expansion
@@ -376,8 +375,7 @@ c      ntarg         : number of targets
 c---------------------------------------------------------------------
 c     OUTPUT
 c     vel - Complex velocity
-c     grada - gradient of analytic component 
-c     gradaa - gradient of anti analytic component 
+c     grad - gradient (d/dz, d/dzbar) 
 c*********************************************************************
 
       implicit real *8 (a-h,o-z)
@@ -385,7 +383,7 @@ c*********************************************************************
       real *8 rscale,center(2),ztarg(2,ntarg)
       complex *16 zc,zt,zdis,eye
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 vel(nd,ntarg),grada(nd,ntarg),gradaa(nd,ntarg)
+      complex *16 vel(nd,ntarg),grad(nd,2,ntarg)
       complex *16 ztemp,ztemp1,zpow(0:1000)
 
       rinv=1.0d0/rscale
@@ -414,19 +412,19 @@ c*********************************************************************
         enddo
         do i=1,nterms
           do idim=1,nd
-            grada(idim,k) = grada(idim,k) + 
+            grad(idim,1,k) = grad(idim,1,k) + 
      1         mpole(idim,1,i)*zpow(i-1)*i*rinv
-            grada(idim,k) = grada(idim,k) + 
+            grad(idim,1,k) = grad(idim,1,k) + 
      1         0.5*mpole(idim,4,i)*i*zpow(i-1)*rinv
-            grada(idim,k) = grada(idim,k) + 
+            grad(idim,1,k) = grad(idim,1,k) + 
      1         eye*0.5*mpole(idim,5,i)*i*zpow(i-1)*rinv
-            gradaa(idim,k) = gradaa(idim,k) + 
+            grad(idim,2,k) = grad(idim,2,k) + 
      1          mpole(idim,2,i)*dconjg(zpow(i-1))*i*rinv
-            gradaa(idim,k) = gradaa(idim,k) + 
+            grad(idim,2,k) = grad(idim,2,k) + 
      1          mpole(idim,3,i)*dconjg(zpow(i-1))*i*zdis*rinv
-            gradaa(idim,k) = gradaa(idim,k) + 
+            grad(idim,2,k) = grad(idim,2,k) + 
      1         dconjg(0.5*mpole(idim,4,i)*i*zpow(i-1))*rinv
-            gradaa(idim,k) = gradaa(idim,k) - 
+            grad(idim,2,k) = grad(idim,2,k) - 
      1         dconjg(eye*0.5*mpole(idim,5,i)*i*zpow(i-1))*rinv
           enddo
         enddo
@@ -439,7 +437,7 @@ c*********************************************************************
 c*******************************************************************
 c     EXPANSION FORMATION
 c*******************************************************************
-      subroutine bh2dformmpd_vec(nd,rscale,sources,ns,d1,d2,
+      subroutine bh2dformmpd_vec(nd,rscale,sources,ns,dip,
      1           center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the multipole expansion about
@@ -472,8 +470,7 @@ c     INPUT parameters
 c      nd            : number of densities
 c      rscale        : scaling parameter
 c      sources(2,ns) : coordinates of sources
-c      d1           : dipole parameter 1 (corresponding to c2)
-c      d2           : dipole parameter 2 (corresponding to c3)
+c      dip(2,ns)    : dipole parameters (corresponding to c2,c3 above)
 c      ns           : number of sources
 c      center(2)    : expansion center
 c      nterms       : Order of multipole expansion
@@ -490,7 +487,7 @@ c-----------------------------------------------------------------
       implicit real *8 (a-h,o-z)
       integer ns,nterms
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 d1(nd,ns),d2(nd,ns)
+      complex *16 dip(nd,2,ns)
       real *8 sources(2,ns),center(2),rscale
       complex *16 zc,z1,z2,zs,zdis,ztemp,zdisc,ztempc
       complex *16 ztempc2
@@ -508,10 +505,10 @@ c-----------------------------------------------------------------
 
          if(abs(zdis).le.1.0d-16) then
             do idim=1,nd
-                mpole(idim,1,1) = mpole(idim,1,1) + d1(idim,i)*rinv
-                mpole(idim,2,1) = mpole(idim,2,1) + d2(idim,i)*rinv
+                mpole(idim,1,1) = mpole(idim,1,1) + dip(idim,1,i)*rinv
+                mpole(idim,2,1) = mpole(idim,2,1) + dip(idim,2,i)*rinv
                 mpole(idim,3,2) = mpole(idim,3,2) - 
-     1              dconjg(d1(idim,i))*rinv**2
+     1              dconjg(dip(idim,1,i))*rinv**2
             enddo
          endif
 
@@ -520,10 +517,11 @@ c-----------------------------------------------------------------
             ztempc2=ztempc*ztempc
             do j=1,nterms
                do idim=1,nd
-                  zt2 = d2(idim,i)*ztempc
-                  zt3 = dconjg(d1(idim,i))*ztempc2
+                  zt2 = dip(idim,2,i)*ztempc
+                  zt3 = dconjg(dip(idim,1,i))*ztempc2
 c           Expansion corresponding to d1/z-zs
-                  mpole(idim,1,j)=mpole(idim,1,j)+d1(idim,i)*zdis/ztemp
+                  mpole(idim,1,j)=mpole(idim,1,j)+
+     1               dip(idim,1,i)*zdis/ztemp
 c           Expansion corresponding to d2/(z_bar - zs_bar)
                   mpole(idim,2,j)=mpole(idim,2,j)+zt2*zdisc
 c           Expansion corresponding to -d1_bar(z-zs)/(z_bar - zs_bar)^2
@@ -653,7 +651,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformmpcd_vec(nd,rscale,sources,ns,c1,d1,d2,
+      subroutine bh2dformmpcd_vec(nd,rscale,sources,ns,c1,dip,
      1           center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the multipole expansion about
@@ -687,8 +685,7 @@ c      nd            : number of densities
 c      rscale        : scaling parameter
 c      sources(2,ns) : coordinates of sources
 c      c1           : charge strength
-c      d1           : dipole parameter 1 (corresponding to c2)
-c      d2           : dipole parameter 2 (corresponding to c3)
+c      dip(2,ns)    : dipole parameters (corresponding to c2,c3 above)
 c      ns           : number of sources
 c      center(2)    : expansion center
 c      nterms       : Order of multipole expansion
@@ -705,7 +702,7 @@ c-----------------------------------------------------------------
       implicit real *8 (a-h,o-z)
       integer ns,nterms
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 c1(nd,ns),d1(nd,ns),d2(nd,ns)
+      complex *16 c1(nd,ns),dip(nd,2,ns)
       real *8 sources(2,ns),center(2),rscale
       complex *16 zc,z1,z2,zs,zdis,ztemp,zdisc,ztempc
       complex *16 ztempc2
@@ -728,10 +725,10 @@ c-----------------------------------------------------------------
 c       Expansion corresponding to c1_bar z-zs/(z_bar - zs_bar)
                 mpole(idim,3,1) = mpole(idim,3,1) + 
      1             dconjg(c1(idim,i))*rinv
-                mpole(idim,1,1) = mpole(idim,1,1) + d1(idim,i)*rinv
-                mpole(idim,2,1) = mpole(idim,2,1) + d2(idim,i)*rinv
+                mpole(idim,1,1) = mpole(idim,1,1) + dip(idim,1,i)*rinv
+                mpole(idim,2,1) = mpole(idim,2,1) + dip(idim,2,i)*rinv
                 mpole(idim,3,2) = mpole(idim,3,2) - 
-     1              dconjg(d1(idim,i))*rinv**2
+     1              dconjg(dip(idim,1,i))*rinv**2
             enddo
          endif
 
@@ -756,10 +753,11 @@ c          Expansion corresponding to c1_bar z-zs/(z_bar - zs_bar)
                enddo
 
                do idim=1,nd
-                  zt2 = d2(idim,i)*ztempc
-                  zt3 = dconjg(d1(idim,i))*ztempc2
+                  zt2 = dip(idim,2,i)*ztempc
+                  zt3 = dconjg(dip(idim,1,i))*ztempc2
 c           Expansion corresponding to d1/z-zs
-                  mpole(idim,1,j)=mpole(idim,1,j)+d1(idim,i)*zdis/ztemp
+                  mpole(idim,1,j)=mpole(idim,1,j)+
+     1               dip(idim,1,i)*zdis/ztemp
 c           Expansion corresponding to d2/(z_bar - zs_bar)
                   mpole(idim,2,j)=mpole(idim,2,j)+zt2*zdisc
 c           Expansion corresponding to -d1_bar(z-zs)/(z_bar - zs_bar)^2
@@ -908,8 +906,7 @@ c     INPUT parameters
 c
 c      rscale        : scaling parameter
 c      sources(2,ns) : coordinates of sources
-c      d1           : dipole parameter 1 (corresponding to c2)
-c      d2           : dipole parameter 2 (corresponding to c3)
+c      dip(2,ns)    : dipole parameters (corresponding to c2,c3 above)
 c      ns            : number of sources
 c      center(2)     : expansion center
 c      nterms        : Order of multipole expansion
@@ -926,7 +923,7 @@ c-----------------------------------------------------------------
       implicit real *8 (a-h,o-z)
       integer ns,nterms
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 d1(nd,ns),d2(nd,ns)
+      complex *16 dip(nd,2,ns)
       real *8 sources(2,ns),center(2),rscale
       complex *16 zc,z1,z2,zs,zdis,ztemp,zdisc,ztempc
 
@@ -940,12 +937,12 @@ c-----------------------------------------------------------------
          ztempc=dconjg(ztemp)
          do j=0,nterms
             do idim=1,nd
-              mpole(idim,1,j)=mpole(idim,1,j)-d1(idim,i)*zdis*ztemp
-              mpole(idim,2,j)=mpole(idim,2,j)-d2(idim,i)*zdisc*ztempc
+              mpole(idim,1,j)=mpole(idim,1,j)-dip(idim,1,i)*zdis*ztemp
+              mpole(idim,2,j)=mpole(idim,2,j)-dip(idim,2,i)*zdisc*ztempc
               mpole(idim,2,j)=mpole(idim,2,j)+
-     1             dconjg(d1(idim,i))*(j+1)*zdisc*ztempc*ztempc/ztemp
+     1             dconjg(dip(idim,1,i))*(j+1)*zdisc*ztempc*ztempc/ztemp
               mpole(idim,3,j)=mpole(idim,3,j) - 
-     1            dconjg(d1(idim,i))*(j+1)*zdisc*ztempc*ztempc
+     1            dconjg(dip(idim,1,i))*(j+1)*zdisc*ztempc*ztempc
             
             enddo
             zdis=zdis*ztemp*rscale
@@ -961,7 +958,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformtacd_vec(nd,rscale,sources,ns,c1,d1,d2,
+      subroutine bh2dformtacd_vec(nd,rscale,sources,ns,c1,dip,
      1       center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the local expansion about
@@ -1013,7 +1010,7 @@ c-----------------------------------------------------------------
       implicit real *8 (a-h,o-z)
       integer ns,nterms
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 c1(nd,ns),d1(nd,ns),d2(nd,ns)
+      complex *16 c1(nd,ns),dip(nd,2,ns)
       real *8 sources(2,ns),center(2),rscale
       complex *16 zc,z1,z2,zs,zdis,ztemp,zdisc,ztempc
 
@@ -1043,12 +1040,12 @@ c-----------------------------------------------------------------
               mpole(idim,3,j)=mpole(idim,3,j) - 
      1           dconjg(c1(idim,i))*zdisc*ztempc
  
-              mpole(idim,1,j)=mpole(idim,1,j)-d1(idim,i)*zdis*ztemp
-              mpole(idim,2,j)=mpole(idim,2,j)-d2(idim,i)*zdisc*ztempc
+              mpole(idim,1,j)=mpole(idim,1,j)-dip(idim,1,i)*zdis*ztemp
+              mpole(idim,2,j)=mpole(idim,2,j)-dip(idim,2,i)*zdisc*ztempc
               mpole(idim,2,j)=mpole(idim,2,j)+
-     1             dconjg(d1(idim,i))*(j+1)*zdisc*ztempc*ztempc/ztemp
+     1             dconjg(dip(idim,1,i))*(j+1)*zdisc*ztempc*ztempc/ztemp
               mpole(idim,3,j)=mpole(idim,3,j) - 
-     1            dconjg(d1(idim,i))*(j+1)*zdisc*ztempc*ztempc
+     1            dconjg(dip(idim,1,i))*(j+1)*zdisc*ztempc*ztempc
             
             enddo
             zdis=zdis*ztemp*rscale

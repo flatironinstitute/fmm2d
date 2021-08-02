@@ -40,13 +40,13 @@ c
       complex *16 w(lw)
       complex *16 w2(-lw:lw)
 c
-      complex *16 pot(nd),grada(nd),gradaa(nd)
-      complex *16 opot(nd),ograda(nd),ogradaa(nd)
+      complex *16 pot(nd),grad(nd,2)
+      complex *16 opot(nd),ograd(nd,2)
       complex *16, allocatable :: mpolecd(:,:,:)
       complex *16, allocatable :: mpole2cd(:,:,:)
       complex *16, allocatable :: localcd(:,:,:)
       complex *16, allocatable :: local2cd(:,:,:)
-      complex *16, allocatable :: charge(:,:),dip1(:,:),dip2(:,:)
+      complex *16, allocatable :: charge(:,:),dip(:,:,:)
       complex *16, allocatable :: dummy(:,:)
       complex *16 eye
 c
@@ -77,11 +77,10 @@ c
 c       create two charge sources.
 c
       ns = 2
-      allocate(charge(nd,ns),dip1(nd,ns),dip2(nd,ns),dummy(nd,ns))
-      call mksource(nd,ns,source,charge,dip1,dip2,dummy,c0)
+      allocate(charge(nd,ns),dip(nd,2,ns),dummy(nd,ns))
+      call mksource(nd,ns,source,charge,dip,dummy,c0)
       call prin2(' charge is *',charge,2*nd*ns)
-      call prin2(' dip1 is *',dip1,2*nd*ns)
-      call prin2(' dip2 is *',dip2,2*ns*nd)
+      call prin2(' dip is *',dip,4*nd*ns)
 c
 c
 c       create center for shifted expansions
@@ -104,19 +103,17 @@ c
 c       direct calculation:
 c
       np = 1
-      ng = 1
+      ng = 2
       call zero_out(nd,np,opot)
-      call zero_out(nd,ng,ograda)
-      call zero_out(nd,ng,ogradaa)
+      call zero_out(nd,ng,ograd)
 
       thresh = 1.0d-16
-      call bh2d_directcdg_vec(nd,source,ns,charge,dip1,dip2,
-     1       ztrg,opot,ograda,ogradaa,thresh)
+      call bh2d_directcdg_vec(nd,source,ns,charge,dip,
+     1       ztrg,opot,ograd,thresh)
         call prin2('Via direct calculation, potential is*',opot,2*nd)
 c
       call prin2('Via direct calculation, potential is*',opot,2*nd)
-      call prin2('Via direct calculation, grada is*',ograda,2*nd)
-      call prin2('Via direct calculation, grada is*',ogradaa,2*nd)
+      call prin2('Via direct calculation, grad is*',ograd,4*nd)
 c
 c
 c       create h-expansion:
@@ -150,21 +147,20 @@ ccc        do 8000 iii = 0,4
         call prinf('calling formmp and mpeval =*', lused,0)
         call bh2dmpzero_vec(nd,mpolecd,nterms)
         call bh2dformmpcd_vec(nd,rscale,source,ns,charge,
-     1          dip1,dip2,c0,nterms,mpolecd)
+     1          dip,c0,nterms,mpolecd)
 c
 c ... evaluate the h-expansion at the target point:
 c
         ntrg = 1
 c
         call zero_out(nd,np,pot)
-        call zero_out(nd,ng,grada)
-        call zero_out(nd,ng,gradaa)
+        call zero_out(nd,ng,grad)
         call bh2dmpevalg_vec(nd,rscale,c0,mpolecd,nterms,ztrg,ntrg,pot,
-     1      grada,gradaa)
-        call bherrprintvec(nd,pot,opot,grada,ograda,gradaa,ogradaa)
+     1      grad)
+        call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
+     1     grad(1,2),ograd(1,2))
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
-        call prin2('Via mpole calculation, grada is*',grada,2*nd*ng)
-        call prin2('Via mpole calculation, gradaa is*',gradaa,2*nd*ng)
+        call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
 
 c
 ccc	stop
@@ -176,14 +172,13 @@ c
         call bh2dmpmp_vec(nd,rscale,c0,mpolecd,nterms,
      1       rscale2,c1,mpole2cd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
-        call zero_out(nd,ng,grada)
-        call zero_out(nd,ng,gradaa)
+        call zero_out(nd,ng,grad)
         call bh2dmpevalg_vec(nd,rscale2,c1,mpole2cd,nterms,ztrg,ntrg,
-     1      pot,grada,gradaa)
-        call bherrprintvec(nd,pot,opot,grada,ograda,gradaa,ogradaa)
+     1      pot,grad)
+        call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
+     1     grad(1,2),ograd(1,2))
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
-        call prin2('Via mpole calculation, grada is*',grada,2*nd*ng)
-        call prin2('Via mpole calculation, gradaa is*',gradaa,2*nd*ng)
+        call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
 
 
 c
@@ -196,14 +191,13 @@ c
         call bh2dmploc_vec(nd,rscale2,c1,mpole2cd,nterms,
      1         rscale,c2,localcd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
-        call zero_out(nd,ng,grada)
-        call zero_out(nd,ng,gradaa)
+        call zero_out(nd,ng,grad)
         call bh2dtaevalg_vec(nd,rscale,c2,localcd,nterms,ztrg,ntrg,
-     1      pot,grada,gradaa)
-        call bherrprintvec(nd,pot,opot,grada,ograda,gradaa,ogradaa)
+     1      pot,grad)
+        call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
+     1     grad(1,2),ograd(1,2))
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
-        call prin2('Via mpole calculation, grada is*',grada,2*nd*ng)
-        call prin2('Via mpole calculation, gradaa is*',gradaa,2*nd*ng)
+        call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
 
 c
 ccc	   stop
@@ -215,31 +209,29 @@ c
       call bh2dlocloc_vec(nd,rscale,c2,localcd,nterms,
      1       rscale3,c3,local2cd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
-        call zero_out(nd,ng,grada)
-        call zero_out(nd,ng,gradaa)
+        call zero_out(nd,ng,grad)
         call bh2dtaevalg_vec(nd,rscale3,c3,local2cd,nterms,ztrg,ntrg,
-     1      pot,grada,gradaa)
-        call bherrprintvec(nd,pot,opot,grada,ograda,gradaa,ogradaa)
+     1      pot,grad)
+        call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
+     1     grad(1,2),ograd(1,2))
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
-        call prin2('Via mpole calculation, grada is*',grada,2*nd*ng)
-        call prin2('Via mpole calculation, gradaa is*',gradaa,2*nd*ng)
+        call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
 c
 c
 c    create local exp from sources
 c
       call prin2('calling bh2dformta and taeval *',nterms,0)
       call bh2dmpzero_vec(nd,local2cd,nterms)
-      call bh2dformtacd_vec(nd,rscale2,source,ns,charge,dip1,dip2,
+      call bh2dformtacd_vec(nd,rscale2,source,ns,charge,dip,
      1          c3,nterms,local2cd)
         call zero_out(nd,np,pot)
-        call zero_out(nd,ng,grada)
-        call zero_out(nd,ng,gradaa)
+        call zero_out(nd,ng,grad)
         call bh2dtaevalg_vec(nd,rscale2,c3,local2cd,nterms,ztrg,ntrg,
-     1      pot,grada,gradaa)
-        call bherrprintvec(nd,pot,opot,grada,ograda,gradaa,ogradaa)
+     1      pot,grad)
+        call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
+     1     grad(1,2),ograd(1,2))
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
-        call prin2('Via mpole calculation, grada is*',grada,2*nd*ng)
-        call prin2('Via mpole calculation, gradaa is*',gradaa,2*nd*ng)
+        call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
         deallocate(mpolecd)
         deallocate(mpole2cd)
         deallocate(localcd)
@@ -285,11 +277,11 @@ cc     2 		abs(pot-opot)/abs(opot),1)
 c
 C
 C
-      subroutine mksource(nd,ns,source,charge,dip1,dip2,dummy,c0)
+      subroutine mksource(nd,ns,source,charge,dip,dummy,c0)
       implicit none
       integer nd,ns
       real* 8 dd,source(2,ns),c0(2)
-      complex* 16 dip1(nd,ns),charge(nd,ns),dummy(nd,ns),dip2(nd,ns)
+      complex* 16 dip(nd,2,ns),charge(nd,ns),dummy(nd,ns)
       complex *16 eye
 c
       data eye/(0.0d0,1.0d0)/
@@ -299,17 +291,17 @@ c
       source(2,1)=c0(2)+0.25d0
       charge(1,1)= (1.0d0 + eye*0.2d0)
       dummy(1,1)= 0.0d0
-      dip1(1,1)= charge(1,1)*dd
-      dip1(1,1)= charge(1,1)
-      dip2(1,1)= charge(1,1)*dd*eye
-      dip2(1,1)= charge(1,1)*eye
+      dip(1,1,1)= charge(1,1)*dd
+      dip(1,1,1)= charge(1,1)
+      dip(1,2,1)= charge(1,1)*dd*eye
+      dip(1,2,1)= charge(1,1)*eye
 
       charge(2,1)= (1.0d0 + eye*0.2d0)
       dummy(2,1)= 0.0d0
-      dip1(2,1)= charge(1,1)*dd
-      dip1(2,1)= charge(1,1)
-      dip2(2,1) = charge(1,1)*dd
-      dip2(2,1) = charge(1,1)
+      dip(2,1,1)= charge(1,1)*dd
+      dip(2,1,1)= charge(1,1)
+      dip(2,2,1) = charge(1,1)*dd
+      dip(2,2,1) = charge(1,1)
       source(1,2)=c0(1)+0.25d0
       source(2,2)=c0(2)-0.25d0
       source(1,2)=source(1,1)+dd
@@ -319,10 +311,10 @@ c
       charge(2,2)= -1.0d0 + eye*0.1d0
       dummy(1,2)= 0.0d0
       dummy(2,2)= 0.0d0
-      dip1(1,2)= 2.0d0
-      dip1(2,2)= 2.0d0
-      dip2(1,2)= 2.0d0 + 3.0d0*eye
-      dip2(2,2)= 2.0d0 + 3.0d0*eye
+      dip(1,1,2)= 2.0d0
+      dip(2,1,2)= 2.0d0
+      dip(1,2,2)= 2.0d0 + 3.0d0*eye
+      dip(2,2,2)= 2.0d0 + 3.0d0*eye
 
       return
       end

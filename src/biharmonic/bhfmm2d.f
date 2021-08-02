@@ -19,8 +19,8 @@ c    $Date$
 c    $Revision$
 
       subroutine bhfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dip1,dip2,iper,ifpgh,pot,grada,gradaa,
-     2            hess,nt,targ,ifpghtarg,pottarg,gradatarg,gradaatarg,
+     1            ifdipole,dip,iper,ifpgh,pot,grad,
+     2            hess,nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -35,8 +35,7 @@ c   charge(nd,ns)    : charge strengths
 c   ifdipole      : flag for including dipole interactions
 c                   dipole interactions included if ifcharge =1
 c                   not included otherwise
-c   dip1(nd,ns)   : dipole-1 strengths
-c   dip2(nd,ns)   : dipole-2 strengths
+c   dip(nd,2,ns)  : dipole strengths
 c   iper          : flag for periodic implmentations. Currently unused
 c   ifpgh         : flag for computing pot/grad/hess
 c                   ifpgh = 1, only potential is computed
@@ -54,12 +53,10 @@ c                   computed at targets
 c
 c   OUTPUT PARAMETERS
 c   pot(nd,*)       : velocity at the source locations
-c   grada(nd,*)    : gradients (d/dz) at the source locations
-c   gradaa(nd,*)    : gradients (d/d\conjg{z}) at the source locations
+c   grad(nd,2,*)    : gradients (d/dz),d/dzbar at the source locations
 c   hess(nd,3,*)    : hessian  at the source locations
 c   pottarg(nd,*)   : potential at the target locations
-c   gradatarg(nd,*): gradient (d/dz) at the target locations
-c   gradaatarg(nd,*): gradient (d/d\conjg{z}) at the target locations
+c   gradtarg(nd,2,*): gradient (d/dz), d/dzbar at the target locations
 c   hesstarg(nd,3,*): hessian at the target locations
 c
 
@@ -73,10 +70,10 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,*),dip1(nd,*),dip2(nd,*)
+      complex *16 charge(nd,*),dip(nd,2,*)
 
-      complex *16 pot(nd,*),grada(nd,*),gradaa(nd,*), hess(nd,3,*)
-      complex *16 pottarg(nd,*),gradatarg(nd,*),gradaatarg(nd,*)
+      complex *16 pot(nd,*),grad(nd,2,*), hess(nd,3,*)
+      complex *16 pottarg(nd,*),gradtarg(nd,2,*)
       complex *16 hesstarg(nd,3,*)
 
 c
@@ -100,13 +97,11 @@ c
       integer, allocatable :: itarg(:),itargse(:,:),iexpcse(:,:)
       real *8, allocatable :: sourcesort(:,:)
       real *8, allocatable :: targsort(:,:)
-      complex *16, allocatable :: chargesort(:,:),dip1sort(:,:)
-      complex *16, allocatable :: dip2sort(:,:)
-      complex *16, allocatable :: potsort(:,:),gradasort(:,:),
-     1                             hesssort(:,:,:),gradaasort(:,:)
-      complex *16, allocatable :: pottargsort(:,:),gradatargsort(:,:),
-     1                            hesstargsort(:,:,:),
-     2                            gradaatargsort(:,:) 
+      complex *16, allocatable :: chargesort(:,:),dipsort(:,:,:)
+      complex *16, allocatable :: potsort(:,:),gradsort(:,:,:),
+     1                             hesssort(:,:,:)
+      complex *16, allocatable :: pottargsort(:,:),gradtargsort(:,:,:),
+     1                            hesstargsort(:,:,:)
 
 c
 cc     additional fmm variables
@@ -192,42 +187,38 @@ C$OMP END PARALLEL DO
 
 
       if(ifcharge.eq.1.and.ifdipole.eq.0) then
-        allocate(chargesort(nd,ns),dip1sort(nd,1),dip2sort(nd,1))
+        allocate(chargesort(nd,ns),dipsort(nd,2,1))
       endif
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,1),dip1sort(nd,ns),dip2sort(nd,ns))
+        allocate(chargesort(nd,1),dipsort(nd,2,ns))
       endif
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,ns),dip1sort(nd,ns),dip2sort(nd,ns))
+        allocate(chargesort(nd,ns),dipsort(nd,2,ns))
       endif
 
       if(ifpgh.eq.1) then
-        allocate(potsort(nd,ns),gradasort(nd,1),hesssort(nd,3,1))
-        allocate(gradaasort(nd,1))
+        allocate(potsort(nd,ns),gradsort(nd,2,1),hesssort(nd,3,1))
       else if(ifpgh.eq.2) then
-        allocate(potsort(nd,ns),gradasort(nd,ns),hesssort(nd,3,1))
-        allocate(gradaasort(nd,ns))
+        allocate(potsort(nd,ns),gradsort(nd,2,ns),hesssort(nd,3,1))
       else if(ifpgh.eq.3) then
-        allocate(potsort(nd,ns),gradasort(nd,ns),hesssort(nd,3,ns))
-        allocate(gradaasort(nd,ns))
+        allocate(potsort(nd,ns),gradsort(nd,2,ns),hesssort(nd,3,ns))
       else
-        allocate(potsort(nd,1),gradasort(nd,1),hesssort(nd,3,1))
-        allocate(gradaasort(nd,1))
+        allocate(potsort(nd,1),gradsort(nd,2,1),hesssort(nd,3,1))
       endif
 
       
       if(ifpghtarg.eq.1) then
-        allocate(pottargsort(nd,nt),gradatargsort(nd,1),
-     1     hesstargsort(nd,3,1),gradaatargsort(nd,1))
+        allocate(pottargsort(nd,nt),gradtargsort(nd,2,1),
+     1     hesstargsort(nd,3,1))
       else if(ifpghtarg.eq.2) then
-        allocate(pottargsort(nd,nt),gradatargsort(nd,nt),
-     1      hesstargsort(nd,3,1),gradaatargsort(nd,nt))
+        allocate(pottargsort(nd,nt),gradtargsort(nd,2,nt),
+     1      hesstargsort(nd,3,1))
       else if(ifpghtarg.eq.3) then
-        allocate(pottargsort(nd,nt),gradatargsort(nd,nt),
-     1     hesstargsort(nd,3,nt),gradaatargsort(nd,nt))
+        allocate(pottargsort(nd,nt),gradtargsort(nd,2,nt),
+     1     hesstargsort(nd,3,nt))
       else
-        allocate(pottargsort(nd,1),gradatargsort(nd,1),
-     1     hesstargsort(nd,3,1),gradaatargsort(nd,1))
+        allocate(pottargsort(nd,1),gradtargsort(nd,2,1),
+     1     hesstargsort(nd,3,1))
       endif
       
 c
@@ -247,8 +238,8 @@ c
         do i=1,ns
           do idim=1,nd
             potsort(idim,i) = 0
-            gradasort(idim,i) = 0
-            gradaasort(idim,i) = 0
+            gradsort(idim,1,i) = 0
+            gradsort(idim,2,i) = 0
           enddo
         enddo
       endif
@@ -257,8 +248,8 @@ c
         do i=1,ns
           do idim=1,nd
             potsort(idim,i) = 0
-            gradasort(idim,i) = 0
-            gradaasort(idim,i) = 0
+            gradsort(idim,1,i) = 0
+            gradsort(idim,2,i) = 0
             hesssort(idim,1,i) = 0
             hesssort(idim,2,i) = 0
             hesssort(idim,3,i) = 0
@@ -279,8 +270,8 @@ c
         do i=1,nt
           do idim=1,nd
             pottargsort(idim,i) = 0
-            gradatargsort(idim,i) = 0
-            gradaatargsort(idim,i) = 0
+            gradtargsort(idim,1,i) = 0
+            gradtargsort(idim,2,i) = 0
           enddo
         enddo
       endif
@@ -289,8 +280,8 @@ c
         do i=1,nt
           do idim=1,nd
             pottargsort(idim,i) = 0
-            gradatargsort(idim,i) = 0
-            gradaatargsort(idim,i) = 0
+            gradtargsort(idim,1,i) = 0
+            gradtargsort(idim,2,i) = 0
             hesstargsort(idim,1,i) = 0
             hesstargsort(idim,2,i) = 0
             hesstargsort(idim,3,i) = 0
@@ -337,8 +328,7 @@ c
       if(ifcharge.eq.1) 
      1     call dreorderf(2*nd,ns,charge,chargesort,isrc)
       if(ifdipole.eq.1) then
-         call dreorderf(2*nd,ns,dip1,dip1sort,isrc)
-         call dreorderf(2*nd,ns,dip2,dip2sort,isrc)
+         call dreorderf(4*nd,ns,dip,dipsort,isrc)
       endif
 
 c
@@ -373,14 +363,14 @@ C$      time1=omp_get_wtime()
       call bhfmm2dmain(nd,eps,
      $   ns,sourcesort,
      $   ifcharge,chargesort,
-     $   ifdipole,dip1sort,dip2sort,
+     $   ifdipole,dipsort,
      $   nt,targsort,nexpc,expc,
      $   iaddr,rmlexp,mptemp,lmptmp,
      $   itree,ltree,iptr,ndiv,nlevels,
      $   nboxes,iper,boxsize,rscales,tcenters,itree(iptr(1)),
      $   isrcse,itargse,iexpcse,nterms,ntj,
-     $   ifpgh,potsort,gradasort,gradaasort,hesssort,
-     $   ifpghtarg,pottargsort,gradatargsort,gradaatargsort,
+     $   ifpgh,potsort,gradsort,hesssort,
+     $   ifpghtarg,pottargsort,gradtargsort,
      $   hesstargsort,jexps,scj)
       call cpu_time(time2)
 C$        time2=omp_get_wtime()
@@ -398,14 +388,12 @@ c
 
       if(ifpgh.eq.2) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(2*nd,ns,gradasort,grada,isrc)
-        call dreorderi(2*nd,ns,gradaasort,gradaa,isrc)
+        call dreorderi(4*nd,ns,gradsort,grad,isrc)
       endif
 
       if(ifpgh.eq.3) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(2*nd,ns,gradasort,grada,isrc)
-        call dreorderi(2*nd,ns,gradaasort,gradaa,isrc)
+        call dreorderi(4*nd,ns,gradsort,grad,isrc)
         call dreorderi(6*nd,ns,hesssort,hess,isrc)
       endif
 
@@ -415,14 +403,12 @@ c
 
       if(ifpghtarg.eq.2) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(2*nd,nt,gradatargsort,gradatarg,itarg)
-        call dreorderi(2*nd,nt,gradaatargsort,gradaatarg,itarg)
+        call dreorderi(4*nd,nt,gradtargsort,gradtarg,itarg)
       endif
 
       if(ifpghtarg.eq.3) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(2*nd,nt,gradatargsort,gradatarg,itarg)
-        call dreorderi(2*nd,nt,gradaatargsort,gradaatarg,itarg)
+        call dreorderi(4*nd,nt,gradtargsort,gradtarg,itarg)
         call dreorderi(6*nd,nt,hesstargsort,hesstarg,itarg)
       endif
 
@@ -437,14 +423,14 @@ c
       subroutine bhfmm2dmain(nd,eps,
      $     nsource,sourcesort,
      $     ifcharge,chargesort,
-     $     ifdipole,dip1sort,dip2sort,
+     $     ifdipole,dipsort,
      $     ntarget,targetsort,nexpc,expcsort,
      $     iaddr,rmlexp,mptemp,lmptmp,
      $     itree,ltree,iptr,ndiv,nlevels, 
      $     nboxes,iper,boxsize,rscales,centers,laddr,
      $     isrcse,itargse,iexpcse,nterms,ntj,
-     $     ifpgh,pot,grada,gradaa,hess,
-     $     ifpghtarg,pottarg,gradatarg,gradaatarg,hesstarg,
+     $     ifpgh,pot,grad,hess,
+     $     ifpghtarg,pottarg,gradtarg,hesstarg,
      $     jsort,scjsort)
 c
 c
@@ -509,8 +495,7 @@ c
 c   ifdipole:  dipole computation flag
 c              ifdipole = 1   =>  include dipole contribution
 c                                     otherwise do not
-c   dip1sort: complex *16 (nsource): dipole strengths 1
-c   dip2sort: complex *16 (nsource): dipole strengths 2
+c   dipsort: complex *16 (nsource): dipole strengths
 c   ntarget: integer:  number of targets
 c   targetsort: real *8 (2,ntarget):  target locations
 c   nexpc: number of expansion centers
@@ -600,13 +585,11 @@ c   jexps : coeffs for local expansion
 c   scj: scaling parameter for the expansions
 c
 c   pot: potential at the source locations
-c   grada: analytic gradient at the source locations
-c   gradaa: conjugate analytic gradient (d/dzbar) at the source locations
+c   grad: gradient at the source locations (d/dz,d/dzbar)
 c   hess: hessian at the source locations
 c  
 c   pottarg: potential at the target locations
-c   gradatarg: analytic gradient at the target locations
-c   gradaatarg: conjugate analytic gradient (d/dzbar) at the target locations
+c   gradatarg: gradient at the target locations (d/dz,d/dzbar)
 c   hesstarg: hessian at the target locations
 c------------------------------------------------------------------
 
@@ -626,7 +609,7 @@ c------------------------------------------------------------------
       real *8 sourcesort(2,nsource)
 
       complex *16 chargesort(nd,*)
-      complex *16 dip1sort(nd,*),dip2sort(nd,*)
+      complex *16 dipsort(nd,2,*)
 
       real *8 targetsort(2,ntarget)
       complex *16 jsort(nd,5,0:ntj,*)
@@ -634,13 +617,11 @@ c------------------------------------------------------------------
       real *8 expcsort(2,*)
 
       complex *16 pot(nd,*)
-      complex *16 grada(nd,*)
-      complex *16 gradaa(nd,*)
+      complex *16 grad(nd,2,*)
       complex *16 hess(nd,3,*)
 
       complex *16 pottarg(nd,*)
-      complex *16 gradatarg(nd,*)
-      complex *16 gradaatarg(nd,*)
+      complex *16 gradtarg(nd,2,*)
       complex *16 hesstarg(nd,3,*)
 
       integer iaddr(2,nboxes),lmptmp
@@ -821,8 +802,8 @@ C$OMP$SCHEDULE(DYNAMIC)
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
                 call bh2dformmpd_vec(nd,rscales(ilev),
-     1          sourcesort(1,istart),npts,dip1sort(1,istart),
-     2          dip2sort(1,istart),centers(1,ibox),
+     1          sourcesort(1,istart),npts,dipsort(1,1,istart),
+     2          centers(1,ibox),
      3          nterms(ilev),rmlexp(iaddr(1,ibox))) 
              endif
           enddo
@@ -842,7 +823,7 @@ c             Check if current box is a leaf box
              if(nchild.eq.0.and.npts.gt.0) then
                 call bh2dformmpcd_vec(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
-     2             dip1sort(1,istart),dip2sort(1,istart),
+     2             dipsort(1,1,istart),
      3             centers(1,ibox),
      4             nterms(ilev),rmlexp(iaddr(1,ibox))) 
              endif
@@ -930,7 +911,7 @@ C$OMP$SCHEDULE(DYNAMIC)
 
                     call bh2dformtad_vec(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   dip1sort(1,istart),dip2sort(1,istart),
+     2                   dipsort(1,1,istart),
      3                   centers(1,ibox),nterms(ilev),
      4                   rmlexp(iaddr(2,ibox)))
                  enddo
@@ -969,8 +950,8 @@ C$OMP$SCHEDULE(DYNAMIC)
                     
                     call bh2dformtacd_vec(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   chargesort(1,istart),dip1sort(1,istart),
-     3                   dip2sort(1,istart),centers(1,ibox),
+     2                   chargesort(1,istart),dipsort(1,1,istart),
+     3                   centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
                  enddo
               endif
@@ -1144,8 +1125,7 @@ c              evalute multipole expansion at all targets
               call bh2dmpevalg_vec(nd,rscales(ilev+1),
      1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2          nterms(ilev+1),targetsort(1,istart),npts,
-     3          pottarg(1,istart),gradatarg(1,istart),
-     4          gradaatarg(1,istart))
+     3          pottarg(1,istart),gradtarg(1,1,istart))
             enddo
           endif
 
@@ -1171,7 +1151,7 @@ c              evalute multipole expansion at all sources
               call bh2dmpevalg_vec(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
-     3           pot(1,istart),grada(1,istart),gradaa(1,istart))
+     3           pot(1,istart),grad(1,1,istart))
             enddo
           endif
 
@@ -1217,8 +1197,7 @@ c                at targets
               call bh2dtaevalg_vec(nd,rscales(ilev),
      1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2          nterms(ilev),targetsort(1,istart),npts,
-     3          pottarg(1,istart),gradatarg(1,istart),
-     4          gradaatarg(1,istart))
+     3          pottarg(1,istart),gradtarg(1,1,istart))
             endif
 
 c
@@ -1237,7 +1216,7 @@ cc                evaluate local expansion at sources
               call bh2dtaevalg_vec(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
-     3           pot(1,istart),grada(1,istart),gradaa(1,istart))
+     3           pot(1,istart),grad(1,1,istart))
             endif
           endif
         enddo
@@ -1287,12 +1266,12 @@ C$OMP$SCHEDULE(DYNAMIC)
                 
                call bhfmm2dpart_direct_vec(nd,jstart,jend,istartt,
      1         iendt,sourcesort,ifcharge,chargesort,ifdipole,
-     2         dip1sort,dip2sort,targetsort,ifpghtarg,pottarg,
-     3         gradatarg,gradaatarg,hesstarg,thresh)
+     2         dipsort,targetsort,ifpghtarg,pottarg,
+     3         gradtarg,hesstarg,thresh)
          
                call bhfmm2dpart_direct_vec(nd,jstart,jend,istarts,iends,
      1         sourcesort,ifcharge,chargesort,ifdipole,
-     2         dip1sort,dip2sort,sourcesort,ifpgh,pot,grada,gradaa,hess,
+     2         dipsort,sourcesort,ifpgh,pot,grad,hess,
      3         thresh)
             enddo   
          enddo
@@ -1320,8 +1299,8 @@ c
 c
 c------------------------------------------------------------------     
       subroutine bhfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
-     $     source,ifcharge,charge,ifdipole,dip1,dip2,
-     $     targ,ifpgh,pot,grada,gradaa,hess,thresh)
+     $     source,ifcharge,charge,ifdipole,dip,
+     $     targ,ifpgh,pot,grad,hess,thresh)
 c--------------------------------------------------------------------
 c     This subroutine adds the contribuition due to sources
 c     istart to iend in the source array at the expansion centers
@@ -1367,11 +1346,8 @@ c                 flag for including expansions due to dipoles
 c                 The expansion due to dipoles will be included
 c                 if ifdipole == 1
 c
-c     dip1        in: complex *16(ns)
-c                 dipole strengths - 1 at the source locations
-c
-c     dip2        in: complex *16(ns)
-c                 dipole strengths - 2 at the source locations
+c     dip         in: complex *16(2,ns)
+c                 dipole strengths at the source locations
 c
 c     targ        in: real *8(2,nt)
 c                 target locations
@@ -1393,8 +1369,7 @@ c     OUTPUT
 c
 c   Updated velocity and gradients at the targets
 c   pot : potential at the targets
-c   grada: analytic gradient at the targets
-c   gradaa: conjugate analytic (d/dzbar) gradient at the targets
+c   grad: gradient at the targets (d/dz,d/dzbar)
 c   hess: Hessian at the targets
 c-------------------------------------------------------               
         implicit none
@@ -1407,15 +1382,14 @@ c
 
 
         real *8 source(2,*)
-        complex *16 charge(nd,*),dip1(nd,*),dip2(nd,*)
+        complex *16 charge(nd,*),dip(nd,2,*)
 
         integer ifpgh
         real *8 targ(2,*),thresh
         
 c
         complex *16 pot(nd,*)
-        complex *16 grada(nd,*)
-        complex *16 gradaa(nd,*)
+        complex *16 grad(nd,2,*)
         complex *16 hess(nd,3,*)
 
 c
@@ -1431,8 +1405,8 @@ c
           if(ifpgh.eq.2) then
              do j=jstart,jend
                call bh2d_directcg_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grada(1,j),
-     2            gradaa(1,j),thresh)
+     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
+     2            thresh)
              enddo
           endif
         endif
@@ -1441,7 +1415,7 @@ c
           if(ifpgh.eq.1) then
              do j=jstart,jend
                call bh2d_directdp_vec(nd,source(1,istart),ns,
-     1            dip1(1,istart),dip2(1,istart),
+     1            dip(1,1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
           endif
@@ -1449,8 +1423,8 @@ c
           if(ifpgh.eq.2) then
              do j=jstart,jend
                call bh2d_directdg_vec(nd,source(1,istart),ns,
-     1            dip1(1,istart),dip2(1,istart),
-     2            targ(1,j),pot(1,j),grada(1,j),gradaa(1,j),
+     1            dip(1,1,istart),
+     2            targ(1,j),pot(1,j),grad(1,1,j),
      2            thresh)
              enddo
           endif
@@ -1460,7 +1434,7 @@ c
           if(ifpgh.eq.1) then
              do j=jstart,jend
                call bh2d_directcdp_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),dip1(1,istart),dip2(1,istart),
+     1            charge(1,istart),dip(1,1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
           endif
@@ -1468,8 +1442,8 @@ c
           if(ifpgh.eq.2) then
              do j=jstart,jend
                call bh2d_directcdg_vec(nd,source(1,istart),ns,
-     1            charge(1,istart),dip1(1,istart),dip2(1,istart),
-     2            targ(1,j),pot(1,j),grada(1,j),gradaa(1,j),
+     1            charge(1,istart),dip(1,1,istart),
+     2            targ(1,j),pot(1,j),grad(1,1,j),
      2            thresh)
              enddo
           endif

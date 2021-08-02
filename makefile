@@ -106,6 +106,7 @@ HELM = src/helmholtz
 HOBJS = $(HELM)/h2dcommon.o $(HELM)/h2dterms.o \
 	$(HELM)/helmrouts2d.o $(HELM)/hfmm2d.o $(HELM)/hfmm2dwrap.o \
 	$(HELM)/wideband2d.o $(HELM)/hfmm2dwrap_vec.o \
+	$(HELM)/hndiv2d.o
 
 # laplace objects
 LAP = src/laplace
@@ -115,18 +116,27 @@ LOBJS = $(LAP)/l2dterms.o \
 	$(LAP)/cfmm2d.o $(LAP)/cfmm2dwrap.o \
 	$(LAP)/cfmm2dwrap_vec.o \
 	$(LAP)/rfmm2d.o $(LAP)/rfmm2dwrap.o \
-	$(LAP)/rfmm2dwrap_vec.o 
+	$(LAP)/rfmm2dwrap_vec.o $(LAP)/lndiv2d.o 
+
+BH = src/biharmonic
+BHOBJS = $(BH)/bh2dterms.o \
+	$(BH)/bhrouts2d.o $(BH)/bhfmm2d.o $(BH)/bhndiv2d.o \
+
 
 ifneq ($(FAST_KER),ON)
 LOBJS += $(LAP)/lapkernels2d.o
 LOBJS += $(LAP)/rlapkernels2d.o
 LOBJS += $(LAP)/cauchykernels2d.o
 HOBJS += $(HELM)/helmkernels2d.o
+BHOBJS += $(BH)/bhkernels2d.o
 endif
 
 ifeq ($(FAST_KER),ON)
+LOBJS += $(LAP)/rlapkernels2d.o
+LOBJS += $(LAP)/cauchykernels2d.o
 LOBJS += $(LAP)/lapkernels2d.o
 HOBJS += $(HELM)/helmkernels2d.o
+BHOBJS += $(BH)/bhkernels2d.o
 COMOBJS+= $(SRCDIR)/libkernels.o
 endif
 
@@ -201,13 +211,16 @@ $(DYNAMICLIB): $(OBJS)
 # testing routines
 #
 test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
-		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec
+		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d
 	(cd test/helmholtz; ./run_helmtest.sh)
 	(cd test/laplace; ./run_laptest.sh)
+	(cd test/biharmonic; ./run_bhtest.sh)
 	cat print_testreshelm.txt
 	cat print_testreslap.txt
+	cat print_testresbh.txt
 	rm print_testreshelm.txt
 	rm print_testreslap.txt
+	rm print_testresbh.txt
 
 test/hfmm2d:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d $(LIBS)
@@ -221,11 +234,6 @@ test/lfmm2d:
 test/lfmm2d_vec:
 	$(FC) $(FFLAGS) test/laplace/test_lfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-lfmm2d-vec $(LIBS) 
 
-#python
-python: $(STATICLIB)
-	cd python && \
-	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e .
-
 test/cfmm2d:
 	$(FC) $(FFLAGS) test/laplace/test_cfmm2d.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-cfmm2d $(LIBS)
 
@@ -238,6 +246,14 @@ test/rfmm2d:
 test/rfmm2d_vec:
 	$(FC) $(FFLAGS) test/laplace/test_rfmm2d_vec.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-rfmm2d-vec $(LIBS) 
 
+test/bhfmm2d:
+	$(FC) $(FFLAGS) test/biharmonic/test_bhfmm2d.f $(TOBJS) $(COMOBJS) $(BHOBJS) -o test/biharmonic/int2-test-bhfmm2d $(LIBS)
+
+
+#python
+python: $(STATICLIB)
+	cd python && \
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e .
 
 # matlab..
 MWRAPFILE = fmm2d

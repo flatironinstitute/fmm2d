@@ -1,8 +1,8 @@
 PROJECT = int2-hfmm2d
 
-HOST = gcc
+#HOST = gcc
 HOST = gcc-openmp
-HOST = intel
+#HOST = intel
 
 # FC - fortran compiler
 # FFLAGS - fortran compiler flags
@@ -50,6 +50,7 @@ OBJECTS =  test_hfmm2d.o \
   $(HFMM)/helmkernels2d.o \
   $(COM)/hank103.o \
   $(HFMM)/h2dcommon.o \
+  $(HFMM)/hndiv2d.o \
   $(HFMM)/wideband2d.o \
   $(HFMM)/h2dterms.o 
 

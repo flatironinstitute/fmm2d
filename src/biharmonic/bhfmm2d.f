@@ -19,9 +19,8 @@ c    $Date$
 c    $Revision$
 
       subroutine bhfmm2d(nd,eps,ns,sources,ifcharge,charge,
-     1            ifdipole,dip1,dip2,iper,ifpgh,pot,grad,gradaa,
-     2            hess,
-     2            nt,targ,ifpghtarg,pottarg,gradatarg,gradaatarg,
+     1            ifdipole,dip1,dip2,iper,ifpgh,pot,grada,gradaa,
+     2            hess,nt,targ,ifpghtarg,pottarg,gradatarg,gradaatarg,
      3            hesstarg)
 c----------------------------------------------
 c   INPUT PARAMETERS:
@@ -139,8 +138,10 @@ c
 
       nlevels = 0
       nboxes = 0
-      idivflag =0
-      ndiv = 20
+
+      call bhndiv2d(eps,ns,nt,ifcharge,ifdipole,ifpgh,
+     1  ifpghtarg,ndiv,idivflag)
+
       ltree = 0
       nlmin = 0
       nlmax = 51
@@ -226,7 +227,7 @@ C$OMP END PARALLEL DO
      1     hesstargsort(nd,3,nt),gradaatargsort(nd,nt))
       else
         allocate(pottargsort(nd,1),gradatargsort(nd,1),
-     1     hesstargsort(nd,1),gradaatargsort(nd,1))
+     1     hesstargsort(nd,3,1),gradaatargsort(nd,1))
       endif
       
 c
@@ -269,7 +270,6 @@ c
       if(ifpghtarg.eq.1) then
         do i=1,nt
           do idim=1,nd
-            pottarg(idim,i) = 0
             pottargsort(idim,i) = 0
           enddo
         enddo
@@ -308,7 +308,7 @@ c
       nmax = 0
       do i=0,nlevels
         rscales(i) = boxsize(i)
-        call l2dterms(eps,nterms(i),ier)
+        call bh2dterms(eps,nterms(i),ier)
         nterms(i) = nterms(i) 
         if(nterms(i).gt.nmax) nmax = nterms(i)
       enddo
@@ -338,6 +338,7 @@ c
      1     call dreorderf(2*nd,ns,charge,chargesort,isrc)
       if(ifdipole.eq.1) then
          call dreorderf(2*nd,ns,dip1,dip1sort,isrc)
+         call dreorderf(2*nd,ns,dip2,dip2sort,isrc)
       endif
 
 c
@@ -1186,6 +1187,7 @@ C$    time2=omp_get_wtime()
       timeinfo(6) = time2-time1
 
 
+
       if(ifprint.ge.1)
      $    call prinf('=== step 7 (eval lo) ===*',i,0)
 
@@ -1318,7 +1320,7 @@ c
 c
 c------------------------------------------------------------------     
       subroutine bhfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
-     $     source,ifcharge,charge,ifdipole,dip1,dip2
+     $     source,ifcharge,charge,ifdipole,dip1,dip2,
      $     targ,ifpgh,pot,grada,gradaa,hess,thresh)
 c--------------------------------------------------------------------
 c     This subroutine adds the contribuition due to sources

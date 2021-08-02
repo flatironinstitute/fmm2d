@@ -134,8 +134,12 @@ c
 
       nlevels = 0
       nboxes = 0
-      idivflag =0
-      ndiv = 20
+
+
+      call lndiv2d(eps,ns,nt,ifcharge,ifdipole,ifpgh,
+     1  ifpghtarg,ndiv,idivflag)
+
+
       ltree = 0
       nlmin = 0
       nlmax = 51

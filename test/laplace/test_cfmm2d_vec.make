@@ -41,6 +41,7 @@ OBJECTS =  test_cfmm2d_vec.o \
   $(LFMM)/lfmm2dwrap_vec.o \
   $(COM)/fmmcommon2d.o \
   $(LFMM)/laprouts2d.o \
+  $(LFMM)/lndiv2d.o \
   $(LFMM)/lapkernels2d.o \
   $(LFMM)/cauchykernels2d.o \
   $(LFMM)/l2dterms.o 

@@ -1,4 +1,4 @@
-PROJECT = int2-lfmm2d
+PROJECT = int2-bhfmm2d
 
 HOST = gcc
 HOST = gcc-openmp
@@ -19,32 +19,26 @@ endif
 # Test objects
 #
 
-LFMM = ../../src/laplace
+BHFMM = ../../src/biharmonic
 COM = ../../src/common
 
 
 .PHONY: all clean list
 
 
-OBJECTS =  test_lfmm2d.o \
+OBJECTS =  test_bhfmm2d.o \
   $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree2d.o \
   $(COM)/tree_routs2d.o \
   $(COM)/cumsum.o \
-  $(LFMM)/lfmm2d.o \
-  $(LFMM)/lfmm2dwrap.o \
-  $(LFMM)/lfmm2dwrap_vec.o \
-  $(LFMM)/cfmm2d.o \
-  $(LFMM)/cfmm2dwrap.o \
-  $(LFMM)/cfmm2dwrap_vec.o \
+  $(BHFMM)/bhfmm2d.o \
   $(COM)/fmmcommon2d.o \
-  $(LFMM)/laprouts2d.o \
-  $(LFMM)/lndiv2d.o \
-  $(LFMM)/lapkernels2d.o \
-  $(LFMM)/cauchykernels2d.o \
-  $(LFMM)/l2dterms.o 
+  $(BHFMM)/bhrouts2d.o \
+  $(BHFMM)/bhkernels2d.o \
+  $(BHFMM)/bhndiv2d.o \
+  $(BHFMM)/bh2dterms.o 
 
 
 #

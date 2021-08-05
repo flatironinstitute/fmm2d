@@ -143,7 +143,7 @@ endif
 # Test objects
 TOBJS = $(COM)/hkrand.o $(COM)/dlaran.o
 
-OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) 
+OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) $(BHOBJS) 
 
 .PHONY: usage install lib test all python 
 

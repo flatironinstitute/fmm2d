@@ -108,7 +108,7 @@ c
       call zero_out(nd,ng,ograd)
 
       thresh = 1.0d-16
-      call bh2d_directcdg_vec(nd,source,ns,charge,dip,
+      call bh2d_directcdg(nd,source,ns,charge,dip,
      1       ztrg,opot,ograd,thresh)
         call prin2('Via direct calculation, potential is*',opot,2*nd)
 c
@@ -145,8 +145,8 @@ ccc        do 8000 iii = 0,4
         allocate(local2cd(nd,5,0:nterms))
 
         call prinf('calling formmp and mpeval =*', lused,0)
-        call bh2dmpzero_vec(nd,mpolecd,nterms)
-        call bh2dformmpcd_vec(nd,rscale,source,ns,charge,
+        call bh2dmpzero(nd,mpolecd,nterms)
+        call bh2dformmpcd(nd,rscale,source,ns,charge,
      1          dip,c0,nterms,mpolecd)
 c
 c ... evaluate the h-expansion at the target point:
@@ -155,7 +155,7 @@ c
 c
         call zero_out(nd,np,pot)
         call zero_out(nd,ng,grad)
-        call bh2dmpevalg_vec(nd,rscale,c0,mpolecd,nterms,ztrg,ntrg,pot,
+        call bh2dmpevalg(nd,rscale,c0,mpolecd,nterms,ztrg,ntrg,pot,
      1      grad)
         call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
      1     grad(1,2),ograd(1,2))
@@ -168,12 +168,12 @@ ccc	goto 8000
 c    mpmp shift
 c
         call prinf('calling mpmp and mpeval *',nterms,0)
-        call bh2dmpzero_vec(nd,mpole2cd,nterms)
-        call bh2dmpmp_vec(nd,rscale,c0,mpolecd,nterms,
+        call bh2dmpzero(nd,mpole2cd,nterms)
+        call bh2dmpmp(nd,rscale,c0,mpolecd,nterms,
      1       rscale2,c1,mpole2cd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
         call zero_out(nd,ng,grad)
-        call bh2dmpevalg_vec(nd,rscale2,c1,mpole2cd,nterms,ztrg,ntrg,
+        call bh2dmpevalg(nd,rscale2,c1,mpole2cd,nterms,ztrg,ntrg,
      1      pot,grad)
         call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
      1     grad(1,2),ograd(1,2))
@@ -187,12 +187,12 @@ c
 c    convert to local
 c
         call prin2('calling mploc and taeval *',wavek,0)
-        call bh2dmpzero_vec(nd,localcd,nterms)
-        call bh2dmploc_vec(nd,rscale2,c1,mpole2cd,nterms,
+        call bh2dmpzero(nd,localcd,nterms)
+        call bh2dmploc(nd,rscale2,c1,mpole2cd,nterms,
      1         rscale,c2,localcd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
         call zero_out(nd,ng,grad)
-        call bh2dtaevalg_vec(nd,rscale,c2,localcd,nterms,ztrg,ntrg,
+        call bh2dtaevalg(nd,rscale,c2,localcd,nterms,ztrg,ntrg,
      1      pot,grad)
         call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
      1     grad(1,2),ograd(1,2))
@@ -205,12 +205,12 @@ c
 c    shift local and change scaling and nterms.
 c
       call prinf('calling locloc and taeval *',nterms3,0)
-      call bh2dmpzero_vec(nd,local2cd,nterms)
-      call bh2dlocloc_vec(nd,rscale,c2,localcd,nterms,
+      call bh2dmpzero(nd,local2cd,nterms)
+      call bh2dlocloc(nd,rscale,c2,localcd,nterms,
      1       rscale3,c3,local2cd,nterms,carray,ldc)
         call zero_out(nd,np,pot)
         call zero_out(nd,ng,grad)
-        call bh2dtaevalg_vec(nd,rscale3,c3,local2cd,nterms,ztrg,ntrg,
+        call bh2dtaevalg(nd,rscale3,c3,local2cd,nterms,ztrg,ntrg,
      1      pot,grad)
         call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
      1     grad(1,2),ograd(1,2))
@@ -221,12 +221,12 @@ c
 c    create local exp from sources
 c
       call prin2('calling bh2dformta and taeval *',nterms,0)
-      call bh2dmpzero_vec(nd,local2cd,nterms)
-      call bh2dformtacd_vec(nd,rscale2,source,ns,charge,dip,
+      call bh2dmpzero(nd,local2cd,nterms)
+      call bh2dformtacd(nd,rscale2,source,ns,charge,dip,
      1          c3,nterms,local2cd)
         call zero_out(nd,np,pot)
         call zero_out(nd,ng,grad)
-        call bh2dtaevalg_vec(nd,rscale2,c3,local2cd,nterms,ztrg,ntrg,
+        call bh2dtaevalg(nd,rscale2,c3,local2cd,nterms,ztrg,ntrg,
      1      pot,grad)
         call bherrprintvec(nd,pot,opot,grad(1,1),ograd(1,1),
      1     grad(1,2),ograd(1,2))

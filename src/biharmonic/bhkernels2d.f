@@ -3,7 +3,7 @@ c
 c
 c
 
-      subroutine bh2d_directcp_vec(nd,sources,ns,charges,targ,vel,
+      subroutine bh2d_directcp(nd,sources,ns,charges,targ,vel,
      1         thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
@@ -80,7 +80,7 @@ c
 c
 c
 
-      subroutine bh2d_directcg_vec(nd,sources,ns,charges,
+      subroutine bh2d_directcg(nd,sources,ns,charges,
      1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
@@ -166,7 +166,7 @@ c
 c
 c
 
-      subroutine bh2d_directdp_vec(nd,sources,ns,dippar,
+      subroutine bh2d_directdp(nd,sources,ns,dippar,
      1         targ,vel,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
@@ -247,7 +247,7 @@ c
 c
 c
 
-      subroutine bh2d_directdg_vec(nd,sources,ns,charges,dippar,
+      subroutine bh2d_directdg(nd,sources,ns,charges,dippar,
      1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
@@ -332,7 +332,7 @@ c
 c
 c
 
-      subroutine bh2d_directcdp_vec(nd,sources,ns,charges,dippar,
+      subroutine bh2d_directcdp(nd,sources,ns,charges,dippar,
      1         targ,vel,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
@@ -417,7 +417,7 @@ c
 c
 c
 
-      subroutine bh2d_directcdg_vec(nd,sources,ns,charges,dippar,
+      subroutine bh2d_directcdg(nd,sources,ns,charges,dippar,
      1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its

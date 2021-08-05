@@ -8,7 +8,7 @@
       double precision eps
       double complex eye,zk
       integer i,j,k,ier
-      double precision hkrand
+      double precision hkrand,t1,t2,omp_get_wtime
       
 
       data eye/(0.0d0,1.0d0)/
@@ -65,9 +65,13 @@ c
         grad(2,i) = 0
       enddo
 
-
+      call cpu_time(t1)
+C$      t1 = omp_get_wtime()      
       call hfmm2d_s_c_p(eps,zk,ns,source,charge,
      1      pot,ier)
+      call cpu_time(t2)
+C$      t2 = omp_get_wtime() 
+      call prin2('time taken=*',t2-t1,1)
       call prin2("pot at sources=*",pot,12)
 cc      call prin2("grad at sources=*",grad,12)
 

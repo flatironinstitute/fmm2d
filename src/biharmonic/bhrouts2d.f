@@ -52,7 +52,7 @@ c
 c
 c
 
-      subroutine bh2dmpevalp_vec(nd,rscale,center,mpole,nterms,
+      subroutine bh2dmpevalp(nd,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,vel)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
@@ -146,7 +146,7 @@ c
 c
 c
 
-      subroutine bh2dmpevalg_vec(nd,rscale,center,mpole,nterms,
+      subroutine bh2dmpevalg(nd,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,vel,grad)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
@@ -260,7 +260,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dtaevalp_vec(nd,rscale,center,mpole,nterms,
+      subroutine bh2dtaevalp(nd,rscale,center,mpole,nterms,
      1                      ztarg,ntarg,vel)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
@@ -340,7 +340,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dtaevalg_vec(nd,rscale,center,mpole,nterms,
+      subroutine bh2dtaevalg(nd,rscale,center,mpole,nterms,
      1                      ztarg,ntarg,vel,grad)
 c********************************************************************
 c     This subroutine evaluates the multipole expansion about
@@ -437,7 +437,7 @@ c*********************************************************************
 c*******************************************************************
 c     EXPANSION FORMATION
 c*******************************************************************
-      subroutine bh2dformmpd_vec(nd,rscale,sources,ns,dip,
+      subroutine bh2dformmpd(nd,rscale,sources,ns,dip,
      1           center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the multipole expansion about
@@ -541,7 +541,7 @@ c
 c
 c
 c
-      subroutine bh2dformmpc_vec(nd,rscale,sources,ns,c1,
+      subroutine bh2dformmpc(nd,rscale,sources,ns,c1,
      1           center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the multipole expansion about
@@ -651,7 +651,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformmpcd_vec(nd,rscale,sources,ns,c1,dip,
+      subroutine bh2dformmpcd(nd,rscale,sources,ns,c1,dip,
      1           center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the multipole expansion about
@@ -779,7 +779,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformtac_vec(nd,rscale,sources,ns,c1,
+      subroutine bh2dformtac(nd,rscale,sources,ns,c1,
      1       center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the local expansion about
@@ -873,7 +873,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformtad_vec(nd,rscale,sources,ns,d1,d2,
+      subroutine bh2dformtad(nd,rscale,sources,ns,d1,d2,
      1       center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the local expansion about
@@ -958,7 +958,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformtacd_vec(nd,rscale,sources,ns,c1,dip,
+      subroutine bh2dformtacd(nd,rscale,sources,ns,c1,dip,
      1       center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the local expansion about
@@ -1060,7 +1060,7 @@ c********************************************************************
 c     TRANSLATION OPERATORS
 c*******************************************************************
 
-      subroutine bh2dlocloc_vec(nd,rscale1,c1,hexp,nterms1,
+      subroutine bh2dlocloc(nd,rscale1,c1,hexp,nterms1,
      1       rscale2,c2,jexp,nterms2,carray,ldc)
 c******************************************************************
 c     Converts local expansion to local expansion
@@ -1174,7 +1174,7 @@ c---------------------------------------------------------------
       return
       end
 c******************************************************************
-      subroutine bh2dmpmp_vec(nd,rscale1,c1,hexp,nterms1,
+      subroutine bh2dmpmp(nd,rscale1,c1,hexp,nterms1,
      1       rscale2,c2,jexp,nterms2,carray,ldc)
 c******************************************************************
 c     Converts multipole expansion to multipole expansion
@@ -1304,7 +1304,7 @@ c     Handling the log term in the expansion
       return
       end
 c*******************************************************************
-      subroutine bh2dmploc_vec(nd,rscale1,c1,hexp,nterms1,
+      subroutine bh2dmploc(nd,rscale1,c1,hexp,nterms1,
      1       rscale2,c2,jexp,nterms2,carray,ldc)
 c******************************************************************
 c     Converts multipole expansion to local expansion
@@ -1434,7 +1434,7 @@ c
       end
 c*******************************************************************
 
-      subroutine bh2dmpzero_vec(nd,mpole,nterms)
+      subroutine bh2dmpzero(nd,mpole,nterms)
       implicit real *8 (a-h,o-z)
       complex *16 mpole(nd,5,0:nterms)
       

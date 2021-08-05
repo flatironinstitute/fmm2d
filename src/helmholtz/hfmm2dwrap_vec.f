@@ -5,6 +5,11 @@ c-------------------------------
 
       subroutine hfmm2d_s_c_p_vec(nd,eps,zk,ns,sources,
      1            charge,pot,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge
+cf2py  intent(out) pot,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -64,6 +69,11 @@ c------------------------------
 
       subroutine hfmm2d_s_c_g_vec(nd,eps,zk,ns,sources,
      1            charge,pot,grad,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge
+cf2py  intent(out) pot,grad,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -127,6 +137,11 @@ c
 c
       subroutine hfmm2d_s_c_h_vec(nd,eps,zk,ns,sources,
      1            charge,pot,grad,hess,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge
+cf2py  intent(out) pot,grad,hess,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -189,6 +204,11 @@ c-------------------------------
 
       subroutine hfmm2d_s_d_p_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec
+cf2py  intent(out) pot,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -249,6 +269,11 @@ c------------------------------
 
       subroutine hfmm2d_s_d_g_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec
+cf2py  intent(out) pot,grad,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -313,6 +338,11 @@ c
 c
       subroutine hfmm2d_s_d_h_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,hess,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec
+cf2py  intent(out) pot,grad,hess,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -376,6 +406,11 @@ c-------------------------------
 
       subroutine hfmm2d_s_cd_p_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,charge
+cf2py  intent(out) pot,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -436,6 +471,11 @@ c------------------------------
 
       subroutine hfmm2d_s_cd_g_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,charge
+cf2py  intent(out) pot,grad,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -499,6 +539,11 @@ c
 c
       subroutine hfmm2d_s_cd_h_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,hess,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,charge
+cf2py  intent(out) pot,grad,hess,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -563,6 +608,11 @@ c-------------------------------
 
       subroutine hfmm2d_t_c_p_vec(nd,eps,zk,ns,sources,
      1            charge,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -620,6 +670,11 @@ c------------------------------
 
       subroutine hfmm2d_t_c_g_vec(nd,eps,zk,ns,sources,
      1            charge,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pottarg,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -682,6 +737,11 @@ c
       subroutine hfmm2d_t_c_h_vec(nd,eps,zk,ns,sources,
      1            charge,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -742,6 +802,11 @@ c-------------------------------
 
       subroutine hfmm2d_t_d_p_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -800,6 +865,11 @@ c------------------------------
 
       subroutine hfmm2d_t_d_g_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -863,6 +933,11 @@ c
       subroutine hfmm2d_t_d_h_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -924,6 +999,11 @@ c-------------------------------
 
       subroutine hfmm2d_t_cd_p_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -982,6 +1062,11 @@ c------------------------------
 
       subroutine hfmm2d_t_cd_g_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1044,6 +1129,11 @@ c
       subroutine hfmm2d_t_cd_h_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1105,6 +1195,11 @@ c-------------------------------
 
       subroutine hfmm2d_st_c_p_vec(nd,eps,zk,ns,sources,
      1            charge,pot,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pot,pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1163,6 +1258,11 @@ c------------------------------
 
       subroutine hfmm2d_st_c_g_vec(nd,eps,zk,ns,sources,
      1            charge,pot,grad,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1226,6 +1326,11 @@ c
       subroutine hfmm2d_st_c_h_vec(nd,eps,zk,ns,sources,
      1            charge,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,hess,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1287,6 +1392,11 @@ c-------------------------------
 
       subroutine hfmm2d_st_d_p_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1346,6 +1456,11 @@ c------------------------------
 
       subroutine hfmm2d_st_d_g_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1410,6 +1525,11 @@ c
       subroutine hfmm2d_st_d_h_vec(nd,eps,zk,ns,sources,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,hess,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1472,6 +1592,11 @@ c-------------------------------
 
       subroutine hfmm2d_st_cd_p_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1531,6 +1656,11 @@ c------------------------------
 
       subroutine hfmm2d_st_cd_g_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1594,6 +1724,11 @@ c
       subroutine hfmm2d_st_cd_h_vec(nd,eps,zk,ns,sources,charge,
      1            dipstr,dipvec,pot,grad,hess,nt,targ,pottarg,
      2            gradtarg,hesstarg,ier)
+cf2py  intent(in) eps,nd
+cf2py  intent(in) zk
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
+cf2py  intent(out) pot,pottarg,grad,gradtarg,hess,hesstarg,ier
+
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions

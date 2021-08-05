@@ -105,11 +105,11 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -164,11 +164,11 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -228,11 +228,11 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -290,11 +290,11 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -350,11 +350,11 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -414,11 +414,11 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -472,11 +472,11 @@ c
       ifpgh = 1
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -532,11 +532,11 @@ c
       ifpgh = 2
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 
@@ -596,11 +596,11 @@ c
       ifpgh = 3
       thresh = 1.0d-14
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,nts,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dipstr,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call cfmm2dpart_direct_vec(nd,1,nsrc,1,ntt,sources,ifcharge,
+      call cfmm2dpart_direct(nd,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dipstr,targ,ifpgh,pottargex,
      2       gradtargex,hesstargex,thresh)
 

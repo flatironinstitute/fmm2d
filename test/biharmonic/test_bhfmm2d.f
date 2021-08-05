@@ -81,11 +81,11 @@ c
 
       thresh = 1.0d-14
 
-      call bhfmm2dpart_direct_vec(1,1,nsrc,1,nts,sources,ifcharge,
+      call bhfmm2dpart_direct(1,1,nsrc,1,nts,sources,ifcharge,
      1       charges,ifdipole,dip,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call bhfmm2dpart_direct_vec(1,1,nsrc,1,ntt,sources,ifcharge,
+      call bhfmm2dpart_direct(1,1,nsrc,1,ntt,sources,ifcharge,
      1       charges,ifdipole,dip,targ,ifpghtarg,pottargex,
      2       gradtargex,hesstargex,thresh)
 

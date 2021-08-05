@@ -227,7 +227,7 @@ c
 c
 c
 c------------------------------------------------------------------
-      subroutine lfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
+      subroutine lfmm2dpart_direct(nd,istart,iend,jstart,jend,
      $     source,ifcharge,charge,ifdipole,dipstr,dipvec,
      $     targ,ifpgh,pot,grad,hess,thresh)
 c--------------------------------------------------------------------
@@ -329,21 +329,21 @@ c
       if(ifcharge.eq.1.and.ifdipole.eq.0) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directcp_vec(nd,source(1,istart),ns,
+               call l2d_directcp(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),thresh)
             enddo
          endif
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directcg_vec(nd,source(1,istart),ns,
+               call l2d_directcg(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
             enddo
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directch_vec(nd,source(1,istart),ns,
+               call l2d_directch(nd,source(1,istart),ns,
      1              charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)
             enddo
@@ -353,7 +353,7 @@ c
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directdp_vec(nd,source(1,istart),ns,
+               call l2d_directdp(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),
      2              targ(1,j),pot(1,j),thresh)
             enddo
@@ -361,7 +361,7 @@ c
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directdg_vec(nd,source(1,istart),ns,
+               call l2d_directdg(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),
      2              targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
@@ -369,7 +369,7 @@ c
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directdh_vec(nd,source(1,istart),ns,
+               call l2d_directdh(nd,source(1,istart),ns,
      1              dipstr(1,istart),dipvec(1,1,istart),targ(1,j),
      2              pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)
@@ -380,7 +380,7 @@ c
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
          if(ifpgh.eq.1) then
             do j=jstart,jend
-               call l2d_directcdp_vec(nd,source(1,istart),ns,
+               call l2d_directcdp(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),thresh)
             enddo
@@ -388,7 +388,7 @@ c
 
          if(ifpgh.eq.2) then
             do j=jstart,jend
-               call l2d_directcdg_vec(nd,source(1,istart),ns,
+               call l2d_directcdg(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              thresh)
@@ -396,7 +396,7 @@ c
          endif
          if(ifpgh.eq.3) then
             do j=jstart,jend
-               call l2d_directcdh_vec(nd,source(1,istart),ns,
+               call l2d_directcdh(nd,source(1,istart),ns,
      1              charge(1,istart),dipstr(1,istart),
      2              dipvec(1,1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2              hess(1,1,j),thresh)

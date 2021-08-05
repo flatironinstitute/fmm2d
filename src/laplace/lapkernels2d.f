@@ -5,7 +5,7 @@ c     complex-valued charge, dipstr, pot, grad, hess
 c     real-valued dipvec
 c      
 c**********************************************************************
-      subroutine l2d_directcp_vec(nd,sources,ns,charge,
+      subroutine l2d_directcp(nd,sources,ns,charge,
      $           targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -64,7 +64,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcg_vec(nd,sources,ns,charge,targ,pot,
+      subroutine l2d_directcg(nd,sources,ns,charge,targ,pot,
      1             grad,thresh)
       implicit none
 c**********************************************************************
@@ -136,7 +136,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directch_vec(nd,sources,ns,charge,targ,
+      subroutine l2d_directch(nd,sources,ns,charge,targ,
      1           pot,grad,hess,thresh)
       implicit none
 c**********************************************************************
@@ -221,7 +221,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdp_vec(nd,sources,ns,dipstr,dipvec,
+      subroutine l2d_directdp(nd,sources,ns,dipstr,dipvec,
      $           targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -287,7 +287,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdg_vec(nd,sources,ns,dipstr,dipvec,targ,pot,
+      subroutine l2d_directdg(nd,sources,ns,dipstr,dipvec,targ,pot,
      1             grad,thresh)
       implicit none
 c**********************************************************************
@@ -374,7 +374,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directdh_vec(nd,sources,ns,dipstr,dipvec,targ,
+      subroutine l2d_directdh(nd,sources,ns,dipstr,dipvec,targ,
      1           pot,grad,hess,thresh)
       implicit none
 c**********************************************************************
@@ -473,7 +473,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdp_vec(nd,sources,ns,charge,
+      subroutine l2d_directcdp(nd,sources,ns,charge,
      $           dipstr,dipvec,targ,pot,thresh)
       implicit none
 c**********************************************************************
@@ -544,7 +544,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdg_vec(nd,sources,ns,charge,dipstr,dipvec,
+      subroutine l2d_directcdg(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,pot,grad,thresh)
       implicit none
 c**********************************************************************
@@ -643,7 +643,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2d_directcdh_vec(nd,sources,ns,charge,dipstr,dipvec,
+      subroutine l2d_directcdh(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,pot,grad,hess,thresh)
       implicit none
 c**********************************************************************

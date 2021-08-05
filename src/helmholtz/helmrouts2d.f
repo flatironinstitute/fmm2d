@@ -81,7 +81,7 @@ c-----------------------------------------------------------------------
 c
 c
 C***********************************************************************
-      subroutine h2dformmpc_vec(nd,zk,rscale,source,ns,charge,
+      subroutine h2dformmpc(nd,zk,rscale,source,ns,charge,
      1                      center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -132,7 +132,7 @@ c
          call jbessel2d(nterms+1,z,rscale,jval,ifder,jder)
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
-         call ctompole_vec(nd,zmul,zinv,mpole,jval,charge(1,j),nterms) 
+         call ctompole(nd,zmul,zinv,mpole,jval,charge(1,j),nterms) 
       enddo
       return
       end
@@ -141,7 +141,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dformmpd_vec(nd,zk,rscale,source,ns,
+      subroutine h2dformmpd(nd,zk,rscale,source,ns,
      1                      dipstr,dipvec,center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -194,7 +194,7 @@ c
          call jbessel2d(nterms+1,z,rscale,jval,ifder,jder)
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
-         call dtompole_vec(nd,zk,rscale,zmul,zinv,
+         call dtompole(nd,zk,rscale,zmul,zinv,
      1           mpole,jval,dipstr(1,j),dipvec(1,1,j),nterms) 
       enddo
       return
@@ -204,7 +204,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dformmpcd_vec(nd,zk,rscale,source,ns,charge,
+      subroutine h2dformmpcd(nd,zk,rscale,source,ns,charge,
      1                       dipstr,dipvec,center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -259,8 +259,8 @@ c
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
 c
-         call ctompole_vec(nd,zmul,zinv,mpole,jval,charge(1,j),nterms) 
-         call dtompole_vec(nd,zk,rscale,zmul,zinv,
+         call ctompole(nd,zmul,zinv,mpole,jval,charge(1,j),nterms) 
+         call dtompole(nd,zk,rscale,zmul,zinv,
      1           mpole,jval,dipstr(1,j),dipvec(1,1,j),nterms) 
       enddo
       return
@@ -271,7 +271,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dmpevalp_vec(nd,zk,rscale,center,mpole,nterms,
+      subroutine h2dmpevalp(nd,zk,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1)
       implicit none
 c**********************************************************************
@@ -327,7 +327,7 @@ c
 c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
-         call mpole_evalp_vec(nd,zmul,zinv,mpole,mptemp,hval,
+         call mpole_evalp(nd,zmul,zinv,mpole,mptemp,hval,
      $        nterms,pot1(1,k)) 
 
       enddo
@@ -339,7 +339,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dmpevalg_vec(nd,zk,rscale,center,mpole,nterms,
+      subroutine h2dmpevalg(nd,zk,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1,grad1)
       implicit none
 c**********************************************************************
@@ -396,7 +396,7 @@ c
       allocate(mpoley(nd,-nterms-1:nterms+1))
       allocate(mptemp(-nterms-2:nterms+2))
 c
-      call mk_mpoleg_vec(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
+      call mk_mpoleg(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
 c
       do k=1,ntarg
          zdiff(1)=ztarg(1,k)-center(1)
@@ -408,9 +408,9 @@ c
 c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
-         call mpole_evalp_vec(nd,zmul,zinv,mpole,mptemp,hval,
+         call mpole_evalp(nd,zmul,zinv,mpole,mptemp,hval,
      $        nterms,pot1(1,k)) 
-         call mpole_evalg_vec(nd,mpolex,mpoley,mptemp,nterms,
+         call mpole_evalg(nd,mpolex,mpoley,mptemp,nterms,
      $        grad1(1,1,k)) 
       enddo
       return
@@ -420,7 +420,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dmpevalh_vec(nd,zk,rscale,center,mpole,nterms,
+      subroutine h2dmpevalh(nd,zk,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1,grad1,hess1)
       implicit none
 c**********************************************************************
@@ -485,8 +485,8 @@ c
       allocate(mpoleyy(nd,-nterms-2:nterms+2))
       allocate(mptemp(-nterms-2:nterms+2))
 c
-      call mk_mpoleg_vec(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
-      call mk_mpoleh_vec(nd,zk,rscale,mpolex,mpoley,
+      call mk_mpoleg(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
+      call mk_mpoleh(nd,zk,rscale,mpolex,mpoley,
      $     mpolexx,mpolexy,mpoleyy,nterms)
 
 c
@@ -500,11 +500,11 @@ c
 c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
-         call mpole_evalp_vec(nd,zmul,zinv,mpole,mptemp,hval,
+         call mpole_evalp(nd,zmul,zinv,mpole,mptemp,hval,
      $        nterms,pot1(1,k)) 
-         call mpole_evalg_vec(nd,mpolex,mpoley,mptemp,nterms,
+         call mpole_evalg(nd,mpolex,mpoley,mptemp,nterms,
      $        grad1(1,1,k)) 
-         call mpole_evalh_vec(nd,mpolexx,mpolexy,mpoleyy,mptemp,nterms,
+         call mpole_evalh(nd,mpolexx,mpolexy,mpoleyy,mptemp,nterms,
      $        hess1(1,1,k)) 
       enddo
       return
@@ -514,7 +514,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dformtac_vec(nd,zk,rscale,source,ns,charge,
+      subroutine h2dformtac(nd,zk,rscale,source,ns,charge,
      1                center,nterms,local)
       implicit none
 C***********************************************************************
@@ -566,7 +566,7 @@ c
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
 c
-         call ctompole_vec(nd,zmul,zinv,local,hval,charge(1,j),nterms) 
+         call ctompole(nd,zmul,zinv,local,hval,charge(1,j),nterms) 
       enddo
       return
       end
@@ -576,7 +576,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dformtad_vec(nd,zk,rscale,source,ns,
+      subroutine h2dformtad(nd,zk,rscale,source,ns,
      1           dipstr,dipvec,center,nterms,local)
       implicit none
 C***********************************************************************
@@ -627,7 +627,7 @@ c
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
 c
-         call dtompole_vec(nd,zk,rsinv,zmul,zinv,
+         call dtompole(nd,zk,rsinv,zmul,zinv,
      1           local,hval,dipstr(1,j),dipvec(1,1,j),nterms) 
       enddo
       return
@@ -638,7 +638,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dformtacd_vec(nd,zk,rscale,source,ns,charge,
+      subroutine h2dformtacd(nd,zk,rscale,source,ns,charge,
      1                dipstr,dipvec,center,nterms,local)
       implicit none
 C***********************************************************************
@@ -696,9 +696,9 @@ c
          zmul=exp(-ima*theta)
          zinv=conjg(zmul)
 c
-         call ctompole_vec(nd,zmul,zinv,local,hval,charge(1,j),nterms) 
+         call ctompole(nd,zmul,zinv,local,hval,charge(1,j),nterms) 
 c
-         call dtompole_vec(nd,zk,rsinv,zmul,zinv,
+         call dtompole(nd,zk,rsinv,zmul,zinv,
      1           local,hval,dipstr(1,j),dipvec(1,1,j),nterms) 
       enddo
       return
@@ -708,7 +708,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dtaevalp_vec(nd,zk,rscale,center,local,nterms,
+      subroutine h2dtaevalp(nd,zk,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1)
       implicit none
 c**********************************************************************
@@ -769,7 +769,7 @@ c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
 c
-         call mpole_evalp_vec(nd,zmul,zinv,local,mptemp,jval,
+         call mpole_evalp(nd,zmul,zinv,local,mptemp,jval,
      $        nterms,pot1(1,k)) 
       enddo
       return
@@ -782,7 +782,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dtaevalg_vec(nd,zk,rscale,center,local,nterms,
+      subroutine h2dtaevalg(nd,zk,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1,grad1)
       implicit none
 c**********************************************************************
@@ -836,7 +836,7 @@ c
       allocate(mptemp(-nterms-2:nterms+2))
 c
       rsinv = 1.0d0/rscale
-      call mk_mpoleg_vec(nd,zk,rsinv,local,localx,localy,nterms)
+      call mk_mpoleg(nd,zk,rsinv,local,localx,localy,nterms)
 c
       do k=1,ntarg
          zdiff(1)=ztarg(1,k)-center(1)
@@ -850,10 +850,10 @@ c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
 c
-         call mpole_evalp_vec(nd,zmul,zinv,local,mptemp,jval,
+         call mpole_evalp(nd,zmul,zinv,local,mptemp,jval,
      $        nterms,pot1(1,k)) 
 c
-         call mpole_evalg_vec(nd,localx,localy,mptemp,nterms,
+         call mpole_evalg(nd,localx,localy,mptemp,nterms,
      $        grad1(1,1,k)) 
 c
       enddo
@@ -866,7 +866,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dtaevalh_vec(nd,zk,rscale,center,local,nterms,
+      subroutine h2dtaevalh(nd,zk,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1,grad1,hess1)
       implicit none
 c**********************************************************************
@@ -927,9 +927,9 @@ c
       allocate(mptemp(-nterms-2:nterms+2))
 c
       rsinv = 1.0d0/rscale
-      call mk_mpoleg_vec(nd,zk,rsinv,local,localx,localy,nterms)
+      call mk_mpoleg(nd,zk,rsinv,local,localx,localy,nterms)
 c
-      call mk_mpoleh_vec(nd,zk,rsinv,localx,localy,
+      call mk_mpoleh(nd,zk,rsinv,localx,localy,
      $     localxx,localxy,localyy,nterms)
 c
 c
@@ -946,13 +946,13 @@ c
          zmul=exp(ima*theta)
          zinv=conjg(zmul)
 
-         call mpole_evalp_vec(nd,zmul,zinv,local,mptemp,jval,
+         call mpole_evalp(nd,zmul,zinv,local,mptemp,jval,
      $        nterms,pot1(1,k)) 
 c
-         call mpole_evalg_vec(nd,localx,localy,mptemp,nterms,
+         call mpole_evalg(nd,localx,localy,mptemp,nterms,
      $        grad1(1,1,k)) 
 c
-         call mpole_evalh_vec(nd,localxx,localxy,localyy,mptemp,nterms,
+         call mpole_evalh(nd,localxx,localxy,localyy,mptemp,nterms,
      $        hess1(1,1,k)) 
 c
       enddo
@@ -964,7 +964,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dmpmp_vec(nd,zk,rscale1,center1,hexp1,nterms1,
+      subroutine h2dmpmp(nd,zk,rscale1,center1,hexp1,nterms1,
      $                      rscale2,center2,hexp2,nterms2)
       implicit none
 C**********************************************************************
@@ -1093,7 +1093,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dlocloc_vec(nd,zk,rscale1,center1,jexp1,nterms1,
+      subroutine h2dlocloc(nd,zk,rscale1,center1,jexp1,nterms1,
      $                          rscale2,center2,jexp2,nterms2)
       implicit none
 c**********************************************************************
@@ -1218,7 +1218,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine h2dmploc_vec(nd,zk,rscale1,center1,hexp,nterms1,
+      subroutine h2dmploc(nd,zk,rscale1,center1,hexp,nterms1,
      $                         rscale2,center2,jexp,nterms2)
       implicit none
 c**********************************************************************
@@ -1338,39 +1338,12 @@ c
 c
 c
 c
-C***********************************************************************
-      subroutine h2dmpzero_vec(nd,mpole,nterms)
-      implicit none
-C***********************************************************************
-c
-c     This subroutine sets a vector multipole expansion to zero.
-c-----------------------------------------------------------------------
-c     INPUT:
-c
-c     nd     :   vector length (number of mpole expansions)
-c     nterms :   order of multipole expansion
-C---------------------------------------------------------------------
-c     OUTPUT:
-c
-c     mpole  :   coeffs for the expansion set to zero.
-C---------------------------------------------------------------------
-      integer n,nterms,nd,ii
-      complex *16 mpole(nd,-nterms:nterms)
-c
-      do n=-nterms,nterms
-      do ii=1,nd
-         mpole(ii,n)=0.0d0
-      enddo
-      enddo
-      return
-      end
-c
 c
 c
 c
 c
 C***********************************************************************
-      subroutine ctompole_vec(nd,zmul,zinv,mpole,jval,charge,nterms) 
+      subroutine ctompole(nd,zmul,zinv,mpole,jval,charge,nterms) 
       implicit none
 C***********************************************************************
 c
@@ -1414,7 +1387,7 @@ c
       end
 
 C***********************************************************************
-      subroutine dtompole_vec(nd,zk,rscale,zmul,zinv,
+      subroutine dtompole(nd,zk,rscale,zmul,zinv,
      1           mpole,jval,dipstr,dipvec,nterms) 
       implicit none
 C***********************************************************************
@@ -1481,7 +1454,7 @@ c
       end
 
 C***********************************************************************
-      subroutine mpole_evalp_vec(nd,zmul,zinv,mpole,mptemp,hval,
+      subroutine mpole_evalp(nd,zmul,zinv,mpole,mptemp,hval,
      $           nterms,pot1) 
       implicit none
 C***********************************************************************
@@ -1535,7 +1508,7 @@ c
       end
 
 C***********************************************************************
-      subroutine mpole_evalg_vec(nd,mpolex,mpoley,mptemp,nterms,grad1) 
+      subroutine mpole_evalg(nd,mpolex,mpoley,mptemp,nterms,grad1) 
       implicit none
 C***********************************************************************
 c
@@ -1578,7 +1551,7 @@ c
       end
 
 C***********************************************************************
-      subroutine mpole_evalh_vec(nd,mpolexx,mpolexy,mpoleyy,mptemp,
+      subroutine mpole_evalh(nd,mpolexx,mpolexy,mpoleyy,mptemp,
      $           nterms,hess1) 
       implicit none
 C***********************************************************************
@@ -1633,7 +1606,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine mk_mpoleg_vec(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
+      subroutine mk_mpoleg(nd,zk,rscale,mpole,mpolex,mpoley,nterms)
       implicit none
 C***********************************************************************
 c
@@ -1708,7 +1681,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine mk_mpoleh_vec(nd,zk,rscale,mpolex,mpoley,
+      subroutine mk_mpoleh(nd,zk,rscale,mpolex,mpoley,
      $           mpolexx,mpolexy,mpoleyy,nterms)
       implicit none
 C***********************************************************************

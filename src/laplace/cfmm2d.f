@@ -706,8 +706,8 @@ c
 C$OMP PARALLEL DO DEFAULT (SHARED)
 C$OMP$PRIVATE(ibox)
          do ibox = laddr(1,ilev),laddr(2,ilev)
-            call l2dmpzero_vec(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
-            call l2dmpzero_vec(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
+            call l2dmpzero(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
+            call l2dmpzero(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
          enddo
 C$OMP END PARALLEL DO         
        enddo
@@ -752,7 +752,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                 call l2dformmpc_vec(nd,rscales(ilev),
+                 call l2dformmpc(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
      2             centers(1,ibox),nterms(ilev),
      3             rmlexp(iaddr(1,ibox)))
@@ -772,7 +772,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call l2dformmpd_vec(nd,rscales(ilev),
+                call l2dformmpd(nd,rscales(ilev),
      1          sourcesort(1,istart),npts,dipstrsort(1,istart),
      2          centers(1,ibox),
      3          nterms(ilev),rmlexp(iaddr(1,ibox))) 
@@ -792,7 +792,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c             Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call l2dformmpcd_vec(nd,rscales(ilev),
+                call l2dformmpcd(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
      2             dipstrsort(1,istart),
      3             centers(1,ibox),
@@ -842,7 +842,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call l2dformtac_vec(nd,rscales(ilev),
+                    call l2dformtac(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   chargesort(1,istart),centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
@@ -880,7 +880,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
 
-                    call l2dformtad_vec(nd,rscales(ilev),
+                    call l2dformtad(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   dipstrsort(1,istart),
      3                   centers(1,ibox),nterms(ilev),
@@ -919,7 +919,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call l2dformtacd_vec(nd,rscales(ilev),
+                    call l2dformtacd(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   chargesort(1,istart),dipstrsort(1,istart),
      3                   centers(1,ibox),
@@ -955,7 +955,7 @@ C$OMP$SCHEDULE(DYNAMIC)
             iend = isrcse(2,jbox)
             npts = iend-istart+1
             if(npts.gt.0) then
-              call l2dmpmp_vec(nd,rscales(ilev+1),
+              call l2dmpmp(nd,rscales(ilev+1),
      1             centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2             nterms(ilev+1),rscales(ilev),centers(1,ibox),
      3             rmlexp(iaddr(1,ibox)),nterms(ilev),carray,ldc)
@@ -1002,7 +1002,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nlist2s(ibox)
               jbox = list2(i,ibox) 
-              call l2dmploc_vec(nd,rscales(ilev),
+              call l2dmploc(nd,rscales(ilev),
      $          centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev),
      2          rscales(ilev),centers(1,ibox),rmlexp(iaddr(2,ibox)),
      3          nterms(ilev),carray,ldc)
@@ -1048,7 +1048,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nchild
               jbox = itree(iptr(5)+4*(ibox-1)+i-1)
-              call l2dlocloc_vec(nd,rscales(ilev),centers(1,ibox),
+              call l2dlocloc(nd,rscales(ilev),centers(1,ibox),
      1          rmlexp(iaddr(2,ibox)),nterms(ilev),rscales(ilev+1),
      2          centers(1,jbox),rmlexp(iaddr(2,jbox)),nterms(ilev+1),
      3          carray,ldc)
@@ -1080,7 +1080,7 @@ C$OMP$SCHEDULE(DYNAMIC)
               jbox = list3(i,ibox)
 c                 shift multipole expansion directly to box
 c                 for all expansion centers
-              call l2dmploc_vec(nd,rscales(ilev+1),
+              call l2dmploc(nd,rscales(ilev+1),
      $          centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev+1),
      2          scjsort(j),expcsort(1,j),jsort(1,0,j),ntj,carray,ldc)
             enddo
@@ -1095,7 +1095,7 @@ c              evalute multipole expansion at all targets
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
                   
-              call l2dmpevalp_vec(nd,rscales(ilev+1),
+              call l2dmpevalp(nd,rscales(ilev+1),
      1         centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2         nterms(ilev+1),targetsort(1,istart),npts,
      3         pottarg(1,istart))
@@ -1104,7 +1104,7 @@ c              evalute multipole expansion at all targets
           if(ifpghtarg.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox)
-              call l2dmpevalg_vec(nd,rscales(ilev+1),
+              call l2dmpevalg(nd,rscales(ilev+1),
      1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2          nterms(ilev+1),targetsort(1,istart),npts,
      3          pottarg(1,istart),gradtarg(1,istart))
@@ -1114,7 +1114,7 @@ c              evalute multipole expansion at all targets
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox)
 
-              call l2dmpevalh_vec(nd,rscales(ilev+1),
+              call l2dmpevalh(nd,rscales(ilev+1),
      1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2          nterms(ilev+1),targetsort(1,istart),npts,
      3          pottarg(1,istart),
@@ -1132,7 +1132,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.1) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call l2dmpevalp_vec(nd,rscales(ilev+1),
+              call l2dmpevalp(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart))
@@ -1141,7 +1141,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call l2dmpevalg_vec(nd,rscales(ilev+1),
+              call l2dmpevalg(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,istart))
@@ -1150,7 +1150,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.3) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call l2dmpevalh_vec(nd,rscales(ilev+1),
+              call l2dmpevalh(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,istart),hess(1,istart))
@@ -1185,7 +1185,7 @@ C$OMP$SCHEDULE(DYNAMIC)
             istart = iexpcse(1,ibox)
             iend = iexpcse(2,ibox)
             do i=istart,iend
-              call l2dlocloc_vec(nd,rscales(ilev),
+              call l2dlocloc(nd,rscales(ilev),
      $          centers(1,ibox),
      1          rmlexp(iaddr(2,ibox)),nterms(ilev),scjsort(i),
      2          expcsort(1,i),jsort(1,0,i),ntj,carray,ldc)
@@ -1197,19 +1197,19 @@ c                at targets
             iend = itargse(2,ibox)
             npts = iend-istart + 1
             if(ifpghtarg.eq.1) then
-              call l2dtaevalp_vec(nd,rscales(ilev),
+              call l2dtaevalp(nd,rscales(ilev),
      1              centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2              nterms(ilev),targetsort(1,istart),npts,
      3              pottarg(1,istart))
             endif
             if(ifpghtarg.eq.2) then
-              call l2dtaevalg_vec(nd,rscales(ilev),
+              call l2dtaevalg(nd,rscales(ilev),
      1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2          nterms(ilev),targetsort(1,istart),npts,
      3          pottarg(1,istart),gradtarg(1,istart))
             endif
             if(ifpghtarg.eq.3) then
-              call l2dtaevalh_vec(nd,rscales(ilev),
+              call l2dtaevalh(nd,rscales(ilev),
      1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2          nterms(ilev),targetsort(1,istart),npts,
      3          pottarg(1,istart),gradtarg(1,istart),
@@ -1223,19 +1223,19 @@ cc                evaluate local expansion at sources
             iend = isrcse(2,ibox)
             npts = iend-istart+1
             if(ifpgh.eq.1) then
-              call l2dtaevalp_vec(nd,rscales(ilev),
+              call l2dtaevalp(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart))
             endif
             if(ifpgh.eq.2) then
-              call l2dtaevalg_vec(nd,rscales(ilev),
+              call l2dtaevalg(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,istart))
             endif
             if(ifpgh.eq.3) then
-              call l2dtaevalh_vec(nd,rscales(ilev),
+              call l2dtaevalh(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,istart),hess(1,istart))
@@ -1286,18 +1286,18 @@ C$OMP$SCHEDULE(DYNAMIC)
                jstart = isrcse(1,jbox)
                jend = isrcse(2,jbox)
 
-               call cfmm2dexpc_direct_vec(nd,jstart,jend,istarte,
+               call cfmm2dexpc_direct(nd,jstart,jend,istarte,
      1         iende,rscales,nlevels, 
      2         sourcesort,ifcharge,chargesort,ifdipole,dipstrsort,
      3         expcsort,jsort,scjsort,ntj)
 
                 
-               call cfmm2dpart_direct_vec(nd,jstart,jend,istartt,
+               call cfmm2dpart_direct(nd,jstart,jend,istartt,
      1         iendt,sourcesort,ifcharge,chargesort,ifdipole,
      2         dipstrsort,targetsort,ifpghtarg,pottarg,
      3         gradtarg,hesstarg,thresh)
          
-               call cfmm2dpart_direct_vec(nd,jstart,jend,istarts,iends,
+               call cfmm2dpart_direct(nd,jstart,jend,istarts,iends,
      1         sourcesort,ifcharge,chargesort,ifdipole,
      2         dipstrsort,sourcesort,ifpgh,pot,grad,hess,
      3         thresh)
@@ -1321,7 +1321,7 @@ C$    time2=omp_get_wtime()
       return
       end
 c
-      subroutine cfmm2dexpc_direct_vec(nd,istart,iend,jstart,jend,
+      subroutine cfmm2dexpc_direct(nd,istart,iend,jstart,jend,
      $     rscales,nlevels,source,ifcharge,charge,ifdipole,dipstr,
      $     targ,jexps,scj,ntj)
 c--------------------------------------------------------------------
@@ -1408,18 +1408,18 @@ c
         ns = iend - istart + 1
         do j=jstart,jend
            if(ifcharge.eq.1.and.ifdipole.eq.0) then
-              call l2dformtac_vec(nd,scj(j),
+              call l2dformtac(nd,scj(j),
      1        source(1,istart),charge(1,istart),ns,targ(1,j),
      2        ntj,jexps(1,0,j))
            endif
 
            if(ifdipole.eq.1.and.ifcharge.eq.0) then
-               call l2dformtad_vec(nd,scj(j),
+               call l2dformtad(nd,scj(j),
      1         source(1,istart),dipstr(1,istart),
      2         ns,targ(1,j),ntj,jexps(1,0,j))
            endif        
            if(ifdipole.eq.1.and.ifcharge.eq.1) then
-               call l2dformtacd_vec(nd,scj(j),
+               call l2dformtacd(nd,scj(j),
      1         source(1,istart),charge(1,istart),dipstr(1,istart),
      2         ns,targ(1,j),ntj,jexps(1,0,j))
            endif        
@@ -1428,7 +1428,7 @@ c
         return
         end
 c------------------------------------------------------------------     
-      subroutine cfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
+      subroutine cfmm2dpart_direct(nd,istart,iend,jstart,jend,
      $     source,ifcharge,charge,ifdipole,dipstr,
      $     targ,ifpgh,pot,grad,hess,thresh)
 c--------------------------------------------------------------------
@@ -1527,21 +1527,21 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directcp_vec(nd,source(1,istart),ns,
+               call c2d_directcp(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),thresh)
              enddo
           endif
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directcg_vec(nd,source(1,istart),ns,
+               call c2d_directcg(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
      2            thresh)
              enddo
           endif
           if(ifpgh.eq.3) then
              do j=jstart,jend
-               call c2d_directch_vec(nd,source(1,istart),ns,
+               call c2d_directch(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
      2            hess(1,j),thresh)
              enddo
@@ -1551,7 +1551,7 @@ c
         if(ifcharge.eq.0.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directdp_vec(nd,source(1,istart),ns,
+               call c2d_directdp(nd,source(1,istart),ns,
      1            dipstr(1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
@@ -1559,7 +1559,7 @@ c
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directdg_vec(nd,source(1,istart),ns,
+               call c2d_directdg(nd,source(1,istart),ns,
      1            dipstr(1,istart),
      2            targ(1,j),pot(1,j),grad(1,j),
      2            thresh)
@@ -1567,7 +1567,7 @@ c
           endif
           if(ifpgh.eq.3) then
              do j=jstart,jend
-               call c2d_directdh_vec(nd,source(1,istart),ns,
+               call c2d_directdh(nd,source(1,istart),ns,
      1            dipstr(1,istart),targ(1,j),
      2            pot(1,j),grad(1,j),
      2            hess(1,j),thresh)
@@ -1578,7 +1578,7 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call c2d_directcdp_vec(nd,source(1,istart),ns,
+               call c2d_directcdp(nd,source(1,istart),ns,
      1            charge(1,istart),dipstr(1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
@@ -1586,7 +1586,7 @@ c
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call c2d_directcdg_vec(nd,source(1,istart),ns,
+               call c2d_directcdg(nd,source(1,istart),ns,
      1            charge(1,istart),dipstr(1,istart),
      2            targ(1,j),pot(1,j),grad(1,j),
      2            thresh)
@@ -1594,7 +1594,7 @@ c
           endif
           if(ifpgh.eq.3) then
              do j=jstart,jend
-               call c2d_directcdh_vec(nd,source(1,istart),ns,
+               call c2d_directcdh(nd,source(1,istart),ns,
      1            charge(1,istart),dipstr(1,istart),
      2            targ(1,j),pot(1,j),grad(1,j),
      2            hess(1,j),thresh)

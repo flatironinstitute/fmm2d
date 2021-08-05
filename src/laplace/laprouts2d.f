@@ -81,7 +81,7 @@ c-----------------------------------------------------------------------
 c
 c
 C***********************************************************************
-      subroutine l2dformmpc_vec(nd,rscale,source,ns,charge,
+      subroutine l2dformmpc(nd,rscale,source,ns,charge,
      1                      center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -153,7 +153,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dformmpd_vec(nd,rscale,source,ns,
+      subroutine l2dformmpd(nd,rscale,source,ns,
      1                      dipstr,center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -216,7 +216,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dformmpcd_vec(nd,rscale,source,ns,charge,
+      subroutine l2dformmpcd(nd,rscale,source,ns,charge,
      1                       dipstr,center,nterms,mpole)
       implicit none
 C***********************************************************************
@@ -286,7 +286,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dmpevalp_vec(nd,rscale,center,mpole,nterms,
+      subroutine l2dmpevalp(nd,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1)
       implicit none
 c**********************************************************************
@@ -347,7 +347,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dmpevalg_vec(nd,rscale,center,mpole,nterms,
+      subroutine l2dmpevalg(nd,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1,grad1)
       implicit none
 c**********************************************************************
@@ -414,7 +414,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dmpevalh_vec(nd,rscale,center,mpole,nterms,
+      subroutine l2dmpevalh(nd,rscale,center,mpole,nterms,
      1                     ztarg,ntarg,pot1,grad1,hess1)
       implicit none
 c**********************************************************************
@@ -498,7 +498,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dformtac_vec(nd,rscale,source,ns,charge,
+      subroutine l2dformtac(nd,rscale,source,ns,charge,
      1                center,nterms,local)
       implicit none
 C***********************************************************************
@@ -559,7 +559,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dformtad_vec(nd,rscale,source,ns,
+      subroutine l2dformtad(nd,rscale,source,ns,
      1           dipstr,center,nterms,local)
       implicit none
 C***********************************************************************
@@ -618,7 +618,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dformtacd_vec(nd,rscale,source,ns,charge,
+      subroutine l2dformtacd(nd,rscale,source,ns,charge,
      1                dipstr,center,nterms,local)
       implicit none
 C***********************************************************************
@@ -693,7 +693,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dtaevalp_vec(nd,rscale,center,local,nterms,
+      subroutine l2dtaevalp(nd,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1)
       implicit none
 c**********************************************************************
@@ -756,7 +756,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dtaevalg_vec(nd,rscale,center,local,nterms,
+      subroutine l2dtaevalg(nd,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1,grad1)
       implicit none
 c**********************************************************************
@@ -825,7 +825,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dtaevalh_vec(nd,rscale,center,local,nterms,
+      subroutine l2dtaevalh(nd,rscale,center,local,nterms,
      1           ztarg,ntarg,pot1,grad1,hess1)
       implicit none
 c**********************************************************************
@@ -902,7 +902,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dmpmp_vec(nd,rscale1,center1,hexp1,nterms1,
+      subroutine l2dmpmp(nd,rscale1,center1,hexp1,nterms1,
      $                      rscale2,center2,hexp2,nterms2,carray,ldc)
       implicit none
 C**********************************************************************
@@ -1017,7 +1017,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dlocloc_vec(nd,rscale1,center1,jexp1,nterms1,
+      subroutine l2dlocloc(nd,rscale1,center1,jexp1,nterms1,
      $                      rscale2,center2,jexp2,nterms2,carray,ldc)
       implicit none
 C**********************************************************************
@@ -1127,7 +1127,7 @@ c
 c
 c
 c**********************************************************************
-      subroutine l2dmploc_vec(nd,rscale1,center1,hexp1,nterms1,
+      subroutine l2dmploc(nd,rscale1,center1,hexp1,nterms1,
      $                      rscale2,center2,jexp2,nterms2,carray,ldc)
       implicit none
 C**********************************************************************
@@ -1251,7 +1251,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine l2dmpzero_vec(nd,mpole,nterms)
+      subroutine l2dmpzero(nd,mpole,nterms)
       implicit none
 C***********************************************************************
 c

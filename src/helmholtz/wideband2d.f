@@ -1,6 +1,6 @@
 c      
 C***********************************************************************
-      subroutine h2dmpmphf_vec(nd,zk,rscale1,center1,hexp1,nterms1,
+      subroutine h2dmpmphf(nd,zk,rscale1,center1,hexp1,nterms1,
      1                rscale2,center2,hexp2,nterms2)
       implicit none
 C***********************************************************************
@@ -67,7 +67,7 @@ c
       enddo
 c
       call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
-      call h2d_sig2exp_vec(nd,nsig, sig2, wsave, nterms2, hexp2)
+      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, hexp2)
       return
       end 
 c
@@ -246,7 +246,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dmplochf_vec(nd,zk,rscale1,center1,hexp,nterms1,
+      subroutine h2dmplochf(nd,zk,rscale1,center1,hexp,nterms1,
      1                rscale2,center2,jexp,nterms2)
       implicit none
 C***********************************************************************
@@ -316,7 +316,7 @@ c
 c
       call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
 c
-      call h2d_sig2exp_vec(nd,nsig, sig2, wsave, nterms2, jexp)
+      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, jexp)
       return
       end 
 c
@@ -325,7 +325,7 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2d_sig2exp_vec(nd,nsig,sig,wsave,nterms,expans)
+      subroutine h2d_sig2exp(nd,nsig,sig,wsave,nterms,expans)
       implicit none
 C***********************************************************************
 c     

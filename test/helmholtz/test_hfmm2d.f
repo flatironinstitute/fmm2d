@@ -1252,11 +1252,11 @@ c
 
       thresh = 2.0d0**(-51)
       
-      call hfmm2dpart_direct_vec(1,1,nsrc,1,nts,zk,sources,ifcharge,
+      call hfmm2dpart_direct(1,1,nsrc,1,nts,zk,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,sources,ifpgh,potex,
      2       gradex,hessex,thresh)
 
-      call hfmm2dpart_direct_vec(1,1,nsrc,1,ntt,zk,sources,ifcharge,
+      call hfmm2dpart_direct(1,1,nsrc,1,ntt,zk,sources,ifcharge,
      1       charges,ifdipole,dipstr,dipvec,targ,ifpghtarg,pottargex,
      2       gradtargex,hesstargex,thresh)
       erra = 0

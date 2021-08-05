@@ -735,8 +735,8 @@ c
 C$OMP PARALLEL DO DEFAULT (SHARED)
 C$OMP$PRIVATE(ibox)
          do ibox = laddr(1,ilev),laddr(2,ilev)
-            call bh2dmpzero_vec(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
-            call bh2dmpzero_vec(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
+            call bh2dmpzero(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
+            call bh2dmpzero(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
          enddo
 C$OMP END PARALLEL DO         
        enddo
@@ -781,7 +781,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                 call bh2dformmpc_vec(nd,rscales(ilev),
+                 call bh2dformmpc(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
      2             centers(1,ibox),nterms(ilev),
      3             rmlexp(iaddr(1,ibox)))
@@ -801,7 +801,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call bh2dformmpd_vec(nd,rscales(ilev),
+                call bh2dformmpd(nd,rscales(ilev),
      1          sourcesort(1,istart),npts,dipsort(1,1,istart),
      2          centers(1,ibox),
      3          nterms(ilev),rmlexp(iaddr(1,ibox))) 
@@ -821,7 +821,7 @@ C$OMP$SCHEDULE(DYNAMIC)
              npts = iend-istart+1
 c             Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
-                call bh2dformmpcd_vec(nd,rscales(ilev),
+                call bh2dformmpcd(nd,rscales(ilev),
      1             sourcesort(1,istart),npts,chargesort(1,istart),
      2             dipsort(1,1,istart),
      3             centers(1,ibox),
@@ -871,7 +871,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call bh2dformtac_vec(nd,rscales(ilev),
+                    call bh2dformtac(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   chargesort(1,istart),centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
@@ -909,7 +909,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
 
-                    call bh2dformtad_vec(nd,rscales(ilev),
+                    call bh2dformtad(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   dipsort(1,1,istart),
      3                   centers(1,ibox),nterms(ilev),
@@ -948,7 +948,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     iend = isrcse(2,jbox)
                     npts = iend-istart+1
                     
-                    call bh2dformtacd_vec(nd,rscales(ilev),
+                    call bh2dformtacd(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
      2                   chargesort(1,istart),dipsort(1,1,istart),
      3                   centers(1,ibox),
@@ -984,7 +984,7 @@ C$OMP$SCHEDULE(DYNAMIC)
             iend = isrcse(2,jbox)
             npts = iend-istart+1
             if(npts.gt.0) then
-              call bh2dmpmp_vec(nd,rscales(ilev+1),
+              call bh2dmpmp(nd,rscales(ilev+1),
      1             centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2             nterms(ilev+1),rscales(ilev),centers(1,ibox),
      3             rmlexp(iaddr(1,ibox)),nterms(ilev),carray,ldc)
@@ -1031,7 +1031,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nlist2s(ibox)
               jbox = list2(i,ibox) 
-              call bh2dmploc_vec(nd,rscales(ilev),
+              call bh2dmploc(nd,rscales(ilev),
      $          centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev),
      2          rscales(ilev),centers(1,ibox),rmlexp(iaddr(2,ibox)),
      3          nterms(ilev),carray,ldc)
@@ -1077,7 +1077,7 @@ C$OMP$SCHEDULE(DYNAMIC)
           if(npts.gt.0) then
             do i=1,nchild
               jbox = itree(iptr(5)+4*(ibox-1)+i-1)
-              call bh2dlocloc_vec(nd,rscales(ilev),centers(1,ibox),
+              call bh2dlocloc(nd,rscales(ilev),centers(1,ibox),
      1          rmlexp(iaddr(2,ibox)),nterms(ilev),rscales(ilev+1),
      2          centers(1,jbox),rmlexp(iaddr(2,jbox)),nterms(ilev+1),
      3          carray,ldc)
@@ -1113,7 +1113,7 @@ c              evalute multipole expansion at all targets
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
                   
-              call bh2dmpevalp_vec(nd,rscales(ilev+1),
+              call bh2dmpevalp(nd,rscales(ilev+1),
      1         centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2         nterms(ilev+1),targetsort(1,istart),npts,
      3         pottarg(1,istart))
@@ -1122,7 +1122,7 @@ c              evalute multipole expansion at all targets
           if(ifpghtarg.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox)
-              call bh2dmpevalg_vec(nd,rscales(ilev+1),
+              call bh2dmpevalg(nd,rscales(ilev+1),
      1          centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2          nterms(ilev+1),targetsort(1,istart),npts,
      3          pottarg(1,istart),gradtarg(1,1,istart))
@@ -1139,7 +1139,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.1) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call bh2dmpevalp_vec(nd,rscales(ilev+1),
+              call bh2dmpevalp(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart))
@@ -1148,7 +1148,7 @@ c              evalute multipole expansion at all sources
           if(ifpgh.eq.2) then
             do i=1,nlist3s(ibox)
               jbox = list3(i,ibox) 
-              call bh2dmpevalg_vec(nd,rscales(ilev+1),
+              call bh2dmpevalg(nd,rscales(ilev+1),
      1           centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2           nterms(ilev+1),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,1,istart))
@@ -1188,13 +1188,13 @@ c                at targets
             iend = itargse(2,ibox)
             npts = iend-istart + 1
             if(ifpghtarg.eq.1) then
-              call bh2dtaevalp_vec(nd,rscales(ilev),
+              call bh2dtaevalp(nd,rscales(ilev),
      1              centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2              nterms(ilev),targetsort(1,istart),npts,
      3              pottarg(1,istart))
             endif
             if(ifpghtarg.eq.2) then
-              call bh2dtaevalg_vec(nd,rscales(ilev),
+              call bh2dtaevalg(nd,rscales(ilev),
      1          centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2          nterms(ilev),targetsort(1,istart),npts,
      3          pottarg(1,istart),gradtarg(1,1,istart))
@@ -1207,13 +1207,13 @@ cc                evaluate local expansion at sources
             iend = isrcse(2,ibox)
             npts = iend-istart+1
             if(ifpgh.eq.1) then
-              call bh2dtaevalp_vec(nd,rscales(ilev),
+              call bh2dtaevalp(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart))
             endif
             if(ifpgh.eq.2) then
-              call bh2dtaevalg_vec(nd,rscales(ilev),
+              call bh2dtaevalg(nd,rscales(ilev),
      1           centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2           nterms(ilev),sourcesort(1,istart),npts,
      3           pot(1,istart),grad(1,1,istart))
@@ -1264,12 +1264,12 @@ C$OMP$SCHEDULE(DYNAMIC)
                jend = isrcse(2,jbox)
 
                 
-               call bhfmm2dpart_direct_vec(nd,jstart,jend,istartt,
+               call bhfmm2dpart_direct(nd,jstart,jend,istartt,
      1         iendt,sourcesort,ifcharge,chargesort,ifdipole,
      2         dipsort,targetsort,ifpghtarg,pottarg,
      3         gradtarg,hesstarg,thresh)
          
-               call bhfmm2dpart_direct_vec(nd,jstart,jend,istarts,iends,
+               call bhfmm2dpart_direct(nd,jstart,jend,istarts,iends,
      1         sourcesort,ifcharge,chargesort,ifdipole,
      2         dipsort,sourcesort,ifpgh,pot,grad,hess,
      3         thresh)
@@ -1298,7 +1298,7 @@ c
 c
 c
 c------------------------------------------------------------------     
-      subroutine bhfmm2dpart_direct_vec(nd,istart,iend,jstart,jend,
+      subroutine bhfmm2dpart_direct(nd,istart,iend,jstart,jend,
      $     source,ifcharge,charge,ifdipole,dip,
      $     targ,ifpgh,pot,grad,hess,thresh)
 c--------------------------------------------------------------------
@@ -1397,14 +1397,14 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call bh2d_directcp_vec(nd,source(1,istart),ns,
+               call bh2d_directcp(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),thresh)
              enddo
           endif
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call bh2d_directcg_vec(nd,source(1,istart),ns,
+               call bh2d_directcg(nd,source(1,istart),ns,
      1            charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
      2            thresh)
              enddo
@@ -1414,7 +1414,7 @@ c
         if(ifcharge.eq.0.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call bh2d_directdp_vec(nd,source(1,istart),ns,
+               call bh2d_directdp(nd,source(1,istart),ns,
      1            dip(1,1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
@@ -1422,7 +1422,7 @@ c
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call bh2d_directdg_vec(nd,source(1,istart),ns,
+               call bh2d_directdg(nd,source(1,istart),ns,
      1            dip(1,1,istart),
      2            targ(1,j),pot(1,j),grad(1,1,j),
      2            thresh)
@@ -1433,7 +1433,7 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
              do j=jstart,jend
-               call bh2d_directcdp_vec(nd,source(1,istart),ns,
+               call bh2d_directcdp(nd,source(1,istart),ns,
      1            charge(1,istart),dip(1,1,istart),
      2            targ(1,j),pot(1,j),thresh)
              enddo
@@ -1441,7 +1441,7 @@ c
 
           if(ifpgh.eq.2) then
              do j=jstart,jend
-               call bh2d_directcdg_vec(nd,source(1,istart),ns,
+               call bh2d_directcdg(nd,source(1,istart),ns,
      1            charge(1,istart),dip(1,1,istart),
      2            targ(1,j),pot(1,j),grad(1,1,j),
      2            thresh)

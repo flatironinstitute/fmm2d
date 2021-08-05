@@ -9,7 +9,7 @@
       double precision eps
       double complex eye,zk
       integer i,j,k,idim,ier
-      double precision hkrand,pi,thet,phi
+      double precision hkrand,pi,thet,phi,t1,t2,omp_get_wtime
       
 
       data eye/(0.0d0,1.0d0)/
@@ -30,8 +30,8 @@ c
 
       zk = 2.2d0
 
-      ns = 10000
-      nt = 10000
+      ns = 1600
+      nt = 62500 
       
       nd = 1
 
@@ -44,7 +44,7 @@ c
       allocate(pottarg(nd,nt))
 
 
-      eps = 0.51d-3
+      eps = 0.51d-6
 
       write(*,*) "=========================================="
 
@@ -76,19 +76,24 @@ c
       enddo
 
       do i=1,nt
-        targ(1,i) = source(1,i) + 10.0d0
-        targ(2,i) = source(2,i)
+        targ(1,i) = -3.0d0 + hkrand(0)*6.0d0
+        targ(2,i) = -3.0d0 + hkrand(0)*6.0d0 
 
         do idim=1,nd
           pottarg(idim,i) = 0
         enddo
       enddo
 
+       call cpu_time(t1)
+C$       t1 = omp_get_wtime()       
 
-       call hfmm2d_st_cd_p_vec(nd,eps,zk,ns,source,charge,
-     1      dipstr,dipvec,pot,nt,targ,pottarg,ier)
+       call hfmm2d_t_cd_p(eps,zk,ns,source,charge,
+     1      dipstr,dipvec,nt,targ,pottarg,ier)
 
-       call prin2("potential at sources=*",pot,12)
+       call cpu_time(t2)
+C$       t2 = omp_get_wtime()
+       
+       call prin2('time taken=*',t2-t1,1)
        call prin2("potential at targets=*",pottarg,12)
 
 

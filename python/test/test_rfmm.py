@@ -114,7 +114,6 @@ def test_rfmm():
         testres[itest] = 1
     else:
         print("Failed sources to sources, charges and dipoles, pot and grad")
-    
 
     itest=itest+1
     out=fmm.rfmm2d(eps=eps,sources=sources,targets=targ,charges=charges,pgt=1)

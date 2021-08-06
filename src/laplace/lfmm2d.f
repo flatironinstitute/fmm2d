@@ -192,7 +192,7 @@ c     combine real and imaginary parts
       
       if (ifpghtarg .eq. 1 .or. ifpghtarg .eq. 2
      1     .or. ifpghtarg .eq. 3) then
-         do i = 1,ns
+         do i = 1,nt
             do j = 1,nd
                pottarg(j,i) = dble(pottarg1(1,j,i))
      1              +eye*dble(pottarg1(2,j,i))
@@ -200,7 +200,7 @@ c     combine real and imaginary parts
          enddo
       endif
       if (ifpghtarg .eq. 2 .or. ifpghtarg .eq. 3) then
-         do i = 1,ns
+         do i = 1,nt
             do j = 1,nd
                gradtarg(j,1,i) = dble(gradtarg1(1,j,i))
      1              +eye*dble(gradtarg1(2,j,i))
@@ -210,7 +210,7 @@ c     combine real and imaginary parts
          enddo
       endif
       if (ifpghtarg .eq. 3) then
-         do i = 1,ns
+         do i = 1,nt
             do j = 1,nd
                hesstarg(j,1,i) = dble(hesstarg1(1,j,i))
      1              +eye*dble(hesstarg1(2,j,i))

@@ -566,6 +566,7 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
             charges = charges.reshape(ns,)
         if(ifdipole==1):
             dipvec = dipvec.reshape(2,ns)
+            dipstr = dipstr.reshape(ns,)
         if(pgt>0):
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):
@@ -649,9 +650,13 @@ def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
         if nd == 1 and ns>1:
             assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
             assert dipvec.shape[0] == 2 and dipvec.shape[1] == ns, "dipole vectors must be of shape [2,number of sources]"
+            dipvec = dipvec.reshape(1,2,ns)
+            dipstr = dipstr.reshape(1,ns)
         if nd == 1 and ns==1:
             assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
             assert dipvec.shape[0] == 2, "dipole vectors must be of shape [2,number of sources]"
+            dipvec = dipvec.reshape(1,2,ns)
+            dipstr = dipstr.reshape(1,ns)
         if nd>1:
             assert dipvec.shape[0] == nd and dipvec.shape[1] == 2 and dipvec.shape[2] == ns, "Dipole vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
             assert dipstr.shape[0] == nd and dipstr.shape[1]==ns, "Dipole strengths must be of shape [nd,ns] where nd is number of densities, and ns is number of sources"
@@ -683,6 +688,7 @@ def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
             charges = charges.reshape(ns,)
         if(ifdipole ==1): 
             dipvec = dipvec.reshape(2,ns)
+            dipstr = dipstr.reshape(ns,)
         if(pgt>0):
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):

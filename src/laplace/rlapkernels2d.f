@@ -7,6 +7,9 @@ c
 c**********************************************************************
       subroutine r2d_directcp(nd,sources,ns,charge,
      $           targ,nt,pot,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,targ,nt,thresh
+cf2py  intent(out) pot
       implicit none
 c**********************************************************************
 c
@@ -68,6 +71,9 @@ c
 c**********************************************************************
       subroutine r2d_directcg(nd,sources,ns,charge,targ,nt,pot,
      1             grad,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,targ,nt,thresh
+cf2py  intent(out) pot,grad
       implicit none
 c**********************************************************************
 c
@@ -142,6 +148,9 @@ c
 c**********************************************************************
       subroutine r2d_directch(nd,sources,ns,charge,targ,nt,
      1           pot,grad,hess,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,targ,nt,thresh
+cf2py  intent(out) pot,grad,hess
       implicit none
 c**********************************************************************
 c
@@ -229,6 +238,9 @@ c
 c**********************************************************************
       subroutine r2d_directdp(nd,sources,ns,dipstr,dipvec,
      $           targ,nt,pot,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot
       implicit none
 c**********************************************************************
 c
@@ -297,6 +309,9 @@ c
 c**********************************************************************
       subroutine r2d_directdg(nd,sources,ns,dipstr,dipvec,
      1     targ,nt,pot,grad,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot,grad
       implicit none
 c**********************************************************************
 c
@@ -386,6 +401,9 @@ c
 c**********************************************************************
       subroutine r2d_directdh(nd,sources,ns,dipstr,dipvec,targ,nt,
      1           pot,grad,hess,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot,grad,hess
       implicit none
 c**********************************************************************
 c
@@ -487,6 +505,9 @@ c
 c**********************************************************************
       subroutine r2d_directcdp(nd,sources,ns,charge,
      $           dipstr,dipvec,targ,nt,pot,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot
       implicit none
 c**********************************************************************
 c
@@ -560,6 +581,9 @@ c
 c**********************************************************************
       subroutine r2d_directcdg(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,nt,pot,grad,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot,grad
       implicit none
 c**********************************************************************
 c
@@ -661,6 +685,9 @@ c
 c**********************************************************************
       subroutine r2d_directcdh(nd,sources,ns,charge,dipstr,dipvec,
      1     targ,nt,pot,grad,hess,thresh)
+cf2py  intent(in) nd
+cf2py  intent(in) ns,sources,charge,dipstr,dipvec,targ,nt,thresh
+cf2py  intent(out) pot,grad,hess
       implicit none
 c**********************************************************************
 c

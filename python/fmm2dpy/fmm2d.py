@@ -1,4 +1,5 @@
 from . import hfmm2d_fortran as hfmm
+from . import rfmm2d_fortran as rfmm
 import numpy as np
 import numpy.linalg as la
 
@@ -193,6 +194,267 @@ def hfmm2d(*,eps,zk,sources,charges=None,dipstr=None,dipvec=None,
     return out
 
 
+def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
+          targets=None,pg=0,pgt=0,nd=1):
+    r"""
+      This subroutine computes the N-body Laplace interactions
+      in three dimensions where the interaction kernel is given by 1/r 
+      and its gradients. 
+
+
+      .. math:: 
+
+          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
+
+      where $c_{j}$ are the charge densities, 
+      $v_{j}$ are the dipole orientation vectors, and 
+      $x_{j}$ are the source locations.
+
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      sum
+
+
+      Args:
+        eps: float
+             precision requested
+
+        sources: float(2,n)   
+                 source locations (x_{j})
+        charges: float(nd,n) or float(n)
+                 charge densities (c_{j})
+        dipstr: float(nd,n) or float(n)
+                dipole densities
+        dipvec: float(nd,2,n) or float(2,n)
+                                    dipole orientation vectors (v_{j})
+        targets: float(2,nt)
+                target locations (x)
+        pg:  integer
+               source eval flag
+               potential at sources evaluated if pg = 1
+               potenial and gradient at sources evaluated if pg=2
+               potential, gradient and hessian at sources evaluated if pg=3
+
+        pgt:  integer
+               target eval flag
+               potential at targets evaluated if pgt = 1
+               potenial and gradient at targets evaluated if pgt=2
+               potential, gradient and hessian at targets evaluated if pgt=3
+        
+        nd:   integer
+               number of densities
+
+      Returns:
+        out.pot: potential at source locations if requested
+        out.grad: gradient at source locations if requested
+        out.hess: hessian at source locations if requested
+        out.pottarg: potential at target locations if requested
+        out.gradtarg: gradient at target locations if requested
+        out.hesstarg: hessian at target locations if requested
+      
+      Example:
+        see rfmmexample.py
+    r"""
+
+    out = Output()
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    ifcharge = 0
+    ifdipole = 0
+    iftarg = 0
+    if(pg == 0 and pgt == 0):
+        print("Nothing to compute, set either pg or pgt to non-zero")
+        return out
+    if charges is not None:
+        if nd == 1:
+            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
+        if nd>1:
+            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
+        ifcharge = 1
+    if(dipvec is not None or dipstr is not None):
+        if nd == 1 and ns>1:
+            assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
+            assert dipvec.shape[0] == 2 and dipvec.shape[1] == ns, "dipole vectors must be of shape [2,number of sources]"
+        if nd == 1 and ns==1:
+            assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
+            assert dipvec.shape[0] == 2, "dipole vectors must be of shape [2,number of sources]"
+        if nd>1:
+            assert dipvec.shape[0] == nd and dipvec.shape[1] == 2 and dipvec.shape[2] == ns, "Dipole vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+            assert dipstr.shape[0] == nd and dipstr.shape[1]==ns, "Dipole strengths must be of shape [nd,ns] where nd is number of densities, and ns is number of sources"
+        ifdipole = 1
+    if(targets is not None):
+        assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+        iftarg = 1
+#
+# sources -> sources routines
+#
+    if(iftarg == 0 or pgt != 1 or pgt !=2 or pgt !=3):
+        if(pg == 1 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_c_p_vec(eps,sources,charges,nd)
+            if(nd == 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_c_p(eps,sources,charges)
+        if(pg == 2 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_c_g_vec(eps,sources,charges,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_c_g(eps,sources,charges)
+        if(pg == 3 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_c_h_vec(eps,sources,charges,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_c_h(eps,sources,charges)
+
+
+        if(pg == 1 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_d_p_vec(eps,sources,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_d_p(eps,sources,dipstr,dipvec)
+        if(pg == 2 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_d_g_vec(eps,sources,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_d_g(eps,sources,dipstr,dipvec)
+        if(pg == 3 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_d_h_vec(eps,sources,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_d_h(eps,sources,dipstr,dipvec)
+
+
+        if(pg == 1 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_cd_p_vec(eps,sources,charges,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.ier = rfmm.rfmm2d_s_cd_p(eps,sources,charges,dipstr,dipvec)
+        if(pg == 2 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_cd_g_vec(eps,sources,charges,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.ier = rfmm.rfmm2d_s_cd_g(eps,sources,charges,dipstr,dipvec)
+        if(pg == 3 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_cd_h_vec(eps,sources,charges,dipstr,dipvec,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.ier = rfmm.rfmm2d_s_cd_h(eps,sources,charges,dipstr,dipvec)
+
+#
+# sources -> targets routines
+#
+
+
+    if(pg !=1 and pg !=2 and pg !=3 and targets is not None):
+        if(pgt == 1 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_c_p_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_c_p(eps,sources,charges,targets)
+        if(pgt == 2 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_c_g_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_c_g(eps,sources,charges,targets)
+        if(pgt == 3 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_c_h_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_c_h(eps,sources,charges,targets)
+
+
+        if(pgt == 1 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_d_p_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_d_p(eps,sources,dipstr,dipvec,targets)
+        if(pgt == 2 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_d_g_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_d_g(eps,sources,dipstr,dipvec,targets)
+        if(pgt == 3 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_d_h_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_d_h(eps,sources,dipstr,dipvec,targets)
+
+
+        if(pgt == 1 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_cd_p_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.ier = rfmm.rfmm2d_t_cd_p(eps,sources,charges,dipstr,dipvec,targets)
+        if(pgt == 2 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_cd_g_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_t_cd_g(eps,sources,charges,dipstr,dipvec,targets)
+        if(pgt == 3 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_cd_h_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_t_cd_h(eps,sources,charges,dipstr,dipvec,targets)
+    
+#
+# sources to sources + targets
+#
+    if((pg == 1 or pg == 2 or pg == 3) and targets is not None):
+        assert pg == pgt, "if output is requested at both sources and targets, then the same pg must be equal to pgt"
+        if(pgt == 1 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_c_p_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_c_p(eps,sources,charges,targets)
+        if(pgt == 2 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_c_g_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_c_g(eps,sources,charges,targets)
+        if(pgt == 3 and ifcharge == 1 and ifdipole == 0):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_c_h_vec(eps,sources,charges,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_c_h(eps,sources,charges,targets)
+
+
+        if(pgt == 1 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_d_p_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_d_p(eps,sources,dipstr,dipvec,targets)
+        if(pgt == 2 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_d_g_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_d_g(eps,sources,dipstr,dipvec,targets)
+        if(pgt == 3 and ifcharge == 0 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_d_h_vec(eps,sources,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_d_h(eps,sources,dipstr,dipvec,targets)
+
+
+        if(pgt == 1 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_cd_p_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.pottarg,out.ier = rfmm.rfmm2d_st_cd_p(eps,sources,charges,dipstr,dipvec,targets)
+        if(pgt == 2 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_cd_g_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.pottarg,out.gradtarg,out.ier = rfmm.rfmm2d_st_cd_g(eps,sources,charges,dipstr,dipvec,targets)
+        if(pgt == 3 and ifcharge == 1 and ifdipole == 1):
+            if(nd > 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_cd_h_vec(eps,sources,charges,dipstr,dipvec,targets,nd)
+            if(nd == 1):
+                out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = rfmm.rfmm2d_st_cd_h(eps,sources,charges,dipstr,dipvec,targets)
+
+    return out
+
+
 
 def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
           pgt=0,nd=1,thresh=1e-16):
@@ -309,6 +571,124 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
         if(pgt==2):
             out.gradtarg = out.gradtarg.reshape(2,nt)
 
+
+    return out
+
+
+def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
+          pgt=0,nd=1,thresh=1e-16):
+    r"""
+      This subroutine computes the N-body Laplace interactions
+      in three dimensions where the interaction kernel is given by $1/r$ 
+      and its gradients. 
+
+
+      .. math::
+
+          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
+
+      where $c_{j}$ are the charge densities, 
+      $v_{j}$ are the dipole orientation vectors, and 
+      $x_{j}$ are the source locations.
+
+      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is dropped from the
+      sum
+
+
+      Args:
+        sources: float(2,n)   
+               source locations (x_{j})
+        charges: float(nd,n) or float(n)
+                charge densities (c_{j})
+        dipstr: float(nd,n) or float(n)
+                dipole densities
+        dipvec: float(nd,2,n) or float(2,n)
+                dipole orientation vectors (v_{j})
+        targets: float(2,nt)
+                target locations (x)
+
+        pgt:  integer
+               target eval flag
+               potential at targets evaluated if pgt = 1
+               potenial and gradient at targets evaluated if pgt=2
+               potenial, gradient, and hessians at targets evaluated if pgt=3
+        
+        nd:   integer
+               number of densities
+        thresh: contribution of source x_i, at location x ignored if |x-x_i|<=thresh
+
+      Returns:
+        out.pottarg  - potential at target locations if requested
+        out.gradtarg - gradient at target locations if requested
+        out.hesstarg - hessian at target locations if requested
+              
+      Example:
+        see rfmmexample.py
+
+    r"""
+
+    out = Output()
+    assert sources.shape[0] == 2, "The first dimension of sources must be 3"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    ifcharge = 0
+    ifdipole = 0
+    if(pgt == 0):
+        print("Nothing to compute, set either pg or pgt to non-zero")
+        return out
+    if charges is not None:
+        if nd == 1:
+            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
+            charges = charges.reshape(1,ns)
+        if nd>1:
+            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
+        ifcharge = 1
+    if(dipvec is not None or dipstr is not None):
+        if nd == 1 and ns>1:
+            assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
+            assert dipvec.shape[0] == 2 and dipvec.shape[1] == ns, "dipole vectors must be of shape [2,number of sources]"
+        if nd == 1 and ns==1:
+            assert dipstr.shape[0] == ns, "Dipole strengths must be same length as second dimension of sources"
+            assert dipvec.shape[0] == 2, "dipole vectors must be of shape [2,number of sources]"
+        if nd>1:
+            assert dipvec.shape[0] == nd and dipvec.shape[1] == 2 and dipvec.shape[2] == ns, "Dipole vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+            assert dipstr.shape[0] == nd and dipstr.shape[1]==ns, "Dipole strengths must be of shape [nd,ns] where nd is number of densities, and ns is number of sources"
+        ifdipole = 1
+
+    assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+    nt = targets.shape[1]
+    if(pgt == 1 and ifcharge == 1 and ifdipole == 0):
+        out.pottarg = rfmm.r2d_directcp(sources,charges,targets,thresh)
+    if(pgt == 2 and ifcharge == 1 and ifdipole == 0):
+        out.pottarg,out.gradtarg = rfmm.r2d_directcg(sources,charges,targets,thresh)
+    if(pgt == 3 and ifcharge == 1 and ifdipole == 0):
+        out.pottarg,out.gradtarg,out.hesstarg = rfmm.r2d_directch(sources,charges,targets,thresh)
+    if(pgt == 1 and ifcharge == 0 and ifdipole == 1):
+        out.pottarg = rfmm.r2d_directdp(sources,dipstr,dipvec,targets,thresh)
+    if(pgt == 2 and ifcharge == 0 and ifdipole == 1):
+        out.pottarg,out.gradtarg = rfmm.r2d_directdg(sources,dipstr,dipvec,targets,thresh)
+    if(pgt == 3 and ifcharge == 0 and ifdipole == 1):
+        out.pottarg,out.gradtarg,out.hesstarg = rfmm.r2d_directdh(sources,dipstr,dipvec,targets,thresh)
+    if(pgt == 1 and ifcharge == 1 and ifdipole == 1):
+        out.pottarg = rfmm.r2d_directcdp(sources,charges,dipstr,dipvec,targets,thresh)
+    if(pgt == 2 and ifcharge == 1 and ifdipole == 1):
+        out.pottarg,out.gradtarg = rfmm.r2d_directcdg(sources,charges,dipstr,dipvec,targets,thresh)
+    if(pgt == 3 and ifcharge == 1 and ifdipole == 1):
+        out.pottarg,out.gradtarg,out.hesstarg = rfmm.r2d_directcdh(sources,charges,dipstr,dipvec,targets,thresh)
+
+    if(nd == 1):
+        if(ifcharge == 1):
+            charges = charges.reshape(ns,)
+        if(ifdipole ==1): 
+            dipvec = dipvec.reshape(2,ns)
+        if(pgt>0):
+            out.pottarg = out.pottarg.reshape(nt,)
+        if(pgt==2):
+            out.gradtarg = out.gradtarg.reshape(2,nt)
+        if(pgt==3):
+            out.hesstarg = out.hesstarg.reshape(3,nt)
 
     return out
 

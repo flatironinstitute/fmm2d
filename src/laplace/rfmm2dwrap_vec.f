@@ -37,7 +37,7 @@ c
      1            charge,pot,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge
-cf2py  intent(in) pot,ier
+cf2py  intent(out) pot,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -97,7 +97,7 @@ c------------------------------
      1            charge,pot,grad,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge
-cf2py  intent(in) pot,grad,ier
+cf2py  intent(out) pot,grad,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -160,7 +160,7 @@ c
      1            charge,pot,grad,hess,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge
-cf2py  intent(in) pot,grad,hess,ier
+cf2py  intent(out) pot,grad,hess,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -221,7 +221,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec
-cf2py  intent(in) pot,ier
+cf2py  intent(out) pot,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -282,7 +282,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec
-cf2py  intent(in) pot,grad,ier
+cf2py  intent(out) pot,grad,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -346,7 +346,7 @@ c
      1            dipstr,dipvec,pot,grad,hess,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec
-cf2py  intent(in) pot,grad,hess,ier
+cf2py  intent(out) pot,grad,hess,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -407,7 +407,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec
-cf2py  intent(in) pot,ier
+cf2py  intent(out) pot,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -467,7 +467,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec
-cf2py  intent(in) pot,grad,ier
+cf2py  intent(out) pot,grad,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -529,7 +529,7 @@ c
      1            dipstr,dipvec,pot,grad,hess,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec
-cf2py  intent(in) pot,grad,hess,ier
+cf2py  intent(out) pot,grad,hess,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -591,7 +591,7 @@ c
      1            charge,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -649,7 +649,7 @@ c------------------------------
      1            charge,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -711,7 +711,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -769,7 +769,7 @@ c-------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -828,7 +828,7 @@ c------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -891,7 +891,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -950,7 +950,7 @@ c-------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1008,7 +1008,7 @@ c------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1069,7 +1069,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1132,7 +1132,7 @@ c
      1            charge,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1191,7 +1191,7 @@ c------------------------------
      1            charge,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1255,7 +1255,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1317,7 +1317,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1377,7 +1377,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1443,7 +1443,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1506,7 +1506,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1566,7 +1566,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -1630,7 +1630,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps,nd
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions

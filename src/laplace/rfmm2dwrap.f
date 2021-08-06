@@ -600,7 +600,7 @@ c
      1            charge,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -660,7 +660,7 @@ c------------------------------
      1            charge,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -722,7 +722,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -781,7 +781,7 @@ c-------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -842,7 +842,7 @@ c------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -905,7 +905,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -965,7 +965,7 @@ c-------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,ier
+cf2py  intent(out) pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1025,7 +1025,7 @@ c------------------------------
      1            dipstr,dipvec,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,ier
+cf2py  intent(out) pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1087,7 +1087,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1149,7 +1149,7 @@ c
      1            charge,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1210,7 +1210,7 @@ c------------------------------
      1            charge,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1274,7 +1274,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1336,7 +1336,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1398,7 +1398,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1463,7 +1463,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1526,7 +1526,7 @@ c-------------------------------
      1            dipstr,dipvec,pot,nt,targ,pottarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,pottarg,ier
+cf2py  intent(out) pot,pottarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1587,7 +1587,7 @@ c------------------------------
      1            dipstr,dipvec,pot,grad,nt,targ,pottarg,gradtarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,pottarg,gradtarg,ier
+cf2py  intent(out) pot,grad,pottarg,gradtarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested
@@ -1651,7 +1651,7 @@ c
      2            gradtarg,hesstarg,ier)
 cf2py  intent(in) eps
 cf2py  intent(in) ns,sources,charge,dipstr,dipvec,nt,targ
-cf2py  intent(in) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+cf2py  intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   eps           : FMM precision requested

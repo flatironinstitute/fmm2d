@@ -11,7 +11,7 @@ pkg_name = "fmm2dpy"
 ## TODO: fix problem with relative location for executable
 
 list_helm=['hfmm2dwrap.f','hfmm2dwrap_vec.f','helmkernels2d.f']
-list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f']
+list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f','lfmm2dwrap.f','lfmm2dwrap_vec.f','lapkernels2d.f']
 list_common=[]
 
 FLIBS = os.getenv('FMM_FLIBS')
@@ -43,13 +43,16 @@ for st in st_opts:
             list_int_helm_vec.append('hfmm2d'+st+cd+pg+'_vec')
         for pg in p_optsl:
             list_int_lap.append('rfmm2d'+st+cd+pg)
+            list_int_lap.append('lfmm2d'+st+cd+pg)
             list_int_lap_vec.append('rfmm2d'+st+cd+pg+'_vec')
+            list_int_lap_vec.append('lfmm2d'+st+cd+pg+'_vec')
 
 for cd in c_opts2:
     for pg in p_optsh2:
         list_int_helm_dir.append('h2d_direct'+cd+pg)
     for pg in p_optsl2:
         list_int_lap_dir.append('r2d_direct'+cd+pg)
+        list_int_lap_dir.append('l2d_direct'+cd+pg)
 
 ext_helm = Extension(
     name='fmm2dpy.hfmm2d_fortran',
@@ -61,7 +64,7 @@ ext_helm = Extension(
 )
 
 ext_lap = Extension(
-    name='fmm2dpy.rfmm2d_fortran',
+    name='fmm2dpy.lfmm2d_fortran',
     sources=['../src/laplace/'+item for item in list_lap]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_lap+list_int_lap_vec+list_int_lap_dir+[':'],
     extra_f90_compile_args=["-std=legacy"],

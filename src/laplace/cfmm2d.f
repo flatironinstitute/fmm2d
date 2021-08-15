@@ -1504,7 +1504,7 @@ c   hess: Hessian at the targets
 c-------------------------------------------------------               
         implicit none
 c
-        integer istart,iend,jstart,jend,ns,j,i
+        integer istart,iend,jstart,jend,ns,j,i,nt
         integer ifcharge,ifdipole
 
         integer nd
@@ -1524,81 +1524,70 @@ c
 
 c
         ns = iend - istart + 1
+        nt = jend - jstart + 1
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
-               call c2d_directcp(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),thresh)
-             enddo
+            call c2d_directcp(nd,source(1,istart),ns,
+     1           charge(1,istart),targ(1,jstart),nt,
+     2           pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
-               call c2d_directcg(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
-     2            thresh)
-             enddo
+            call c2d_directcg(nd,source(1,istart),ns,
+     1           charge(1,istart),targ(1,jstart),nt,
+     2           pot(1,jstart),grad(1,jstart),
+     3           thresh)
           endif
           if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directch(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
-             enddo
+            call c2d_directch(nd,source(1,istart),ns,
+     1           charge(1,istart),targ(1,jstart),nt,
+     2           pot(1,jstart),grad(1,jstart),
+     3           hess(1,jstart),thresh)
           endif
         endif
 
         if(ifcharge.eq.0.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
-               call c2d_directdp(nd,source(1,istart),ns,
-     1            dipstr(1,istart),
-     2            targ(1,j),pot(1,j),thresh)
-             enddo
+            call c2d_directdp(nd,source(1,istart),ns,
+     1           dipstr(1,istart),
+     2           targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
-               call c2d_directdg(nd,source(1,istart),ns,
-     1            dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
-     2            thresh)
-             enddo
+            call c2d_directdg(nd,source(1,istart),ns,
+     1           dipstr(1,istart),
+     2           targ(1,jstart),nt,
+     3           pot(1,jstart),grad(1,jstart),
+     4           thresh)
           endif
           if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directdh(nd,source(1,istart),ns,
-     1            dipstr(1,istart),targ(1,j),
-     2            pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
-             enddo
+            call c2d_directdh(nd,source(1,istart),ns,
+     1           dipstr(1,istart),targ(1,jstart),nt,
+     2           pot(1,jstart),grad(1,jstart),
+     3           hess(1,jstart),thresh)
           endif
         endif
 
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
-               call c2d_directcdp(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
-     2            targ(1,j),pot(1,j),thresh)
-             enddo
+            call c2d_directcdp(nd,source(1,istart),ns,
+     1           charge(1,istart),dipstr(1,istart),
+     2           targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
-               call c2d_directcdg(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
-     2            thresh)
-             enddo
+            call c2d_directcdg(nd,source(1,istart),ns,
+     1           charge(1,istart),dipstr(1,istart),
+     2           targ(1,jstart),nt,
+     3           pot(1,jstart),grad(1,jstart),
+     4           thresh)
           endif
           if(ifpgh.eq.3) then
-             do j=jstart,jend
-               call c2d_directcdh(nd,source(1,istart),ns,
-     1            charge(1,istart),dipstr(1,istart),
-     2            targ(1,j),pot(1,j),grad(1,j),
-     2            hess(1,j),thresh)
-             enddo
+            call c2d_directcdh(nd,source(1,istart),ns,
+     1           charge(1,istart),dipstr(1,istart),
+     2           targ(1,jstart),nt,
+     3           pot(1,jstart),grad(1,jstart),
+     4           hess(1,jstart),thresh)
           endif
         endif
 

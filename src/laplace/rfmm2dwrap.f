@@ -109,7 +109,7 @@ c   charge(ns)    : charge strengths
 c
 c   OUTPUT PARAMETERS
 c   pot(ns)       : potential at the source locations
-c   grad(ns)      : gradients at the source locations
+c   grad(2,ns)      : gradients at the source locations
 c
 
 

@@ -11,7 +11,7 @@ pkg_name = "fmm2dpy"
 ## TODO: fix problem with relative location for executable
 
 list_helm=['hfmm2dwrap.f','hfmm2dwrap_vec.f','helmkernels2d.f']
-list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f','lfmm2dwrap.f','lfmm2dwrap_vec.f','lapkernels2d.f']
+list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f','lfmm2dwrap.f','lfmm2dwrap_vec.f','lapkernels2d.f','cfmm2dwrap.f','cfmm2dwrap_vec.f','cauchykernels2d.f']
 list_common=[]
 
 FLIBS = os.getenv('FMM_FLIBS')
@@ -44,8 +44,10 @@ for st in st_opts:
         for pg in p_optsl:
             list_int_lap.append('rfmm2d'+st+cd+pg)
             list_int_lap.append('lfmm2d'+st+cd+pg)
+            list_int_lap.append('cfmm2d'+st+cd+pg)
             list_int_lap_vec.append('rfmm2d'+st+cd+pg+'_vec')
             list_int_lap_vec.append('lfmm2d'+st+cd+pg+'_vec')
+            list_int_lap_vec.append('cfmm2d'+st+cd+pg+'_vec')
 
 for cd in c_opts2:
     for pg in p_optsh2:
@@ -53,6 +55,7 @@ for cd in c_opts2:
     for pg in p_optsl2:
         list_int_lap_dir.append('r2d_direct'+cd+pg)
         list_int_lap_dir.append('l2d_direct'+cd+pg)
+        list_int_lap_dir.append('c2d_direct'+cd+pg)
 
 ext_helm = Extension(
     name='fmm2dpy.hfmm2d_fortran',

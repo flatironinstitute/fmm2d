@@ -1069,7 +1069,7 @@ c     global
       integer nterms1, nterms2, nd
 c     local
       real *8 zdiff(2), r, theta, pi, rsi, rsj, rsi5, rsi7, rsj2
-      real *8 rsi52, rsi2, ders(0:1)
+      real *8 rsi52, rsi2, ders(0:1), dtmp1, dtmp2, dtmp3, dtmp4
       real *8, allocatable :: diffs(:), kvec(:), pow(:), dpow(:),
      1     dfac2(:)
       complex *16, allocatable :: ktemp(:), difftemp(:), powtemp(:)
@@ -1151,116 +1151,56 @@ c
       rsi52=rsi5*rscale2/rscale1
       isign = -1
       do i = 1,nterms2
+         dtmp1 = isign*rsi5*2
+         dtmp2 = dtmp1*dfac2(i)
          do l = 1,nd
-            mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1           2.0d0*(dreal(mbhmpole(l,0))*dreal(ktemp(i)) +
-     2           ima*dreal(mbhmpole(l,0))*dimag(ktemp(i)))
-            mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1           2.0d0*(dreal(ympole(l,0))*dreal(ktemp(i))
-     2           +ima*dreal(ympole(l,0))*dimag(ktemp(i)))
-            lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1           2.0d0*(dreal(mbhmpole(l,0))*dreal(difftemp(i))
-     2           + ima*dreal(mbhmpole(l,0))*dimag(difftemp(i)))*dfac2(i)
-            lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1           2.0d0*(dreal(ympole(l,0))*dreal(ktemp(i))
-     2           +ima*dreal(ympole(l,0))*dimag(ktemp(i)))*dfac2(i)
+            mbhloc(l,i) = mbhloc(l,i) + dtmp1*
+     1           dreal(mbhmpole(l,0))*ktemp(i)
+            mbhloc(l,i) = mbhloc(l,i) + dtmp1*
+     1           dreal(ympole(l,0))*ktemp(i)
+            lloc(l,i) = lloc(l,i) + dtmp2*
+     1           dreal(mbhmpole(l,0))*difftemp(i)
+            lloc(l,i) = lloc(l,i) + dtmp2*
+     1           dreal(ympole(l,0))*ktemp(i)
          enddo
          rsj=rscale1
          rsj2=rscale1**2
+         dtmp1=isign*rsi5         
+         dtmp2=dtmp1*dfac2(i)
          do j = 1,min(nterms1,i)
+
+            dtmp3=dtmp1*rsj2
+            dtmp4=dtmp2*rsj2
+
             do l = 1,nd
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(i-j))
-     1              -dimag(mbhmpole(l,j))*dimag(ktemp(i-j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(ktemp(i-j))
-     3              +dimag(mbhmpole(l,j))*dreal(ktemp(i-j))))*rsj2
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(mbhmpole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(mbhmpole(l,j))*dreal(ktemp(i+j))))
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i-j))
-     1              -dimag(ympole(l,j))*dimag(ktemp(i-j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i-j))
-     3              +dimag(ympole(l,j))*dreal(ktemp(i-j))))*rsj2
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(ympole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(ympole(l,j))*dreal(ktemp(i+j))))
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(i-j))
-     1              -dimag(mbhmpole(l,j))*dimag(ktemp(i-j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(ktemp(i-j))
-     3              +dimag(mbhmpole(l,j))*dreal(ktemp(i-j))))*rsj2*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(difftemp(i+j))
-     1              +dimag(mbhmpole(l,j))*dimag(difftemp(i+j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(difftemp(i+j))
-     3              -dimag(mbhmpole(l,j))*dreal(difftemp(i+j))))*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i-j))
-     1              -dimag(ympole(l,j))*dimag(ktemp(i-j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i-j))
-     3              +dimag(ympole(l,j))*dreal(ktemp(i-j))))*rsj2*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(ympole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(ympole(l,j))*dreal(ktemp(i+j))))*dfac2(i)
+               mbhloc(l,i) = mbhloc(l,i) + dtmp3*
+     1              (mbhmpole(l,j)+ympole(l,j))*ktemp(i-j)
+               mbhloc(l,i) = mbhloc(l,i) + dtmp1*
+     1              dconjg(mbhmpole(l,j)+ympole(l,j))*ktemp(i+j)
+               lloc(l,i) = lloc(l,i) + dtmp4*
+     1              (mbhmpole(l,j)+ympole(l,j))*ktemp(i-j)
+               lloc(l,i) = lloc(l,i) + dtmp2*
+     1              dconjg(mbhmpole(l,j))*difftemp(i+j)
+               lloc(l,i) = lloc(l,i) + dtmp2*
+     1              dconjg(ympole(l,j))*ktemp(i+j)
             enddo
             rsj=rsj*rscale1
             rsj2=rsj2*rscale1**2
          enddo
+         dtmp3=dtmp1*rsi2
+         dtmp4=dtmp2*rsi2
          do j = i+1,nterms1
             do l = 1,nd
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(j-i))
-     1              +dimag(mbhmpole(l,j))*dimag(ktemp(j-i))
-     2              -ima*(dreal(mbhmpole(l,j))*dimag(ktemp(j-i))
-     3              -dimag(mbhmpole(l,j))*dreal(ktemp(j-i))))*rsi2
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(mbhmpole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(mbhmpole(l,j))*dreal(ktemp(i+j))))
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(j-i))
-     1              +dimag(ympole(l,j))*dimag(ktemp(j-i))
-     2              -ima*(dreal(ympole(l,j))*dimag(ktemp(j-i))
-     3              -dimag(ympole(l,j))*dreal(ktemp(j-i))))*rsi2
-               mbhloc(l,i) = mbhloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(ympole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(ympole(l,j))*dreal(ktemp(i+j))))
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(ktemp(j-i))
-     1              +dimag(mbhmpole(l,j))*dimag(ktemp(j-i))
-     2              -ima*(dreal(mbhmpole(l,j))*dimag(ktemp(j-i))
-     3              -dimag(mbhmpole(l,j))*dreal(ktemp(j-i))))*rsi2*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(mbhmpole(l,j))*dreal(difftemp(i+j))
-     1              +dimag(mbhmpole(l,j))*dimag(difftemp(i+j))
-     2              +ima*(dreal(mbhmpole(l,j))*dimag(difftemp(i+j))
-     3              -dimag(mbhmpole(l,j))*dreal(difftemp(i+j))))*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(j-i))
-     1              +dimag(ympole(l,j))*dimag(ktemp(j-i))
-     2              -ima*(dreal(ympole(l,j))*dimag(ktemp(j-i))
-     3              -dimag(ympole(l,j))*dreal(ktemp(j-i))))*rsi2*
-     5              dfac2(i)
-               lloc(l,i) = lloc(l,i) + isign*rsi5*
-     1              (dreal(ympole(l,j))*dreal(ktemp(i+j))
-     1              +dimag(ympole(l,j))*dimag(ktemp(i+j))
-     2              +ima*(dreal(ympole(l,j))*dimag(ktemp(i+j))
-     3              -dimag(ympole(l,j))*dreal(ktemp(i+j))))*dfac2(i)
+               mbhloc(l,i) = mbhloc(l,i) + dtmp3*
+     1              (mbhmpole(l,j)+ympole(l,j))*dconjg(ktemp(j-i))
+               mbhloc(l,i) = mbhloc(l,i) + dtmp1*
+     1              dconjg(mbhmpole(l,j)+ympole(l,j))*ktemp(i+j)
+               lloc(l,i) = lloc(l,i) + dtmp4*
+     1              (mbhmpole(l,j)+ympole(l,j))*dconjg(ktemp(j-i))
+               lloc(l,i) = lloc(l,i) + dtmp2*
+     1              dconjg(mbhmpole(l,j))*difftemp(i+j)
+               lloc(l,i) = lloc(l,i) + dtmp2*
+     1              dconjg(ympole(l,j))*ktemp(i+j)
             enddo
          enddo
          isign = -isign

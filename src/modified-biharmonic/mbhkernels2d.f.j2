@@ -21,7 +21,7 @@ c
 {% for rout in mbhDirectRouts %}
       subroutine {{ rout.name }}(nd,beta,source,ns,
      1     {% if "c" in rout.ker %}charge,{% endif %}{% if "d" in rout.ker %}dipstr,dipvec,{% endif %}{% if "q" in rout.ker %}quadstr,quadvec,{% endif %}{% if "o" in rout.ker %}octstr,octvec,{% endif %}
-     2     targ,{% if rout.out == "p" %}pot,{% endif %}{% if rout.out == "g" %}pot,grad,{% endif %}{% if rout.out == "h" %}pot,grad,hess,{% endif %}thresh)
+     2     targ,nt,{% if rout.out == "p" %}pot,{% endif %}{% if rout.out == "g" %}pot,grad,{% endif %}{% if rout.out == "h" %}pot,grad,hess,{% endif %}thresh)
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     input:
@@ -45,16 +45,23 @@ c     quadvec - real *8 (nd,3,ns) quadrupole orientations
 c     octstr - real *8 (nd,ns) octopole strengths
 c     octvec - real *8 (nd,4,ns) octopole orientations
 {%- endif %}
-c     targ - real *8 (2) target location
+c     targ - real *8 (2) target locations
+c     nt - integer, number of targets
 c     thresh - real *8 threshold, don't compute contribution of
 c                     charge if distance from charge to target is
 c                     less than this threshold
 c
 c     output:
 c
-c     pot - real *8 (nd) potentials at target
-c     grad - real *8 (nd,2) gradients at target
-c     hess - real *8 (nd,3) Hessians at target
+{%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}      
+c     pot(nd,nt)      : value of potential at targets
+{%- endif %}      
+{%- if rout.out == "g" or rout.out == "h" %}
+c     grad(nd,2,nt)   : value of gradient at targets
+{%- endif %}      
+{%- if rout.out == "h" %}
+c     hess(nd,3,nt)   : value of Hessian at targets
+{%- endif %}      
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
@@ -64,17 +71,17 @@ c     global variables
       {% if "d" in rout.ker %}real *8 dipstr(nd,*),dipvec(nd,2,*){% endif %}
       {% if "q" in rout.ker %}real *8 quadstr(nd,*),quadvec(nd,3,*){% endif %}
       {% if "o" in rout.ker %}real *8 octstr(nd,*),octvec(nd,4,*){% endif %}      
-      real *8 targ(2)
-      {% if rout.out == "p" %}real *8 pot(nd){% endif %}
-      {% if rout.out == "g" %}real *8 pot(nd),grad(nd,2){% endif %}
-      {% if rout.out == "h" %}real *8 pot(nd),grad(nd,2),hess(nd,3){% endif %}      
+      real *8 targ(2,nt)
+      {% if rout.out == "p" %}real *8 pot(nd,nt){% endif %}
+      {% if rout.out == "g" %}real *8 pot(nd,nt),grad(nd,2,nt){% endif %}
+      {% if rout.out == "h" %}real *8 pot(nd,nt),grad(nd,2,nt),hess(nd,3,nt){% endif %}      
       real *8 thresh
-      integer ns,nd
+      integer ns,nd,nt
 c     local variables
       real *8 potloc,gradloc(2),hessloc(3),der3(4),der4(5),der5(6)
       real *8 thresh2, xdiff, ydiff, rr
       integer ifpotloc, ifgradloc, ifhessloc, ifder3, ifder4, ifder5
-      integer i, ii
+      integer i, ii, j
 
       thresh2=thresh*thresh
 
@@ -85,138 +92,142 @@ c     local variables
       ifder4=1
       ifder5=1
 
-      
       do i = 1,ns
 
-         xdiff=targ(1)-source(1,i)
-         ydiff=targ(2)-source(2,i)
-         rr=xdiff*xdiff+ydiff*ydiff
-         if(rr.lt.thresh2) goto 1000
+         do j = 1,nt
          
-         call modbhgreen_all(beta,targ,source(1,i),ifpotloc,potloc,
-     1        ifgradloc,gradloc,ifhessloc,hessloc,ifder3,der3,ifder4,
-     2        der4,ifder5,der5)
+            xdiff=targ(1,j)-source(1,i)
+            ydiff=targ(2,j)-source(2,i)
+            rr=xdiff*xdiff+ydiff*ydiff
+            if(rr.lt.thresh2) goto 1000
+         
+            call modbhgreen_all(beta,targ(1,j),source(1,i),ifpotloc,
+     1           potloc,
+     1           ifgradloc,gradloc,ifhessloc,hessloc,ifder3,der3,ifder4,
+     2           der4,ifder5,der5)
 
-         do ii = 1,nd
-            {%- if "c" in rout.ker %}	 
+            do ii = 1,nd
+               {%- if "c" in rout.ker %}	 
 c     charge contrib
 
-            {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
-            pot(ii) = pot(ii) + potloc*charge(ii,i)
-            {%- endif %}
-            {%- if rout.out == "g" or rout.out == "h" %}
-            grad(ii,1) = grad(ii,1) + gradloc(1)*charge(ii,i)
-            grad(ii,2) = grad(ii,2) + gradloc(2)*charge(ii,i)
-            {%- endif %}
-            {%- if rout.out == "h" %}
-            hess(ii,1) = hess(ii,1) + hessloc(1)*charge(ii,i)
-            hess(ii,2) = hess(ii,2) + hessloc(2)*charge(ii,i)
-            hess(ii,3) = hess(ii,3) + hessloc(3)*charge(ii,i)
-            {%- endif %}
-            {%- endif %}
+               {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
+               pot(ii,j) = pot(ii,j) + potloc*charge(ii,i)
+               {%- endif %}
+               {%- if rout.out == "g" or rout.out == "h" %}
+               grad(ii,1,j) = grad(ii,1,j) + gradloc(1)*charge(ii,i)
+               grad(ii,2,j) = grad(ii,2,j) + gradloc(2)*charge(ii,i)
+               {%- endif %}
+               {%- if rout.out == "h" %}
+               hess(ii,1,j) = hess(ii,1,j) + hessloc(1)*charge(ii,i)
+               hess(ii,2,j) = hess(ii,2,j) + hessloc(2)*charge(ii,i)
+               hess(ii,3,j) = hess(ii,3,j) + hessloc(3)*charge(ii,i)
+               {%- endif %}
+               {%- endif %}
 
-            {%- if "d" in rout.ker %}
+               {%- if "d" in rout.ker %}
 c     dipole contrib         
-            
-            {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
-            pot(ii) = pot(ii) - dipstr(ii,i)*(gradloc(1)*dipvec(ii,1,i)
-     1           + gradloc(2)*dipvec(ii,2,i))
-            {%- endif %}
-            {%- if rout.out == "g" or rout.out == "h" %}
-            grad(ii,1) = grad(ii,1) -
-     1           dipstr(ii,i)*(hessloc(1)*dipvec(ii,1,i)
-     1           + hessloc(2)*dipvec(ii,2,i))
-            grad(ii,2) = grad(ii,2) - 
-     1           dipstr(ii,i)*(hessloc(2)*dipvec(ii,1,i)
-     1           + hessloc(3)*dipvec(ii,2,i))
+               
+               {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
+               pot(ii,j) = pot(ii,j) -
+     1              dipstr(ii,i)*(gradloc(1)*dipvec(ii,1,i)
+     1              + gradloc(2)*dipvec(ii,2,i))
+               {%- endif %}
+               {%- if rout.out == "g" or rout.out == "h" %}
+               grad(ii,1,j) = grad(ii,1,j) -
+     1              dipstr(ii,i)*(hessloc(1)*dipvec(ii,1,i)
+     1              + hessloc(2)*dipvec(ii,2,i))
+               grad(ii,2,j) = grad(ii,2,j) - 
+     1              dipstr(ii,i)*(hessloc(2)*dipvec(ii,1,i)
+     1              + hessloc(3)*dipvec(ii,2,i))
 
-            {%- endif %}
-            {%- if rout.out == "h" %}
-            hess(ii,1) = hess(ii,1) -
-     1           dipstr(ii,i)*(der3(1)*dipvec(ii,1,i)
-     1           + der3(2)*dipvec(ii,2,i))
-            hess(ii,2) = hess(ii,2) - 
-     1           dipstr(ii,i)*(der3(2)*dipvec(ii,1,i)
-     1           + der3(3)*dipvec(ii,2,i))
-            hess(ii,3) = hess(ii,3) -
-     1           dipstr(ii,i)*(der3(3)*dipvec(ii,1,i)
-     1           + der3(4)*dipvec(ii,2,i))
+               {%- endif %}
+               {%- if rout.out == "h" %}
+               hess(ii,1,j) = hess(ii,1,j) -
+     1              dipstr(ii,i)*(der3(1)*dipvec(ii,1,i)
+     1              + der3(2)*dipvec(ii,2,i))
+               hess(ii,2,j) = hess(ii,2,j) - 
+     1              dipstr(ii,i)*(der3(2)*dipvec(ii,1,i)
+     1              + der3(3)*dipvec(ii,2,i))
+               hess(ii,3,j) = hess(ii,3,j) -
+     1              dipstr(ii,i)*(der3(3)*dipvec(ii,1,i)
+     1              + der3(4)*dipvec(ii,2,i))
 
-            {%- endif %}
-            {%- endif %}
-            
-            {%- if "q" in rout.ker %}
+               {%- endif %}
+               {%- endif %}
+               
+               {%- if "q" in rout.ker %}
 
 c     quadrupole contrib
-            {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
-            pot(ii) = pot(ii) + 
-     1           quadstr(ii,i)*(hessloc(1)*quadvec(ii,1,i)
-     1           + hessloc(2)*quadvec(ii,2,i) + 
-     1           hessloc(3)*quadvec(ii,3,i))
-            {%- endif %}
-            {%- if rout.out == "g" or rout.out == "h" %}
-            grad(ii,1) = grad(ii,1) + 
-     1           quadstr(ii,i)*(der3(1)*quadvec(ii,1,i)
-     1           + der3(2)*quadvec(ii,2,i) 
-     1           + der3(3)*quadvec(ii,3,i))
-            grad(ii,2) = grad(ii,2) + 
-     1           quadstr(ii,i)*(der3(2)*quadvec(ii,1,i)
-     1           + der3(3)*quadvec(ii,2,i) +
-     1           der3(4)*quadvec(ii,3,i))
+               {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
+               pot(ii,j) = pot(ii,j) + 
+     1              quadstr(ii,i)*(hessloc(1)*quadvec(ii,1,i)
+     1              + hessloc(2)*quadvec(ii,2,i) + 
+     1              hessloc(3)*quadvec(ii,3,i))
+               {%- endif %}
+               {%- if rout.out == "g" or rout.out == "h" %}
+               grad(ii,1,j) = grad(ii,1,j) + 
+     1              quadstr(ii,i)*(der3(1)*quadvec(ii,1,i)
+     1              + der3(2)*quadvec(ii,2,i) 
+     1              + der3(3)*quadvec(ii,3,i))
+               grad(ii,2,j) = grad(ii,2,j) + 
+     1              quadstr(ii,i)*(der3(2)*quadvec(ii,1,i)
+     1              + der3(3)*quadvec(ii,2,i) +
+     1              der3(4)*quadvec(ii,3,i))
 
-            {%- endif %}
-            {%- if rout.out == "h" %}
-            hess(ii,1) = hess(ii,1) +
-     1           quadstr(ii,i)*(der4(1)*quadvec(ii,1,i)
-     1           + der4(2)*quadvec(ii,2,i) + der4(3)*quadvec(ii,3,i))
-            hess(ii,2) = hess(ii,2) +
-     1           quadstr(ii,i)*(der4(2)*quadvec(ii,1,i)
-     1           + der4(3)*quadvec(ii,2,i) + der4(4)*quadvec(ii,3,i))
-            hess(ii,3) = hess(ii,3) +
-     1           quadstr(ii,i)*(der4(3)*quadvec(ii,1,i)
-     1           + der4(4)*quadvec(ii,2,i) + der4(5)*quadvec(ii,3,i))
-            
-            {%- endif %}
-            {%- endif %}
-            {%- if "o" in rout.ker %}
+               {%- endif %}
+               {%- if rout.out == "h" %}
+               hess(ii,1,j) = hess(ii,1,j) +
+     1              quadstr(ii,i)*(der4(1)*quadvec(ii,1,i)
+     1              + der4(2)*quadvec(ii,2,i) + der4(3)*quadvec(ii,3,i))
+               hess(ii,2,j) = hess(ii,2,j) +
+     1              quadstr(ii,i)*(der4(2)*quadvec(ii,1,i)
+     1              + der4(3)*quadvec(ii,2,i) + der4(4)*quadvec(ii,3,i))
+               hess(ii,3,j) = hess(ii,3,j) +
+     1              quadstr(ii,i)*(der4(3)*quadvec(ii,1,i)
+     1              + der4(4)*quadvec(ii,2,i) + der4(5)*quadvec(ii,3,i))
+               
+               {%- endif %}
+               {%- endif %}
+               {%- if "o" in rout.ker %}
 c     octopole contrib
-            {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}            
-            pot(ii) = pot(ii) - 
-     1           octstr(ii,i)*(der3(1)*octvec(ii,1,i)
-     1           + der3(2)*octvec(ii,2,i) + der3(3)*octvec(ii,3,i)
-     1           + der3(4)*octvec(ii,4,i))
+               {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}            
+               pot(ii,j) = pot(ii,j) - 
+     1              octstr(ii,i)*(der3(1)*octvec(ii,1,i)
+     1              + der3(2)*octvec(ii,2,i) + der3(3)*octvec(ii,3,i)
+     1              + der3(4)*octvec(ii,4,i))
 
-            {%- endif %}
-            {%- if rout.out == "g" or rout.out == "h" %}
-            grad(ii,1) = grad(ii,1) - 
-     1           octstr(ii,i)*(der4(1)*octvec(ii,1,i)
-     1           + der4(2)*octvec(ii,2,i) + der4(3)*octvec(ii,3,i)
-     1           + der4(4)*octvec(ii,4,i))
-            grad(ii,2) = grad(ii,2) - 
-     1           octstr(ii,i)*(der4(2)*octvec(ii,1,i)
-     1           + der4(3)*octvec(ii,2,i) + der4(4)*octvec(ii,3,i)
-     1           + der4(5)*octvec(ii,4,i))
+               {%- endif %}
+               {%- if rout.out == "g" or rout.out == "h" %}
+               grad(ii,1,j) = grad(ii,1,j) - 
+     1              octstr(ii,i)*(der4(1)*octvec(ii,1,i)
+     1              + der4(2)*octvec(ii,2,i) + der4(3)*octvec(ii,3,i)
+     1              + der4(4)*octvec(ii,4,i))
+               grad(ii,2,j) = grad(ii,2,j) - 
+     1              octstr(ii,i)*(der4(2)*octvec(ii,1,i)
+     1              + der4(3)*octvec(ii,2,i) + der4(4)*octvec(ii,3,i)
+     1              + der4(5)*octvec(ii,4,i))
 
-            {%- endif %}
-            {%- if rout.out == "h" %}
-            hess(ii,1) = hess(ii,1) - 
-     1           octstr(ii,i)*(der5(1)*octvec(ii,1,i)
-     1           + der5(2)*octvec(ii,2,i) + der5(3)*octvec(ii,3,i)
-     1           + der5(4)*octvec(ii,4,i))
-            hess(ii,2) = hess(ii,2) - 
-     1           octstr(ii,i)*(der5(2)*octvec(ii,1,i)
-     1           + der5(3)*octvec(ii,2,i) + der5(4)*octvec(ii,3,i)
-     1           + der5(5)*octvec(ii,4,i))
-            hess(ii,3) = hess(ii,3) - 
-     1           octstr(ii,i)*(der5(3)*octvec(ii,1,i)
-     1           + der5(4)*octvec(ii,2,i) + der5(5)*octvec(ii,3,i)
-     1           + der5(6)*octvec(ii,4,i))
+               {%- endif %}
+               {%- if rout.out == "h" %}
+               hess(ii,1,j) = hess(ii,1,j) - 
+     1              octstr(ii,i)*(der5(1)*octvec(ii,1,i)
+     1              + der5(2)*octvec(ii,2,i) + der5(3)*octvec(ii,3,i)
+     1              + der5(4)*octvec(ii,4,i))
+               hess(ii,2,j) = hess(ii,2,j) - 
+     1              octstr(ii,i)*(der5(2)*octvec(ii,1,i)
+     1              + der5(3)*octvec(ii,2,i) + der5(4)*octvec(ii,3,i)
+     1              + der5(5)*octvec(ii,4,i))
+               hess(ii,3,j) = hess(ii,3,j) - 
+     1              octstr(ii,i)*(der5(3)*octvec(ii,1,i)
+     1              + der5(4)*octvec(ii,2,i) + der5(5)*octvec(ii,3,i)
+     1              + der5(6)*octvec(ii,4,i))
+               
+               {%- endif %}
+               {%- endif %}
+            enddo
+ 1000       continue
             
-            {%- endif %}
-            {%- endif %}
-         enddo
-	 
- 1000    continue
+         enddo	 
       enddo
       
       
@@ -372,3 +383,318 @@ c
 c      
 c      return
 c      end
+
+
+{% for rout in mbhevalRouts %}
+      subroutine mbh2d_directmps{{ rout.out }}_vec(nd,beta,source,ns,
+     1     mbhmps,ymps,ntermsmps,
+     2     targ,nt,{% if rout.out == "p" %}pot,{% endif %}{% if rout.out == "g" %}pot,grad,{% endif %}{% if rout.out == "h" %}pot,grad,hess,{% endif %}thresh)
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c
+c     multipolar sources direct evaluation routine
+c      
+c     input:
+c
+c     nd - integer, number of vectors per source
+c     beta - real *8, modified biharmonic parameter
+c     ns - integer, number of sources
+c     source - real *8 (2,ns) source locations
+c     mbhmps       in: complex *16 (nd,0:ntermsmps,ns)
+c                  difference kernel type expansion at each source 
+c
+c     ymps         in: complex *16 (nd,0:ntermsmps,ns)
+c                  Yukawa (Bessel K) type expansion at each source 
+c
+c     ntermsmps     in: integer, order of the multipolar charges at
+c                   each source
+c      
+c     targ - real *8 (2,nt) target location
+c     nt - integer, number of targets 
+c     thresh - real *8 threshold, don't compute contribution of
+c                     charge if distance from charge to target is
+c                     less than this threshold
+c
+c     output:
+c
+{%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}      
+c     pot(nd,nt)      : value of potential at targets
+{%- endif %}      
+{%- if rout.out == "g" or rout.out == "h" %}
+c     grad(nd,2,nt)   : value of gradient at targets
+{%- endif %}      
+{%- if rout.out == "h" %}
+c     hess(nd,3,nt)   : value of Hessian at targets
+{%- endif %}      
+c
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+      implicit none
+c     global variables
+      real *8 beta, source(2,*)
+      complex *16 :: mbhmps(nd,0:ntermsmps,ns),ymps(nd,0:ntermsmps,ns)
+      real *8 targ(2,*)
+      {% if rout.out == "p" %}real *8 pot(nd,nt){% endif %}
+      {% if rout.out == "g" %}real *8 pot(nd,nt),grad(nd,2,nt){% endif %}
+      {% if rout.out == "h" %}real *8 pot(nd,nt),grad(nd,2,nt),hess(nd,3,nt){% endif %}      
+      real *8 thresh
+      integer ns,nd,ntermsmps,nt
+c     local variables
+      real *8 zdiff(2), r, theta
+      real *8 ders(0:1), pih
+      real *8, allocatable :: diffs(:), kvec(:)
+      complex *16 z, eye, ztemp1, ztemp2
+      complex *16, allocatable :: mptemp1(:),mptemp2(:)
+      {%- if rout.out == "g" or rout.out == "h" %}
+      complex *16, allocatable :: ympolex(:,:), ympoley(:,:)
+      complex *16, allocatable :: mbhmpolex(:,:), mbhmpoley(:,:)
+      {%- endif %}
+      {%- if rout.out == "h" %}
+      complex *16, allocatable :: ympolexx(:,:), ympolexy(:,:),
+     1     ympoleyy(:,:)
+      complex *16, allocatable :: mbhmpolexx(:,:),mbhmpolexy(:,:),
+     1     mbhmpoleyy(:,:)
+      {%- endif %}      
+      real *8 dc, ds, dc2, ds2, dcx, dsx, dcy, dsy
+      real *8 rscale
+      integer ifder, ifders, l, j, i, nterms, jj
+      data eye /(0.0d0,1.0d0)/
+
+      rscale=1
+      nterms = ntermsmps
+
+      {%- if rout.out == "g" or rout.out == "h" %}
+c     
+      allocate(ympolex(nd,0:nterms+1),ympoley(nd,0:nterms+1),
+     1     mbhmpolex(nd,0:nterms+1),mbhmpoley(nd,0:nterms+1))
+
+      {%- endif %}
+      
+      {%- if rout.out == "h" %}
+c
+      allocate(ympolexx(nd,0:nterms+2),ympolexy(nd,0:nterms+2),
+     1     ympoleyy(nd,0:nterms+2),
+     1     mbhmpolexx(nd,0:nterms+2),mbhmpolexy(nd,0:nterms+2),
+     1     mbhmpoleyy(nd,0:nterms+2))
+
+      {%- endif %}
+
+      allocate(mptemp1(0:nterms+6),mptemp2(0:nterms+6),
+     1     diffs(0:nterms+6),kvec(0:nterms+6))
+
+      do jj = 1,ns
+
+         {%- if rout.out == "g" or rout.out == "h" %}
+         
+         do i=0,nterms+1
+            do j = 1,nd
+               ympolex(j,i)=0
+               ympoley(j,i)=0
+               mbhmpolex(j,i)=0
+               mbhmpoley(j,i)=0
+            enddo
+         enddo
+
+         do j=1,nd
+            ympolex(j,1) = -beta/rscale*ymps(j,0,jj)
+            ympoley(j,1) = -beta/rscale*ymps(j,0,jj)*eye
+            
+            mbhmpolex(j,1) = -beta/rscale*mbhmps(j,0,jj)
+            mbhmpoley(j,1) = -beta/rscale*mbhmps(j,0,jj)*eye
+         enddo
+         
+         do i=1,nterms
+            do j = 1,nd
+               ympolex(j,i-1) = ympolex(j,i-1) 
+     1              -beta/2.0d0*ymps(j,i,jj)*rscale
+               ympolex(j,i+1) = ympolex(j,i+1) 
+     1              -beta/2.0d0*ymps(j,i,jj)/rscale
+               ympoley(j,i-1) = ympoley(j,i-1) 
+     1              +beta/2.0d0*ymps(j,i,jj)*rscale*eye
+               ympoley(j,i+1) = ympoley(j,i+1)
+     1              -beta/2.0d0*ymps(j,i,jj)/rscale*eye
+
+               ympolex(j,i-1) = ympolex(j,i-1) 
+     1              -beta/2.0d0*mbhmps(j,i,jj)*rscale
+               
+               mbhmpolex(j,i+1) = mbhmpolex(j,i+1) 
+     1              -beta/2.0d0*mbhmps(j,i,jj)/rscale
+               ympoley(j,i-1) = ympoley(j,i-1) 
+     1              +beta/2.0d0*mbhmps(j,i,jj)*rscale*eye
+               mbhmpoley(j,i+1) = mbhmpoley(j,i+1) 
+     1              -beta/2.0d0*mbhmps(j,i,jj)/rscale*eye
+            enddo
+         enddo
+
+         {% endif %}
+         {%- if rout.out == "h" %}
+c
+
+         do i=0,nterms+2
+            do j=1,nd
+               ympolexx(j,i)=0
+               ympolexy(j,i)=0
+               ympoleyy(j,i)=0
+               mbhmpolexx(j,i)=0
+               mbhmpolexy(j,i)=0
+               mbhmpoleyy(j,i)=0
+            enddo
+         enddo
+
+         do j = 1,nd
+            ympolexx(j,1) = -beta/1.0d0/rscale*dreal(ympolex(j,0))
+            ympolexy(j,1) = -beta/1.0d0/rscale*dreal(ympolex(j,0))*eye
+            ympoleyy(j,1) = -beta/1.0d0/rscale*dreal(ympoley(j,0))*eye
+
+            mbhmpolexx(j,1) = -beta/1.0d0/rscale*dreal(mbhmpolex(j,0))
+            mbhmpolexy(j,1) = 
+     1           -beta/1.0d0/rscale*dreal(mbhmpolex(j,0))*eye
+            mbhmpoleyy(j,1) = 
+     1           -beta/1.0d0/rscale*dreal(mbhmpoley(j,0))*eye
+         enddo
+         
+         do i=1,nterms+1
+            do j=1,nd
+               ympolexx(j,i-1) = ympolexx(j,i-1)
+     1              -beta/2.0d0*ympolex(j,i)*rscale
+               ympolexx(j,i+1) = ympolexx(j,i+1)
+     1              -beta/2.0d0*ympolex(j,i)/rscale
+               ympolexy(j,i-1) = ympolexy(j,i-1) 
+     1              +beta/2.0d0*ympolex(j,i)*rscale*eye
+               ympolexy(j,i+1) = ympolexy(j,i+1) 
+     1              -beta/2.0d0*ympolex(j,i)/rscale*eye
+               ympoleyy(j,i-1) = ympoleyy(j,i-1) 
+     1              +beta/2.0d0*ympoley(j,i)*rscale*eye
+               ympoleyy(j,i+1) = ympoleyy(j,i+1) 
+     1              -beta/2.0d0*ympoley(j,i)/rscale*eye
+
+               ympolexx(j,i-1) = ympolexx(j,i-1) 
+     1              -beta/2.0d0*mbhmpolex(j,i)*rscale
+               mbhmpolexx(j,i+1) = mbhmpolexx(j,i+1) 
+     1              -beta/2.0d0*mbhmpolex(j,i)/rscale
+               ympolexy(j,i-1) = ympolexy(j,i-1) 
+     1              +beta/2.0d0*mbhmpolex(j,i)*rscale*eye
+               mbhmpolexy(j,i+1) = mbhmpolexy(j,i+1) 
+     1              -beta/2.0d0*mbhmpolex(j,i)/rscale*eye
+               ympoleyy(j,i-1) = ympoleyy(j,i-1) 
+     1              +beta/2.0d0*mbhmpoley(j,i)*rscale*eye
+               mbhmpoleyy(j,i+1) = mbhmpoleyy(j,i+1) 
+     1              -beta/2.0d0*mbhmpoley(j,i)/rscale*eye
+            enddo
+         enddo
+         {%- endif %}
+
+
+         do i = 1,nt
+            zdiff(1) = targ(1,i)-source(1,jj)
+            zdiff(2) = targ(2,i)-source(2,jj)
+            call h2cart2polar(zdiff,r,theta)
+
+            if (r .lt. thresh) cycle
+            
+c     get values of difference functions
+            ifders = 0
+            call diffslogbk_fast(r,beta,rscale,diffs,ifders,ders,kvec,
+     1           nterms+2)       
+            
+            mptemp1(0)=diffs(0)
+            mptemp2(0)=kvec(0)
+            ztemp2=exp(eye*theta)
+            ztemp1=ztemp2
+            do j=1,nterms+2
+               mptemp1(j)=dcmplx(diffs(j)*dreal(ztemp1),
+     1              diffs(j)*dimag(ztemp1))
+               mptemp2(j)=dcmplx(kvec(j)*dreal(ztemp1),
+     1              kvec(j)*dimag(ztemp1))
+               ztemp1 = ztemp1*ztemp2
+            enddo
+         
+c     evaluate
+            
+            {%- if rout.out == "p" or rout.out == "g" or rout.out == "h" %}
+            do j = 1,nd
+               pot(j,i) = pot(j,i) +
+     1              dreal(mptemp1(0))*dreal(mbhmps(j,0,jj)) +
+     1              dreal(mptemp2(0))*dreal(ymps(j,0,jj))
+            enddo
+            
+            do l = 1,nterms
+               do j=1,nd
+                  pot(j,i) = pot(j,i) +
+     1                 dreal(mptemp1(l))*dreal(mbhmps(j,l,jj)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmps(j,l,jj))
+                  pot(j,i) = pot(j,i) +
+     1                 dreal(mptemp2(l))*dreal(ymps(j,l,jj)) +
+     1                 dimag(mptemp2(l))*dimag(ymps(j,l,jj))
+               enddo
+            enddo
+            
+            {%- endif %}
+            {%- if rout.out == "g" or rout.out == "h" %}
+            do j = 1,nd
+               grad(j,1,i) = grad(j,1,i) + 
+     1              dreal(mptemp1(0))*dreal(mbhmpolex(j,0)) +
+     1              dreal(mptemp2(0))*dreal(ympolex(j,0))
+               grad(j,2,i) = grad(j,2,i) + 
+     1              dreal(mptemp1(0))*dreal(mbhmpoley(j,0)) +
+     1              dreal(mptemp2(0))*dreal(ympoley(j,0))
+            enddo
+            do l = 1,nterms+1
+               do j = 1,nd
+                  grad(j,1,i) = grad(j,1,i) +
+     1                 dreal(mptemp1(l))*dreal(mbhmpolex(j,l)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmpolex(j,l))
+                  grad(j,1,i) = grad(j,1,i) +
+     1                 dreal(mptemp2(l))*dreal(ympolex(j,l)) +
+     1                 dimag(mptemp2(l))*dimag(ympolex(j,l))
+                  grad(j,2,i) = grad(j,2,i) +
+     1                 dreal(mptemp1(l))*dreal(mbhmpoley(j,l)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmpoley(j,l))
+                  grad(j,2,i) = grad(j,2,i) +
+     1                 dreal(mptemp2(l))*dreal(ympoley(j,l)) +
+     1                 dimag(mptemp2(l))*dimag(ympoley(j,l))
+               enddo
+            enddo
+            {%- endif %}
+            {%- if rout.out == "h" %}
+            do j=1,nd
+               hess(j,1,i) = hess(j,1,i) +
+     1              dreal(mptemp1(0))*dreal(mbhmpolexx(j,0)) +
+     1              dreal(mptemp2(0))*dreal(ympolexx(j,0))
+               hess(j,2,i) = hess(j,2,i) +
+     1              dreal(mptemp1(0))*dreal(mbhmpolexy(j,0)) +
+     1              dreal(mptemp2(0))*dreal(ympolexy(j,0))
+               hess(j,3,i) = hess(j,3,i) +
+     1              dreal(mptemp1(0))*dreal(mbhmpoleyy(j,0)) +
+     1              dreal(mptemp2(0))*dreal(ympoleyy(j,0))
+            enddo
+            do l = 1,nterms+2
+               do j = 1,nd
+                  hess(j,1,i) = hess(j,1,i) +
+     1                 dreal(mptemp1(l))*dreal(mbhmpolexx(j,l)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmpolexx(j,l))
+                  hess(j,1,i) = hess(j,1,i) + 
+     1                 dreal(mptemp2(l))*dreal(ympolexx(j,l)) +
+     1                 dimag(mptemp2(l))*dimag(ympolexx(j,l))
+                  hess(j,2,i) = hess(j,2,i) + 
+     1                 dreal(mptemp1(l))*dreal(mbhmpolexy(j,l)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmpolexy(j,l))
+                  hess(j,2,i) = hess(j,2,i) + 
+     1                 dreal(mptemp2(l))*dreal(ympolexy(j,l)) +
+     1                 dimag(mptemp2(l))*dimag(ympolexy(j,l))
+                  hess(j,3,i) = hess(j,3,i) + 
+     1                 dreal(mptemp1(l))*dreal(mbhmpoleyy(j,l)) +
+     1                 dimag(mptemp1(l))*dimag(mbhmpoleyy(j,l))
+                  hess(j,3,i) = hess(j,3,i) + 
+     1                 dreal(mptemp2(l))*dreal(ympoleyy(j,l)) +
+     1                 dimag(mptemp2(l))*dimag(ympoleyy(j,l))
+               enddo
+            enddo
+            {%- endif %}
+
+         enddo
+      enddo
+      return 
+      end
+
+{% endfor %}
+
+      

@@ -37,7 +37,8 @@ c
 c     In principle we could test the mpmp and mploc
 c     translations but these are used in the formmp and
 c     formta routines
-c      
+c
+      
       implicit real *8 (a-h,o-z)
       real *8, allocatable :: source(:,:),targ(:,:),targc(:,:)
       real *8, allocatable :: dipvec(:,:,:)
@@ -216,11 +217,9 @@ c      call prin2('ympole *',ympole,nd*2*(nterms+1))
      1     mbhmpole,ympole,nterms,targ,ntarg,
      2     {% if rout.out == "p" %}pot{% endif %}{% if rout.out == "g" %}pot,grad{% endif %}{% if rout.out == "h" %}pot,grad,hess{% endif %})
 
-      do i = 1,ntarg
-         call mbh2d_direct{{ rout.ker }}{{ rout.out }}_vec(nd,beta,source,nsrc,
-     1        {% if "c" in rout.ker %}charge,{% endif %}{% if "d" in rout.ker %}dipstr,dipvec,{% endif %}{% if "q" in rout.ker %}quadstr,quadvec,{% endif %}{% if "o" in rout.ker %}octstr,octvec,{% endif %}
-     2        targ(1,i),{% if rout.out == "p" or rout.out == "g" or rout.out == "h" %}potex(1,i),{% endif %}{% if rout.out == "g" or rout.out == "h" %}gradex(1,1,i),{% endif %}{% if rout.out == "h" %}hessex(1,1,i),{% endif %}thresh)
-      enddo
+      call mbh2d_direct{{ rout.ker }}{{ rout.out }}_vec(nd,beta,source,nsrc,
+     1     {% if "c" in rout.ker %}charge,{% endif %}{% if "d" in rout.ker %}dipstr,dipvec,{% endif %}{% if "q" in rout.ker %}quadstr,quadvec,{% endif %}{% if "o" in rout.ker %}octstr,octvec,{% endif %}
+     2     targ,ntarg,{% if rout.out == "p" or rout.out == "g" or rout.out == "h" %}potex,{% endif %}{% if rout.out == "g" or rout.out == "h" %}gradex,{% endif %}{% if rout.out == "h" %}hessex,{% endif %}thresh)
 
       {%- if rout.out == "p" %}
       call testerr(nd*ntarg,potex,pot,errpot)
@@ -312,11 +311,9 @@ c      call prin2('lloc *',lloc,2*nd*(nterms+1))
      1     mbhlocc,llocc,nterms,targc,ntarg,
      2     {% if rout.out == "p" %}pot{% endif %}{% if rout.out == "g" %}pot,grad{% endif %}{% if rout.out == "h" %}pot,grad,hess{% endif %})
 
-      do i = 1,ntarg
-         call mbh2d_direct{{ rout.ker }}{{ rout.out }}_vec(nd,beta,source,nsrc,
-     1        {% if "c" in rout.ker %}charge,{% endif %}{% if "d" in rout.ker %}dipstr,dipvec,{% endif %}{% if "q" in rout.ker %}quadstr,quadvec,{% endif %}{% if "o" in rout.ker %}octstr,octvec,{% endif %}
-     2        targc(1,i),{% if rout.out == "p" or rout.out == "g" or rout.out == "h" %}potex(1,i),{% endif %}{% if rout.out == "g" or rout.out == "h" %}gradex(1,1,i),{% endif %}{% if rout.out == "h" %}hessex(1,1,i),{% endif %}thresh)
-      enddo
+      call mbh2d_direct{{ rout.ker }}{{ rout.out }}_vec(nd,beta,source,nsrc,
+     1     {% if "c" in rout.ker %}charge,{% endif %}{% if "d" in rout.ker %}dipstr,dipvec,{% endif %}{% if "q" in rout.ker %}quadstr,quadvec,{% endif %}{% if "o" in rout.ker %}octstr,octvec,{% endif %}
+     2     targc,ntarg,{% if rout.out == "p" or rout.out == "g" or rout.out == "h" %}potex,{% endif %}{% if rout.out == "g" or rout.out == "h" %}gradex,{% endif %}{% if rout.out == "h" %}hessex,{% endif %}thresh)
 
       
 c

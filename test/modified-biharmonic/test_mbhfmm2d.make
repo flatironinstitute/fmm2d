@@ -1,4 +1,4 @@
-PROJECT = int2-test-mbhrouts2d
+PROJECT = int2-test-mbhfmm2d
 
 HOST = gcc
 HOST = gcc-dbg
@@ -15,7 +15,7 @@ endif
 
 ifeq ($(HOST),gcc-dbg)
     FC=gfortran 
-    FFLAGS=-g -std=legacy 
+    FFLAGS=-g -pg -std=legacy 
 endif
 
 ifeq ($(HOST),gcc-openmp)
@@ -40,7 +40,7 @@ COM = ../../src/common
 .PHONY: all clean list
 
 
-OBJECTS =  test_mbhrouts2d.o \
+OBJECTS =  test_mbhfmm2d.o \
   $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
@@ -64,7 +64,9 @@ OBJECTS =  test_mbhrouts2d.o \
   $(LFMM)/l2dterms.o \
   $(MBHFMM)/mbhkernels2d.o \
   $(MBHFMM)/mbhrouts2d.o \
-  $(MBHFMM)/mbhgreen2d.o 
+  $(MBHFMM)/mbhgreen2d.o \
+  $(MBHFMM)/mbhfmm2d.o 
+
 
 #
 

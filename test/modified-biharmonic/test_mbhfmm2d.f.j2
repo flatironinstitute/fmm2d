@@ -45,8 +45,8 @@ c
 c     make nsrc/ntarg big enough to trigger fmm routs
 c     but no need to test result everywhere
 
-      nsrc = 400
-      ntarg = 300
+      nsrc = 4000
+      ntarg = 3000
       ntt = min(ntarg,20)
       nst = min(nsrc,20)
       
@@ -183,11 +183,20 @@ c
       {% if rout.out == "h" %}
       ifpgh=3
       ifpghtarg=3
-      {% endif %}      
+      {% endif %}
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       

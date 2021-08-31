@@ -67,8 +67,8 @@
       ifstoklet = 1
       ifstrslet = 1
       iper = 0
-      ifppreg = 2
-      ifppregtarg = 2
+      ifppreg = 3
+      ifppregtarg = 3
       nd = 1
       call stfmm2d(nd,eps,nsrc,sources,ifstoklet,stoklet,
      1  ifstrslet,strslet,strsvec,ifppreg,pot,pre,grad,

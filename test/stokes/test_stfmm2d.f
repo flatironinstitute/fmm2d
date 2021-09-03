@@ -1,14 +1,12 @@
       implicit real *8 (a-h,o-z)
       real *8, allocatable :: sources(:,:),targ(:,:)
-      complex *16, allocatable :: charges(:),dip(:,:)
-      complex *16, allocatable :: pot(:),grad(:,:),hess(:,:)
-      complex *16, allocatable :: pottarg(:),gradtarg(:,:)
-      complex *16, allocatable :: hesstarg(:,:)
-
-      complex *16, allocatable :: potex(:),gradex(:,:)
-      complex *16, allocatable :: hessex(:,:)
-      complex *16, allocatable :: pottargex(:),gradtargex(:,:),
-     1                             hesstargex(:,:)
+      real *8, allocatable :: stoklet(:,:),strslet(:,:),strsvec(:,:)
+      real *8, allocatable :: pot(:,:),grad(:,:,:),pre(:)
+      real *8, allocatable :: potex(:,:),gradex(:,:,:),preex(:)
+      
+      real *8, allocatable :: pottarg(:,:),gradtarg(:,:,:),pretarg(:)
+      real *8, allocatable :: pottargex(:,:),gradtargex(:,:,:),
+     1   pretargex(:)
 
       real *8 expc(100),texps(100),scj(100)
 
@@ -30,20 +28,27 @@
       nsrc = 9998
       ntarg = 9999
 
-      allocate(sources(2,nsrc),charges(nsrc),dip(2,nsrc))
+      allocate(sources(2,nsrc),stoklet(2,nsrc))
+      allocate(strslet(2,nsrc),strsvec(2,nsrc))
       allocate(targ(2,ntarg))
-      allocate(pot(nsrc),grad(2,nsrc),hess(3,nsrc))
-      allocate(pottarg(ntarg),gradtarg(2,ntarg),hesstarg(3,ntarg))
+      allocate(pot(2,nsrc),grad(2,2,nsrc),pre(nsrc))
+      allocate(pottarg(2,ntarg),gradtarg(2,2,ntarg),pretarg(ntarg))
 
       do i=1,nsrc
 
          sources(1,i) = hkrand(0)
          sources(2,i) = hkrand(0)
 
-         charges(i) = hkrand(0) + ima*hkrand(0) 
-         dip(1,i) = hkrand(0) + ima*hkrand(0)
-         dip(2,i) = hkrand(0) + ima*hkrand(0)
+         stoklet(1,i) = hkrand(0)
+         stoklet(2,i) = hkrand(0)
+         
+         strslet(1,i) = hkrand(0)
+         strslet(2,i) = hkrand(0)
+
+         strsvec(1,i) = hkrand(0)
+         strsvec(2,i) = hkrand(0)
       enddo
+
 
 
       do i=1,ntarg
@@ -54,21 +59,24 @@
       nts = min(20,nsrc)
       ntt = min(20,ntarg)
 
-      allocate(potex(nts),gradex(2,nts),hessex(3,nts))
-      allocate(pottargex(ntt),gradtargex(2,ntt),hesstargex(3,ntt))
+      allocate(potex(2,nts),gradex(2,2,nts),preex(nts))
+      allocate(pottargex(2,ntt),gradtargex(2,2,ntt),pretargex(ntt))
 
       eps = 0.5d-6
 
-      ifcharge = 1
-      ifdipole = 1
+      ifstoklet = 1
+      ifstrslet = 1
       iper = 0
-      ifpgh = 2
-      ifpghtarg = 2
+      ifppreg = 3
+      ifppregtarg = 3
       nd = 1
-      call bhfmm2d(nd,eps,nsrc,sources,ifcharge,charges,
-     1  ifdipole,dip,iper,ifpgh,pot,grad,hess,
-     2  ntarg,targ,ifpghtarg,pottarg,gradtarg,
-     3  hesstarg)
+      call stfmm2d(nd,eps,nsrc,sources,ifstoklet,stoklet,
+     1  ifstrslet,strslet,strsvec,ifppreg,pot,pre,grad,
+     2  ntarg,targ,ifppregtarg,pottarg,pretarg,gradtarg,ier)
+      
+c      call prin2('pot=*',pot,2*nsrc)
+c      call prin2('pre=*',pre,nsrc)
+c      call prin2('grad=*',grad,4*nsrc)
 
 
 c
@@ -78,16 +86,22 @@ c
       call dzero(pottargex,2*ntt)
       call dzero(gradex,4*nts)
       call dzero(gradtargex,4*ntt)
+      call dzero(preex,nts)
+      call dzero(pretargex,ntt)
 
       thresh = 1.0d-14
 
-      call bhfmm2dpart_direct(1,1,nsrc,1,nts,sources,ifcharge,
-     1       charges,ifdipole,dip,sources,ifpgh,potex,
-     2       gradex,hessex,thresh)
+      call st2ddirectstokstrsg(nd,sources,ifstoklet,stoklet,ifstrslet,
+     1     strslet,strsvec,nsrc,sources,nts,potex,preex,gradex,thresh)
 
-      call bhfmm2dpart_direct(1,1,nsrc,1,ntt,sources,ifcharge,
-     1       charges,ifdipole,dip,targ,ifpghtarg,pottargex,
-     2       gradtargex,hesstargex,thresh)
+      call st2ddirectstokstrsg(nd,sources,ifstoklet,stoklet,ifstrslet,
+     1    strslet,strsvec,nsrc,targ,ntt,pottargex,pretargex,gradtargex,
+     2    thresh)
+      
+c      call prin2('potex=*',potex,2*nts)
+c      call prin2('preex=*',preex,nts)
+c      call prin2('gradex=*',gradex,4*nts)
+
 
      
       errps = 0
@@ -96,21 +110,24 @@ c
       errgs = 0
       errgt = 0
 
-      errhs = 0
-      errht = 0
-      if(ifpgh.ge.1) call derr(potex,pot,2*nts,errps)
-      if(ifpghtarg.ge.1) call derr(pottargex,pottarg,2*ntt,errpt)
+      errpres = 0
+      errpret = 0
+      if(ifppreg.ge.1) call derr(potex,pot,2*nts,errps)
+      if(ifppregtarg.ge.1) call derr(pottargex,pottarg,2*ntt,errpt)
 
 
-      if(ifpgh.ge.2) call derr(gradex,grad,4*nts,errgs)
-      if(ifpghtarg.ge.2) call derr(gradtargex,gradtarg,4*ntt,errgt)
+      if(ifppreg.ge.2) call derr(preex,pre,nts,errpres)
+      if(ifppregtarg.ge.2) call derr(pretargex,pretarg,ntt,errpret)
 
-      call errprintbh(errps,errgs,errhs,errpt,errgt,
-     1  errht)
+      if(ifppreg.ge.3) call derr(gradex,grad,4*nts,errgs)
+      if(ifppregtarg.ge.3) call derr(gradtargex,gradtarg,4*ntt,errgt)
+
+      call errprintbh(errps,errpres,errgs,errpt,errpret,
+     1  errgt)
       if (errps .lt. eps .and. errgs .lt. eps 
-     1     .and. errhs .lt. eps .and.
+     1     .and. errpres .lt. eps .and.
      1     errpt .lt. eps .and. errgt .lt. eps 
-     1     .and. errht .lt. eps)
+     1     .and. errpret .lt. eps)
      1     ipass(1) = 1
       
       print *, "ipass=",ipass(1)

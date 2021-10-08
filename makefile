@@ -122,6 +122,9 @@ BH = src/biharmonic
 BHOBJS = $(BH)/bh2dterms.o \
 	$(BH)/bhrouts2d.o $(BH)/bhfmm2d.o $(BH)/bhndiv2d.o \
 
+ST = src/stokes
+STOBJS = $(ST)/stfmm2d.o 
+
 
 ifneq ($(FAST_KER),ON)
 LOBJS += $(LAP)/lapkernels2d.o
@@ -129,6 +132,7 @@ LOBJS += $(LAP)/rlapkernels2d.o
 LOBJS += $(LAP)/cauchykernels2d.o
 HOBJS += $(HELM)/helmkernels2d.o
 BHOBJS += $(BH)/bhkernels2d.o
+STOBJS += $(ST)/stokkernels2d.o
 endif
 
 ifeq ($(FAST_KER),ON)
@@ -137,13 +141,14 @@ LOBJS += $(LAP)/cauchykernels2d.o
 LOBJS += $(LAP)/lapkernels2d.o
 HOBJS += $(HELM)/helmkernels2d.o
 BHOBJS += $(BH)/bhkernels2d.o
+STOBJS += $(ST)/stokkernels2d.o
 COMOBJS+= $(SRCDIR)/libkernels.o
 endif
 
 # Test objects
 TOBJS = $(COM)/hkrand.o $(COM)/dlaran.o
 
-OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) $(BHOBJS) 
+OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) $(BHOBJS) $(STOBJS) 
 
 .PHONY: usage install lib test all python 
 

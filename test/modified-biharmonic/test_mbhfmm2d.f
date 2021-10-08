@@ -45,8 +45,8 @@ c
 c     make nsrc/ntarg big enough to trigger fmm routs
 c     but no need to test result everywhere
 
-      nsrc = 400
-      ntarg = 300
+      nsrc = 40000
+      ntarg = 30000
       ntt = min(ntarg,20)
       nst = min(nsrc,20)
       
@@ -96,7 +96,7 @@ c
 c
       beta = 1d-5
       zbeta = ima*beta
-      eps = 0.51d-12
+      eps = 0.51d-6
       thresh = 1d-15
 
       write(*,*) "=========================================="
@@ -158,11 +158,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -222,11 +231,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -286,11 +304,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -350,11 +377,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -414,11 +450,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -478,11 +523,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -542,11 +596,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -606,11 +669,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -670,11 +742,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -734,11 +815,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -798,11 +888,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -862,11 +961,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -926,11 +1034,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -990,11 +1107,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1054,11 +1180,20 @@ c
       ifpghtarg = 1
       
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1118,11 +1253,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1186,11 +1330,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1254,11 +1407,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1322,11 +1484,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1390,11 +1561,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1458,11 +1638,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1526,11 +1715,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1594,11 +1792,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1662,11 +1869,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1730,11 +1946,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1798,11 +2023,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1866,11 +2100,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -1934,11 +2177,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2002,11 +2254,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2070,11 +2331,20 @@ c
       ifpgh=2
       ifpghtarg=2
       
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2138,11 +2408,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2210,11 +2489,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2282,11 +2570,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2354,11 +2651,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2426,11 +2732,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2498,11 +2813,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2570,11 +2894,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2642,11 +2975,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2714,11 +3056,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2786,11 +3137,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2858,11 +3218,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -2930,11 +3299,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -3002,11 +3380,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -3074,11 +3461,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       
@@ -3146,11 +3542,20 @@ c
       
       ifpgh=3
       ifpghtarg=3
-            
+      
+
+      call cpu_time(t1)
+c$    t1 = omp_get_wtime()      
       call mbhfmm2d(nd,eps,beta,nsrc,source,ifc,charge,
      1     ifd,dipstr,dipvec,ifq,quadstr,quadvec,ifo,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,ntarg,targ,ifpghtarg,
      3     pottarg,gradtarg,hesstarg,ier)
+      call cpu_time(t2)
+c$    t2 = omp_get_wtime()      
+
+      write(*,*) 'time for fmm call  ........ ', t2-t1
+      write(*,*) 'points per second  ........ ', (nsrc+ntarg)/(t2-t1)
+      
 
 c      call prin2('potex *',potex,nd*nst)
       

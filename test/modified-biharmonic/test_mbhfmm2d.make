@@ -1,7 +1,7 @@
 PROJECT = int2-test-mbhfmm2d
 
 HOST = gcc
-HOST = gcc-dbg
+#HOST = gcc-dbg
 #HOST = gcc-openmp
 #HOST = intel
 

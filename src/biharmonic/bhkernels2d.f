@@ -247,7 +247,7 @@ c
 c
 c
 
-      subroutine bh2d_directdg(nd,sources,ns,charges,dippar,
+      subroutine bh2d_directdg(nd,sources,ns,dippar,
      1         targ,vel,grad,thresh)
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
@@ -305,7 +305,8 @@ c--------------------------------------------------------------------
       complex *16 zdis1,zdis2
       complex *16 grad(nd,2),eye
 
-      eye = dcmplx(0,1.0d0)
+
+      eye = dcmplx(0.0d0,1.0d0)
       zt = dcmplx(targ(1),targ(2))
       do i=1,ns
          zs = dcmplx(sources(1,i),sources(2,i))

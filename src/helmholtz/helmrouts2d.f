@@ -45,37 +45,37 @@ c      H2D_DIRECT or H2D_DIRECT1 return the result of the requested
 c      computation by overwriting the input pot/grad/hess variables.
 c-----------------------------------------------------------------------
 c
-c      H2DFORMMPC_VEC:  creates multipole expansions (outgoing) due to 
+c      H2DFORMMPC:  creates multipole expansions (outgoing) due to 
 c                       a collection of charge sources.
-c      H2DFORMMPD_VEC:  creates multipole expansions (outgoing) due to 
+c      H2DFORMMPD:  creates multipole expansions (outgoing) due to 
 c                       a collection of dipole sources.
-c      H2DFORMMPCD_VEC: creates multipole expansions (outgoing) due to 
+c      H2DFORMMPCD: creates multipole expansions (outgoing) due to 
 c                       a collection of charge and dipole sources.
-c      H2DMPEVALP_VEC:  computes potentials from multipole expansions
+c      H2DMPEVALP:  computes potentials from multipole expansions
 c                       at a collection of targets
-c      H2DMPEVALG_VEC:  computes potentials/gradients from multipole expansions
+c      H2DMPEVALG:  computes potentials/gradients from multipole expansions
 c                       at a collection of targets
-c      H2DMPEVALH_VEC:  computes potentials/gradients/Hessians 
+c      H2DMPEVALH:  computes potentials/gradients/Hessians 
 c                       from multipole expansions at a collection of targets
 c
-c      H2DFORMTAC_VEC:  creates local expansions due to 
+c      H2DFORMTAC:  creates local expansions due to 
 c                       a collection of charge sources
-c      H2DFORMTAD_VEC:  creates local expansions due to 
+c      H2DFORMTAD:  creates local expansions due to 
 c                       a collection of dipole sources
-c      H2DFORMTACD_VEC: creates local expansions due to 
+c      H2DFORMTACD: creates local expansions due to 
 c                       a collection of charge and dipole sources
-c      H2DTAEVALP_VEC:  computes potentials from local expansions
+c      H2DTAEVALP:  computes potentials from local expansions
 c                       at a collection of targets
-c      H2DTAEVALG_VEC:  computes potentials/gradients from local expansions
+c      H2DTAEVALG:  computes potentials/gradients from local expansions
 c                       at a collection of targets
-c      H2DTAEVALH_VEC:  computes potentials/gradients/Hessians 
+c      H2DTAEVALH:  computes potentials/gradients/Hessians 
 c                       from local expansions at a collection of targets
 c 
-c      H2DMPMP_VEC:     Translates center of multipole expansions 
-c      H2DLOCLOC_VEC:   Translates center of local expansions 
-c      H2DMPLOC_VEC:    Converts multipole expansions to local expansions
+c      H2DMPMP:     Translates center of multipole expansions 
+c      H2DLOCLOC:   Translates center of local expansions 
+c      H2DMPLOC:    Converts multipole expansions to local expansions
 c
-c      H2DMPZERO_VEC:   utility to initialize multipole coefficients to zero.
+c      H2DMPZERO:   utility to initialize multipole coefficients to zero.
 C
 c-----------------------------------------------------------------------
 c
@@ -1519,7 +1519,7 @@ c     INPUT:
 c
 c     nd              : vector length (number of mpole expansions)
 c     mpolex,mpoley   : coeffs for the expansions of x,y derivatives
-c     mptemp          : array computed in mpole_evalp_vec
+c     mptemp          : array computed in mpole_evalp
 c     nterms          : order of multipole expansion
 c-----------------------------------------------------------------------
 c     OUTPUT:
@@ -1565,7 +1565,7 @@ c     nd              : vector length (number of mpole expansions)
 c     mpolexx         
 c     mpolexy         : coeffs for the expansions of x,y derivatives
 c     mpoleyy
-c     mptemp          : array computed in mpole_evalp_vec
+c     mptemp          : array computed in mpole_evalp
 c     nterms          : order of multipole expansion
 c     nterms          : order of multipole expansion
 c-----------------------------------------------------------------------

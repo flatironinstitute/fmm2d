@@ -1,7 +1,7 @@
 PROJECT = int2-hfmm2d
 
-#HOST = gcc
-HOST = gcc-openmp
+HOST = gcc
+#HOST = gcc-openmp
 #HOST = intel
 
 # FC - fortran compiler

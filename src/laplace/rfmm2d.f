@@ -120,15 +120,15 @@ c     allocate variables for cfmm call
       endif
 
       if (ifpghtarg .eq. 1) then
-         allocate(pottarg1(nd,ns),gradtarg1(nd,1),hesstarg1(nd,1))
+         allocate(pottarg1(nd,nt),gradtarg1(nd,1),hesstarg1(nd,1))
       endif
       if (ifpghtarg .eq. 2) then
-         allocate(pottarg1(nd,ns),gradtarg1(nd,ns),
+         allocate(pottarg1(nd,nt),gradtarg1(nd,nt),
      1        hesstarg1(nd,1))
       endif
       if (ifpghtarg .eq. 3) then
-         allocate(pottarg1(nd,ns),gradtarg1(nd,ns),
-     1        hesstarg1(nd,ns))
+         allocate(pottarg1(nd,nt),gradtarg1(nd,nt),
+     1        hesstarg1(nd,nt))
       endif
 
 c     real and complex parts must be split

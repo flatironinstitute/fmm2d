@@ -16,7 +16,7 @@
       done = 1
       pi = atan(done)*4
 
-      nsrc = 4000
+      nsrc = 40000
       ntarg = nsrc+10
 
       allocate(sources(2,nsrc),charges(nsrc),dipstr(nsrc))
@@ -44,8 +44,9 @@ c
 cc      test low frequency mode
 c
       zk = 0.5d0 + 0.1d0*ima
+      zk = 100
 cc      zk = 500.0d0
-      eps = 0.51d-3
+      eps = 0.51d-8
 
       write(*,*) "=========================================="
       write(*,*) "Testing suite for hfmm2d"
@@ -102,6 +103,7 @@ c
       call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
       if(erra.ge.eps) write(33,*) str1(1:len1)
 
+      stop
 
 c
 c

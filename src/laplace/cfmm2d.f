@@ -146,7 +146,7 @@ c
       ifunif = 0
       iper = 0
 
-      ifprint = 0
+      ifprint = 1
 c
 cc      call the tree memory management
 c       code to determine number of boxes,
@@ -654,7 +654,7 @@ c     Suppressed if ifprint=0.
 c     Prints timing breakdown and other things if ifprint=1.
 c     Prints timing breakdown, list information, and other things if ifprint=2.
 c      
-        ifprint=0
+        ifprint=1
 
         pi = 4*atan(1.0d0)
 c

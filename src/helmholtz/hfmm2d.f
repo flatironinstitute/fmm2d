@@ -147,7 +147,7 @@ c
       ifunif = 0
       iper = 0
 
-      ifprint = 0
+      ifprint = 1
 
 c
 cc      call the tree memory management

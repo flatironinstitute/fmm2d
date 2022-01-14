@@ -75,7 +75,7 @@
 c
 cc      test low frequency mode
 c
-      eps = 0.5d-6
+      eps = 0.51d-12
 
 
 

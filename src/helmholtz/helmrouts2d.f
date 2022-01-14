@@ -1587,7 +1587,7 @@ c
          hess1(ii,2)= hess1(ii,2)+mptemp(0)*mpolexy(ii,0)*ima4inv
          hess1(ii,3)= hess1(ii,3)+mptemp(0)*mpoleyy(ii,0)*ima4inv
       enddo
-      do n=1,nterms+1
+      do n=1,nterms+2
          do ii = 1,nd
             hess1(ii,1)=hess1(ii,1)+
      $              mpolexx(ii,n)*mptemp(n)+mpolexx(ii,-n)*mptemp(-n)
@@ -1749,7 +1749,7 @@ c
       enddo
       enddo
 c
-      do i=-nterms+1,-1,1
+      do i=-nterms-1,-1,1
       do ii=1,nd
          mpolexx(ii,i-1)=mpolexx(ii,i-1)+z1scale*mpolex(ii,i)
          mpolexy(ii,i-1)=mpolexy(ii,i-1)+z3scale*mpolex(ii,i)

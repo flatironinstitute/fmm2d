@@ -224,9 +224,9 @@ ccc$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j,zd1,zd2) REDUCTION(+:zsum)
          if(ifstrslet.eq.1) then
            do j=1,nd
              zd1 = -(-strslet(j,2,i) + ima*strslet(j,1,i))/2
-             zd2 = (-strsvec(j,2,i) + ima*strsvec(j,1,i))
+             zd2 =  (-strsvec(j,2,i) + ima*strsvec(j,1,i))
              dip(j,1,i) = -ima*zd1*zd2 
-             dip(j,2,i) = ima*(zd1*dconjg(zd2) + dconjg(zd1)*zd2) 
+             dip(j,2,i) =  ima*(zd1*dconjg(zd2) + dconjg(zd1)*zd2) 
            enddo
          endif
       enddo
@@ -247,17 +247,15 @@ c     call biharmonic FMM
       iper = 0
       ier = 0
       
-
       call bhfmm2d(nd,eps,nsource,source,ifchargel,charge,
      1  ifdipolel,dip,iper,ifpghl,potl,gradl,hesstmp,ntarg,
      2  targ,ifpghtargl,pottargl,gradtargl,hesstmp,ier)
-
 
       if(ifppreg.ge.1) then
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)      
         do i=1,nsource
           do j=1,nd
-            pot(j,1,i) = imag(potl(j,i)+zsum(j)+charge(j,i)) 
+            pot(j,1,i) =  imag(potl(j,i)+zsum(j)+charge(j,i)) 
             pot(j,2,i) = -real(potl(j,i)+zsum(j)+charge(j,i)) 
           enddo
         enddo
@@ -278,9 +276,9 @@ C$OMP END PARALLEL DO
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
         do i=1,nsource
           do j=1,nd
-             grad(j,1,1,i) = imag(gradl(j,2,i))
+             grad(j,1,1,i) =  imag(gradl(j,2,i))
              grad(j,2,2,i) = -imag(gradl(j,2,i))
-             grad(j,2,1,i) = real(2*gradl(j,1,i)-gradl(j,2,i))
+             grad(j,2,1,i) =  real(2*gradl(j,1,i)-gradl(j,2,i))
              grad(j,1,2,i) = -real(2*gradl(j,1,i)+gradl(j,2,i))
           enddo
         enddo
@@ -294,7 +292,7 @@ C$OMP END PARALLEL DO
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)      
         do i=1,ntarg
           do j=1,nd
-            pottarg(j,1,i) = imag(pottargl(j,i)+zsum(j)) 
+            pottarg(j,1,i) =  imag(pottargl(j,i)+zsum(j)) 
             pottarg(j,2,i) = -real(pottargl(j,i)+zsum(j)) 
           enddo
         enddo
@@ -311,13 +309,13 @@ C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
 C$OMP END PARALLEL DO
       endif
 
-      if(ifppreg.ge.3) then
+      if(ifppregtarg.ge.3) then
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
         do i=1,ntarg
           do j=1,nd
-             gradtarg(j,1,1,i) = imag(gradtargl(j,2,i))
+             gradtarg(j,1,1,i) =  imag(gradtargl(j,2,i))
              gradtarg(j,2,2,i) = -imag(gradtargl(j,2,i))
-             gradtarg(j,2,1,i) = real(2*gradtargl(j,1,i)-
+             gradtarg(j,2,1,i) =  real(2*gradtargl(j,1,i)-
      1           gradtargl(j,2,i))
              gradtarg(j,1,2,i) = -real(2*gradtargl(j,1,i)+
      1           gradtargl(j,2,i))

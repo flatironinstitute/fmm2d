@@ -873,7 +873,7 @@ c
 c
 c
 c********************************************************************
-      subroutine bh2dformtad(nd,rscale,sources,ns,d1,d2,
+      subroutine bh2dformtad(nd,rscale,sources,ns,dip,
      1       center,nterms,mpole)
 c*****************************************************************
 c     This subroutine computes the local expansion about

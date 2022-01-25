@@ -245,11 +245,10 @@ ccc$OMP END PARALLEL DO
 c     call biharmonic FMM
 
       iper = 0
-      ier = 0
       
       call bhfmm2d(nd,eps,nsource,source,ifchargel,charge,
      1  ifdipolel,dip,iper,ifpghl,potl,gradl,hesstmp,ntarg,
-     2  targ,ifpghtargl,pottargl,gradtargl,hesstmp,ier)
+     2  targ,ifpghtargl,pottargl,gradtargl,hesstmp)
 
       if(ifppreg.ge.1) then
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)      

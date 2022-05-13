@@ -457,6 +457,8 @@ c---------------------------------------------------------------------
       real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
       real *8 rr2,rr3,thresh2
 
+      thresh2=thresh*thresh
+
 c
       do j = 1,nt
          do i = 1,ns

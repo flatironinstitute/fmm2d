@@ -29,7 +29,7 @@ c
       subroutine lfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
-     3     hesstarg)
+     3     hesstarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -67,6 +67,7 @@ c   hess(nd,3,*)    : hessian at the source locations
 c   pottarg(nd,*)   : potential at the target locations
 c   gradtarg(nd,2,*): gradient at the target locations
 c   hesstarg(nd,3,*): hessian at the target locations
+c   ier             : error code 
 c
 
 
@@ -160,7 +161,7 @@ c     cfmm does the work
       call cfmm2d(nd2,eps,ns,sources,ifcharge,charge1,
      1     ifdipole,dipstr1,iper,ifpgh,pot1,grad1,hess1,
      2     nt,targ,ifpghtarg,pottarg1,gradtarg1,
-     3     hesstarg1)
+     3     hesstarg1,ier)
 
 c     unpack the d/dz, d^2/dz^2 as grad/hess and
 c     combine real and imaginary parts

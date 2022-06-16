@@ -23,7 +23,7 @@ c    $Revision$
       subroutine cfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions

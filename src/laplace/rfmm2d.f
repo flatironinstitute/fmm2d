@@ -27,7 +27,7 @@ c
       subroutine rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
-     3     hesstarg)
+     3     hesstarg,ier)
 c----------------------------------------------
 c   INPUT PARAMETERS:
 c   nd            : number of expansions
@@ -155,7 +155,7 @@ c     cfmm does the work
       call cfmm2d(nd,eps,ns,sources,ifcharge,charge1,
      1     ifdipole,dipstr1,iper,ifpgh,pot1,grad1,hess1,
      2     nt,targ,ifpghtarg,pottarg1,gradtarg1,
-     3     hesstarg1)
+     3     hesstarg1,ier)
 
 c     unpack the d/dz, d^2/dz^2 as grad/hess and
 c     combine real and imaginary parts

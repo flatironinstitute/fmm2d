@@ -118,6 +118,8 @@ cc     additional fmm variables
       real *8, allocatable :: rmlexp(:)
       complex *16, allocatable :: mptemp(:)
 
+      real *8 timeinfo(8),ifnear
+
 c
 cc      temporary variables
 c
@@ -147,7 +149,19 @@ c
       ifunif = 0
       iper = 0
 
-      ifprint = 1
+      ifprint = 0
+
+c
+c  turn on computation of list 1
+c
+      ifnear = 1
+
+c
+c  initialize timeinfo
+c
+      do i=1,8
+        timeinfo(i) = 0
+      enddo
 
 c
 cc      call the tree memory management
@@ -386,7 +400,7 @@ C$      time1=omp_get_wtime()
      $   isrcse,itargse,iexpcse,nterms,ntj,
      $   ifpgh,potsort,gradsort,hesssort,
      $   ifpghtarg,pottargsort,gradtargsort,
-     $   hesstargsort,jexps,scj,ier)
+     $   hesstargsort,jexps,scj,ifnear,timeinfo,ier)
       call cpu_time(time2)
 C$        time2=omp_get_wtime()
       if( ifprint .eq. 1 ) call prin2('time in fmm main=*',
@@ -448,7 +462,7 @@ cc      stop
      $     isrcse,itargse,iexpcse,nterms,ntj,
      $     ifpgh,pot,grad,hess,
      $     ifpghtarg,pottarg,gradtarg,hesstarg,
-     $     jsort,scjsort,ier)
+     $     jsort,scjsort,ifnear,timeinfo,ier)
 c   Helmholtz FMM in R^2: evaluate all pairwise particle
 c   interactions (ignoring self-interaction) 
 c   and interactions with targets.
@@ -599,7 +613,7 @@ c------------------------------------------------------------------
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
       real *8 eps
-      integer iper
+      integer iper,ifnear
 
       real *8 sourcesort(2,nsource)
 
@@ -624,7 +638,7 @@ c------------------------------------------------------------------
       real *8 rmlexp(*)
       complex *16 mptemp(lmptmp)
        
-      real *8 timeinfo(10)
+      real *8 timeinfo(8)
       real *8 timelev(0:200)
       real *8 centers(2,*)
 
@@ -718,7 +732,7 @@ C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(idim,i,j)
 C$OMP END PARALLEL DO
 C
 c       
-        do i=1,10
+        do i=1,8
           timeinfo(i)=0
         enddo
 c
@@ -1037,6 +1051,11 @@ C$    time1=omp_get_wtime()
         nsig = 2*(ni + ni)+1
         allocate(sig(nsig))
         allocate(wsave(4*nsig+100))        
+        dlam = zk
+        dlam = 1/(dlam/(2*pi))                 
+        boxlam = boxsize(ilev)/dlam
+        if(boxlam.gt.8.and.ifprint.ge.1) print *, "in high freq"
+
 cc        call zffti(nsig, wsave)
        
 
@@ -1049,7 +1068,6 @@ C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,mptemp,i,nlist2)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
-
             npts = 0
 
             if(ifpghtarg.gt.0) then
@@ -1072,11 +1090,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                do i=1,nlist2s(ibox)
                   jbox = list2(i,ibox) 
 
-                  dlam = zk
-                  dlam = 1/(dlam/(2*pi))                 
-                  boxlam = boxsize(ilev)/dlam
                   if (boxlam .gt. 8.0d0) then
-ccc                    print *, '. . . high freq mploc, ilev = ', ilev
                     call h2dmplochf(nd,zk,rscales(ilev),
      $                  centers(1,jbox),
      1                  rmlexp(iaddr(1,jbox)),nterms(ilev),

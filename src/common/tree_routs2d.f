@@ -24,7 +24,7 @@ c
       allocate(isum(nbloc))
       if(nbloc.gt.0) call cumsum(nbloc,irefinebox,isum)
       
-C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nbl,j,jbox)
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nbl,j,jbox,ii,l)
       do i = 1,nbloc
         ibox = ifirstbox + i-1
         if(irefinebox(i).eq.1) then

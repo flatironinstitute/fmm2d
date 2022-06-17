@@ -1,4 +1,4 @@
-cc Copyright (C) 2018-2019: Leslie Greengard, Zydrunas Gimbutas, 
+cc Copyright (C) 2018-2019: Le=",nlevelsslie Greengard, Zydrunas Gimbutas, 
 cc and Manas Rachh
 c     c Contact: greengard@cims.nyu.edu
 cc
@@ -146,14 +146,13 @@ c
       ifunif = 0
       iper = 0
 
-      ifprint = 1
+      ifprint = 0
 c
 cc      call the tree memory management
 c       code to determine number of boxes,
 c       number of levels and length of tree
 c
 
-      
       call pts_tree_mem(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
      1  ifunif,iper,nlevels,nboxes,ltree)
 
@@ -165,7 +164,6 @@ c
 c
 c       call the tree code
 c
-
       call pts_tree_build(sources,ns,targ,nt,idivflag,ndiv,nlmin,nlmax,
      1  ifunif,iper,nlevels,nboxes,ltree,itree,iptr,tcenters,boxsize)
 
@@ -287,6 +285,7 @@ c
       endif
 
 
+
 c
 cc      compute scaling factor for multipole/local expansions
 c       and lengths of multipole and local expansions
@@ -294,8 +293,10 @@ c
       allocate(rscales(0:nlevels),nterms(0:nlevels))
 
       nmax = 0
+      ier = 0
       do i=0,nlevels
         rscales(i) = boxsize(i)
+
         call l2dterms(eps,nterms(i),ier)
         nterms(i) = nterms(i) 
         if(nterms(i).gt.nmax) nmax = nterms(i)
@@ -654,7 +655,7 @@ c     Suppressed if ifprint=0.
 c     Prints timing breakdown and other things if ifprint=1.
 c     Prints timing breakdown, list information, and other things if ifprint=2.
 c      
-        ifprint=1
+        ifprint=0
 
         pi = 4*atan(1.0d0)
 c

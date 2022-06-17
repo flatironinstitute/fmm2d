@@ -4,7 +4,7 @@
       complex *16, allocatable :: charges(:),dipstr(:)
       complex *16, allocatable :: pot(:),grad(:,:),hess(:,:)
       complex *16, allocatable :: pottarg(:),gradtarg(:,:),hesstarg(:,:)
-      character(len=72) str1
+      character(len=100) str1
 
       integer ipass(27)
       
@@ -16,11 +16,13 @@
       done = 1
       pi = atan(done)*4
 
-      nsrc = 40000
-      ntarg = nsrc+10
+      nsrc = 1000
+      ntarg = 1001
+cc      ntarg = nsrc+10
 
       allocate(sources(2,nsrc),charges(nsrc),dipstr(nsrc))
-      allocate(targ(2,ntarg),dipvec(2,nsrc))
+      allocate(dipvec(2,nsrc))
+      allocate(targ(2,ntarg))
       allocate(pot(nsrc),grad(2,nsrc),hess(3,nsrc))
       allocate(pottarg(ntarg),gradtarg(2,ntarg),hesstarg(3,ntarg))
 
@@ -44,7 +46,7 @@ c
 cc      test low frequency mode
 c
       zk = 0.5d0 + 0.1d0*ima
-      zk = 100
+      zk = 10
 cc      zk = 500.0d0
       eps = 0.51d-8
 
@@ -77,6 +79,8 @@ c
       write(6,*)
       write(6,*)
 
+
+
       call hfmm2d_s_c_p(eps,zk,nsrc,sources,charges,
      1        pot,ier)
       
@@ -103,7 +107,6 @@ c
       call geterrstr(ifcharge,ifdipole,ifpgh,ifpghtarg,str1,len1)
       if(erra.ge.eps) write(33,*) str1(1:len1)
 
-      stop
 
 c
 c

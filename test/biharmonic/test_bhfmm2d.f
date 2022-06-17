@@ -68,7 +68,7 @@
       call bhfmm2d(nd,eps,nsrc,sources,ifcharge,charges,
      1  ifdipole,dip,iper,ifpgh,pot,grad,hess,
      2  ntarg,targ,ifpghtarg,pottarg,gradtarg,
-     3  hesstarg)
+     3  hesstarg,ier)
 
 
 c

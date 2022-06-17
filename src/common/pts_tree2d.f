@@ -128,8 +128,8 @@ c
       ymin = src(2,1)
       ymax = src(2,1)
 
-C$OMP PARALLEL DO SHARED(src,isrc) PRIVATE(i)
-c$OMP$ REDUCTION(max:xmax,ymax) REDUCTION(min:xmin,ymin)
+C$OMP PARALLEL DO DEFAULT(SHARED) SHARED(src,isrc) PRIVATE(i)
+C$OMP$ REDUCTION(max:xmax,ymax) REDUCTION(min:xmin,ymin)
       do i=1,ns
          if(src(1,i).lt.xmin) xmin = src(1,i)
          if(src(1,i).gt.xmax) xmax = src(1,i)
@@ -143,8 +143,8 @@ C$OMP END PARALLEL DO
       xmax2 = xmax
       ymin2 = ymin
       ymax2 = ymax      
-C$OMP PARALLEL DO SHARED(targ,itarg) PRIVATE(i)
-c$OMP$ REDUCTION(max:xmax2,ymax2) REDUCTION(min:xmin2,ymin2)
+C$OMP PARALLEL DO DEFAULT(SHARED) SHARED(targ,itarg) PRIVATE(i)
+C$OMP$ REDUCTION(max:xmax2,ymax2) REDUCTION(min:xmin2,ymin2)
       do i=1,nt
          if(targ(1,i).lt.xmin2) xmin2 = targ(1,i)
          if(targ(1,i).gt.xmax2) xmax2 = targ(1,i)
@@ -152,7 +152,7 @@ c$OMP$ REDUCTION(max:xmax2,ymax2) REDUCTION(min:xmin2,ymin2)
          if(targ(2,i).gt.ymax2) ymax2 = targ(2,i)
          itarg(i) = i
       enddo
-c$OMP END PARALLEL DO      
+C$OMP END PARALLEL DO      
 
       xmax = max(xmax,xmax2)
       xmin = min(xmin,xmin2)
@@ -201,11 +201,9 @@ c
 c          determine which boxes need to be refined
 c
         irefine = 0
-        nbadd = 0
         
         if(ilev.ge.nlmin) then
-C$OMP PARALLEL DO PRIVATE(i,ibox,nss,ntt,nn)
-c$OMP$ REDUCTION(max:irefine) REDUCTION(+:nbadd)
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nss,ntt,nn)
            do i=1,nbloc
               irefinebox(i) = 0
               ibox = ifirstbox + i-1
@@ -216,22 +214,27 @@ c$OMP$ REDUCTION(max:irefine) REDUCTION(+:nbadd)
               if(idivflag.eq.2) nn = max(ntt,nss)
               
               if(nn.gt.ndiv) irefinebox(i) = 1
-              if(irefinebox(i) .eq. 1) nbadd = nbadd+4
-              irefine = max(irefinebox(i),irefine)
            enddo
-c$OMP END PARALLEL DO          
+C$OMP END PARALLEL DO      
+           irefine = maxval(irefinebox(1:nbloc))
            if(ifunif.eq.1) then
              irefinebox(i) = irefine
            endif
         else
            irefine = 1
-           nbadd = 4*nbloc
-c$OMP PARALLEL DO PRIVATE(i)           
+C$OMP PARALLEL DO PRIVATE(i) DEFAULT(SHARED)           
            do i=1,nbloc
               irefinebox(i) = 1
            enddo
-c$OMP END PARALLEL DO           
+C$OMP END PARALLEL DO           
         endif
+
+        nbadd = 0
+C$OMP PARALLEL DO DEFAULT(SHARED) REDUCTION(+:nbadd)
+       do i=1,nbloc
+         if(irefinebox(i).eq.1) nbadd = nbadd + 4
+       enddo
+C$OMP END PARALLEL DO
 
 c
 c
@@ -253,14 +256,14 @@ c
      1          ichild,centers2,ilevel2,iparent2,
      2          nchild2,ichild2)
            
-C$OMP PARALLEL DO PRIVATE(i)           
+C$OMP PARALLEL DO PRIVATE(i) DEFAULT(SHARED)           
            do i=1,nbctr
               isrcse2(1,i) = isrcse(1,i)
               isrcse2(2,i) = isrcse(2,i)
               itargse2(1,i) = itargse(1,i)
               itargse2(2,i) = itargse(2,i)
            enddo
-c$OMP END PARALLEL DO         
+C$OMP END PARALLEL DO         
 
 
            deallocate(centers,ilevel,iparent,nchild,ichild,
@@ -275,14 +278,14 @@ c$OMP END PARALLEL DO
            call tree_copy(nbctr,centers2,ilevel2,iparent2,
      1          nchild2,ichild2,centers,ilevel,iparent,nchild,ichild)
 
-c$OMP PARALLEL DO PRIVATE(i)          
+C$OMP PARALLEL DO PRIVATE(i) DEFAULT(SHARED)         
            do i=1,nbctr
               isrcse(1,i) = isrcse2(1,i)
               isrcse(2,i) = isrcse2(2,i)
               itargse(1,i) = itargse2(1,i)
               itargse(2,i) = itargse2(2,i)
            enddo
-c$OMP END PARALLEL DO         
+C$OMP END PARALLEL DO         
 
            deallocate(centers2,ilevel2,iparent2,nchild2,ichild2,
      1          isrcse2,itargse2)
@@ -297,7 +300,7 @@ c$OMP END PARALLEL DO
      1          ifirstbox,nbloc,centers,boxsize(ilev+1),nbctr,ilev+1,
      2          ilevel,iparent,nchild,ichild)
 
-c$OMP PARALLEL DO PRIVATE(ibox,i)           
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,i)           
            do i=1,nbloc
               ibox = ifirstbox+i-1
               if(irefinebox(i).eq.1) then
@@ -307,7 +310,7 @@ c$OMP PARALLEL DO PRIVATE(ibox,i)
      1                targ,nt,itarg,itargse)
               endif
            enddo
-c$OMP END PARALLEL DO
+C$OMP END PARALLEL DO
           laddr(2,ilev+1) = nbctr
         else
           exit
@@ -330,14 +333,14 @@ c$OMP END PARALLEL DO
      1            ichild,centers2,ilevel2,iparent2,
      2         nchild2,ichild2)
 
-c$OMP PARALLEL DO PRIVATE(i)          
+C$OMP PARALLEL DO PRIVATE(i) DEFAULT(SHARED)
           do i=1,nbctr
             isrcse2(1,i) = isrcse(1,i)
             isrcse2(2,i) = isrcse(2,i)
             itargse2(1,i) = itargse(1,i)
             itargse2(2,i) = itargse(2,i)
           enddo
-c$OMP END PARALLEL DO
+C$OMP END PARALLEL DO
           deallocate(centers,ilevel,iparent,nchild,ichild,
      1        isrcse,itargse)
 
@@ -349,14 +352,14 @@ c$OMP END PARALLEL DO
 
           call tree_copy(nbctr,centers2,ilevel2,iparent2,
      1         nchild2,ichild2,centers,ilevel,iparent,nchild,ichild)
-c$OMP PARALLEL DO PRIVATE(i)          
+C$OMP PARALLEL DO PRIVATE(i) DEFAULT(SHARED)         
           do i=1,nbctr
             isrcse(1,i) = isrcse2(1,i)
             isrcse(2,i) = isrcse2(2,i)
             itargse(1,i) = itargse2(1,i)
             itargse(2,i) = itargse2(2,i)
          enddo
-c$OMP END PARALLEL DO         
+C$OMP END PARALLEL DO         
 
           deallocate(centers2,ilevel2,iparent2,nchild2,ichild2,
      1       isrcse2,itargse2)
@@ -366,14 +369,14 @@ c$OMP END PARALLEL DO
         allocate(nnbors(nbmax))
         allocate(nbors(9,nbmax))
 
-c$OMP PARALLEL DO PRIVATE(i,j)        
+C$OMP PARALLEL DO PRIVATE(i,j) DEFAULT(SHARED)       
         do i=1,nboxes
           nnbors(i) = 0
           do j=1,9
             nbors(j,i) = -1
           enddo
        enddo
-c$OMP END PARALLEL DO       
+C$OMP END PARALLEL DO       
 
         call computecoll(nlevels,nboxes,laddr,boxsize,centers,
      1        iparent,nchild,ichild,iper,nnbors,nbors)
@@ -600,7 +603,7 @@ c
 c     re sort points in refined boxes
 c
 
-c$OMP PARALLEL DO PRIVATE(ibox,i)          
+ccC$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,i)          
           do i=1,nbloc
             ibox = ifirstbox+i-1
             if(irefinebox(i).eq.1) then
@@ -610,7 +613,7 @@ c$OMP PARALLEL DO PRIVATE(ibox,i)
      1          itree(iptr(5)),targ,nt,itarg,itargse)
             endif
           enddo
-c$OMP END PARALLEL DO
+ccC$OMP END PARALLEL DO
           
           itree(2*ilev+4) = nbctr
         else
@@ -800,7 +803,7 @@ c        This is the distance to test if two boxes separated
 c        by two levels are touching
          distest = 1.05d0*(boxsize(ilev-1) + boxsize(ilev-2))/2.0d0
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,idad,igranddad,i,jbox)         
-C$OMP$ PRIVATE(ict,xdis,ydis,zdis)
+C$OMP$ PRIVATE(ict,xdis,ydis)
          do ibox = laddr(1,ilev),laddr(2,ilev) 
             idad = iparent(ibox)
             igranddad = iparent(idad)
@@ -849,7 +852,7 @@ c        This is the distance to test if two boxes separated
 c        by one level are touching
          distest = 1.05d0*(boxsize(ilev) + boxsize(ilev-1))/2.0d0
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,idad,i,jbox,xdis,ydis)
-C$OMP$PRIVATE(zdis,ict)
+C$OMP$PRIVATE(ict)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             if(iflag(ibox).eq.1.or.iflag(ibox).eq.2) then
                idad = iparent(ibox)

@@ -89,7 +89,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
-     3     hesstarg)
+     3     hesstarg,ier)
       return
       end
 c------------------------------
@@ -149,7 +149,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -212,7 +212,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -276,7 +276,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -337,7 +337,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -401,7 +401,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -464,7 +464,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -524,7 +524,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -588,7 +588,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -650,7 +650,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
-     3     hesstarg)
+     3     hesstarg,ier)
       return
       end
 c------------------------------
@@ -708,7 +708,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -770,7 +770,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -832,7 +832,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -891,7 +891,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -954,7 +954,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -1015,7 +1015,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1073,7 +1073,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1136,7 +1136,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -1200,7 +1200,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2     nt,targ,ifpghtarg,pottarg,gradtarg,
-     3     hesstarg)
+     3     hesstarg,ier)
       return
       end
 c------------------------------
@@ -1260,7 +1260,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1325,7 +1325,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -1388,7 +1388,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1449,7 +1449,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1515,7 +1515,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 
@@ -1577,7 +1577,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1637,7 +1637,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 c------------------------------
@@ -1703,7 +1703,7 @@ c
       call rfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dipstr,dipvec,iper,ifpgh,pot,grad,hess,
      2            nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
       return
       end
 

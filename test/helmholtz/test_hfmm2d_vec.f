@@ -5,7 +5,7 @@
       complex *16, allocatable :: pot(:,:),grad(:,:,:),hess(:,:,:)
       complex *16, allocatable :: pottarg(:,:),gradtarg(:,:,:),
      1   hesstarg(:,:,:)
-      character(len=72) str1
+      character(len=100) str1
 
       integer ipass(27)
       integer nd,idim

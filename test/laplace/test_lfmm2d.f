@@ -76,7 +76,7 @@ c
       write(6,*) 'testing stost, charge, potentials'
 
       call lfmm2d_st_c_p(eps,nsrc,sources,charges,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -121,7 +121,7 @@ c
       write(6,*) 'testing stost, charge, gradients'
 
       call lfmm2d_st_c_g(eps,nsrc,sources,charges,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -169,7 +169,7 @@ c
       write(6,*) 'testing stost, charge, hessians'
       call lfmm2d_st_c_h(eps,nsrc,sources,charges,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -217,7 +217,7 @@ c
       write(6,*) 'testing stost, dipole, potentials'
 
       call lfmm2d_st_d_p(eps,nsrc,sources,dipstr,dipvec,
-     1     pot,ntarg,targ,pottarg)
+     1     pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -262,7 +262,7 @@ c
       write(6,*) 'testing stost, dipole, gradients'
 
       call lfmm2d_st_d_g(eps,nsrc,sources,dipstr,dipvec,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -308,7 +308,7 @@ c
       write(6,*) 'testing stost, dipole, hessians'
       call lfmm2d_st_d_h(eps,nsrc,sources,dipstr,dipvec,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -354,7 +354,7 @@ c
       write(6,*) 'testing stost, charge + dipole, potentials'
 
       call lfmm2d_st_cd_p(eps,nsrc,sources,charges,dipstr,dipvec,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
 c
 cc       test against exact potential
 c
@@ -398,7 +398,7 @@ c
       write(6,*) 'testing stost, charge + dipole, gradients'
 
       call lfmm2d_st_cd_g(eps,nsrc,sources,charges,dipstr,dipvec,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -444,7 +444,7 @@ c
       write(6,*) 'testing stost, charge + dipole, hessians'
       call lfmm2d_st_cd_h(eps,nsrc,sources,charges,dipstr,dipvec,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c

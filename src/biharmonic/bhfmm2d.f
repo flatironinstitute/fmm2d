@@ -21,7 +21,7 @@ c    $Revision$
       subroutine bhfmm2d(nd,eps,ns,sources,ifcharge,charge,
      1            ifdipole,dip,iper,ifpgh,pot,grad,
      2            hess,nt,targ,ifpghtarg,pottarg,gradtarg,
-     3            hesstarg)
+     3            hesstarg,ier)
 c----------------------------------------------
 c
 c   This subroutine evaluates biharmonic sums related to stokes

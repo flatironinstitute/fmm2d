@@ -46,13 +46,15 @@ c     for \rho a worst case source and r a worst case target.
 c
 c-----------------------------------------------------------------------------
 c
-      complex *16  zk, z1, z2, z3, jfun(0:2000), ht0,
+      complex *16  zk, z1, z2, z3, jfun(0:200), ht0,
      1             ht1, ht2, ztmp,
-     1             hfun(0:2000)
+     1             hfun(0:200)
+      integer nterms
 c
       ier = 0
 c
-      ntmax = 1000
+      ntmax = 100
+
 c       
       z1 = 1.5d0
       do i = 0,ntmax
@@ -64,6 +66,7 @@ c
       do i = 0,ntmax
          jfun(i) = z2**i
       enddo
+
 c
       xtemp1 = cdabs(jfun(0)*hfun(0))
       nterms = 1

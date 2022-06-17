@@ -90,7 +90,7 @@ c
       write(*,*) 'testing stost, charge, potentials'
 
       call cfmm2d_st_c_p_vec(nd,eps,nsrc,sources,charges,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -149,7 +149,7 @@ c
       write(*,*) 'testing stost, charge, gradients'
 
       call cfmm2d_st_c_g_vec(nd,eps,nsrc,sources,charges,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -211,7 +211,7 @@ c
       write(*,*) 'testing stost, charge, hessians'
       call cfmm2d_st_c_h_vec(nd,eps,nsrc,sources,charges,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -275,7 +275,7 @@ c
       write(*,*) 'testing stost, dipole, potentials'
 
       call cfmm2d_st_d_p_vec(nd,eps,nsrc,sources,dipstr,
-     1        pot,ntarg,targ,pottarg)
+     1        pot,ntarg,targ,pottarg,ier)
 
 
 c
@@ -335,7 +335,7 @@ c
       write(*,*) 'testing stost, dipole, gradients'
 
       call cfmm2d_st_d_g_vec(nd,eps,nsrc,sources,dipstr,
-     1        pot,grad,ntarg,targ,pottarg,gradtarg)
+     1        pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -397,7 +397,7 @@ c
       write(*,*) 'testing stost, dipole, hessians'
       call cfmm2d_st_d_h_vec(nd,eps,nsrc,sources,dipstr,
      1        pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c
@@ -459,7 +459,7 @@ c
       write(*,*) 'testing stost, charge + dipole, potentials'
 
       call cfmm2d_st_cd_p_vec(nd,eps,nsrc,sources,charges,
-     1     dipstr,pot,ntarg,targ,pottarg)
+     1     dipstr,pot,ntarg,targ,pottarg,ier)
 c
 cc       test against exact potential
 c
@@ -517,7 +517,7 @@ c
       write(*,*) 'testing stost, charge + dipole, gradients'
 
       call cfmm2d_st_cd_g_vec(nd,eps,nsrc,sources,charges,
-     1    dipstr,pot,grad,ntarg,targ,pottarg,gradtarg)
+     1    dipstr,pot,grad,ntarg,targ,pottarg,gradtarg,ier)
 c
 cc       test against exact potential
 c
@@ -579,7 +579,7 @@ c
       write(*,*) 'testing stost, charge + dipole, hessians'
       call cfmm2d_st_cd_h_vec(nd,eps,nsrc,sources,charges,
      1    dipstr,pot,grad,hess,ntarg,targ,pottarg,gradtarg,
-     2        hesstarg)
+     2        hesstarg,ier)
 c
 cc       test against exact potential
 c

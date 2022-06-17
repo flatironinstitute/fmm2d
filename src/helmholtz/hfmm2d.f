@@ -118,7 +118,8 @@ cc     additional fmm variables
       real *8, allocatable :: rmlexp(:)
       complex *16, allocatable :: mptemp(:)
 
-      real *8 timeinfo(8),ifnear
+      real *8 timeinfo(8)
+      integer ifnear
 
 c
 cc      temporary variables
@@ -1396,11 +1397,15 @@ cc     set threshold for ignoring interactions with
 c      |r| < thresh
 c
       thresh = abs(zk)*boxsize(0)*2.0d0**(-51)
+
+
 cc      call prin2('thresh=*',thresh,1)
 c
 cc
       call cpu_time(time1)
-C$    time1=omp_get_wtime()  
+C$    time1=omp_get_wtime() 
+
+      if(ifnear.eq.0) goto 1233
       do ilev = 0,nlevels
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,istartt,iendt,i,jstart,jend,istarte,iende)
@@ -1443,7 +1448,7 @@ C$OMP$SCHEDULE(DYNAMIC)
          enddo
 C$OMP END PARALLEL DO         
       enddo
-
+ 1233 continue
       call cpu_time(time2)
 C$    time2=omp_get_wtime()  
       timeinfo(8) = time2-time1

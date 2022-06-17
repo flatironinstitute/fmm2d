@@ -91,6 +91,9 @@ c
       integer idivflag,nlevels,nboxes,ndiv
       integer ltree
 
+      integer ifnear
+      real *8 timeinfo(8)
+
 c
 cc     sorted arrays
 c
@@ -147,6 +150,19 @@ c
       iper = 0
 
       ifprint = 0
+c
+c  turn on computation of list 1
+c
+      ifnear = 1
+
+c
+c  initialize timeinfo
+c
+      do i=1,8
+        timeinfo(i) = 0
+      enddo
+
+c
 c
 cc      call the tree memory management
 c       code to determine number of boxes,
@@ -369,7 +385,7 @@ C$      time1=omp_get_wtime()
      $   isrcse,itargse,iexpcse,nterms,ntj,
      $   ifpgh,potsort,gradsort,hesssort,
      $   ifpghtarg,pottargsort,gradtargsort,
-     $   hesstargsort,jexps,scj)
+     $   hesstargsort,jexps,scj,ifnear,timeinfo,ier)
       call cpu_time(time2)
 C$        time2=omp_get_wtime()
       if( ifprint .eq. 1 ) call prin2('time in fmm main=*',
@@ -434,7 +450,7 @@ c
      $     isrcse,itargse,iexpcse,nterms,ntj,
      $     ifpgh,pot,grad,hess,
      $     ifpghtarg,pottarg,gradtarg,hesstarg,
-     $     jsort,scjsort)
+     $     jsort,scjsort,ifnear,timeinfo,ier)
 c
 c
 c   Laplace FMM in R^2: evaluate all pairwise particle
@@ -581,6 +597,7 @@ c------------------------------------------------------------------
       integer ifcharge,ifdipole
       integer ifpgh,ifpghtarg
       real *8 eps
+      integer ier,ifnear
 
       real *8 sourcesort(2,nsource)
 
@@ -604,7 +621,7 @@ c------------------------------------------------------------------
       real *8 rmlexp(*)
       complex *16 mptemp(lmptmp)
        
-      real *8 timeinfo(10)
+      real *8 timeinfo(8)
       real *8 timelev(0:200)
       real *8 centers(2,*)
 
@@ -697,7 +714,7 @@ C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(idim,i,j)
 C$OMP END PARALLEL DO
 C
 c       
-        do i=1,10
+        do i=1,8
           timeinfo(i)=0
         enddo
 c
@@ -1263,7 +1280,9 @@ cc      call prin2('thresh=*',thresh,1)
 c
 cc
       call cpu_time(time1)
-C$    time1=omp_get_wtime()  
+C$    time1=omp_get_wtime() 
+      if(ifnear.eq.0) goto 1233
+
       do ilev = 0,nlevels
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,istartt,iendt,i,jstart,jend,istarte,iende)
@@ -1306,7 +1325,7 @@ C$OMP$SCHEDULE(DYNAMIC)
          enddo
 C$OMP END PARALLEL DO         
       enddo
-
+ 1233 continue
       call cpu_time(time2)
 C$    time2=omp_get_wtime()  
       timeinfo(8) = time2-time1

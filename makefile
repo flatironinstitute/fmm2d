@@ -106,7 +106,7 @@ HELM = src/helmholtz
 HOBJS = $(HELM)/h2dcommon.o $(HELM)/h2dterms.o \
 	$(HELM)/helmrouts2d.o $(HELM)/hfmm2d.o $(HELM)/hfmm2dwrap.o \
 	$(HELM)/wideband2d.o $(HELM)/hfmm2dwrap_vec.o \
-	$(HELM)/hndiv2d.o
+	$(HELM)/hndiv2d.o $(HELM)/hfmm2d_ndiv.o
 
 # laplace objects
 LAP = src/laplace
@@ -116,7 +116,9 @@ LOBJS = $(LAP)/l2dterms.o \
 	$(LAP)/cfmm2d.o $(LAP)/cfmm2dwrap.o \
 	$(LAP)/cfmm2dwrap_vec.o \
 	$(LAP)/rfmm2d.o $(LAP)/rfmm2dwrap.o \
-	$(LAP)/rfmm2dwrap_vec.o $(LAP)/lndiv2d.o 
+	$(LAP)/rfmm2dwrap_vec.o $(LAP)/lndiv2d.o \
+	$(LAP)/rfmm2d_ndiv.o $(LAP)/lfmm2d_ndiv.o \
+	$(LAP)/cfmm2d_ndiv.o 
 
 BH = src/biharmonic
 BHOBJS = $(BH)/bh2dterms.o \

@@ -1063,20 +1063,53 @@ mxWrapReturnZDef_single   (mxWrapReturn_single_dcomplex, dcomplex,
                     real_dcomplex, imag_dcomplex)
 
 #if defined(MWF77_CAPS)
-#define MWF77_hfmm2d_t_cd_g HFMM2D_T_CD_G
-#define MWF77_cfmm2d_t_d_p CFMM2D_T_D_P
-#define MWF77_c2d_directdp C2D_DIRECTDP
+#define MWF77_hndiv2d HNDIV2D
+#define MWF77_hfmm2d_ndiv HFMM2D_NDIV
+#define MWF77_h2d_directcp H2D_DIRECTCP
+#define MWF77_h2d_directdp H2D_DIRECTDP
+#define MWF77_h2d_directcdp H2D_DIRECTCDP
+#define MWF77_h2d_directcg H2D_DIRECTCG
+#define MWF77_h2d_directdg H2D_DIRECTDG
 #define MWF77_h2d_directcdg H2D_DIRECTCDG
+#define MWF77_h2d_directch H2D_DIRECTCH
+#define MWF77_h2d_directdh H2D_DIRECTDH
+#define MWF77_h2d_directcdh H2D_DIRECTCDH
 #elif defined(MWF77_UNDERSCORE1)
-#define MWF77_hfmm2d_t_cd_g hfmm2d_t_cd_g_
-#define MWF77_cfmm2d_t_d_p cfmm2d_t_d_p_
-#define MWF77_c2d_directdp c2d_directdp_
+#define MWF77_hndiv2d hndiv2d_
+#define MWF77_hfmm2d_ndiv hfmm2d_ndiv_
+#define MWF77_h2d_directcp h2d_directcp_
+#define MWF77_h2d_directdp h2d_directdp_
+#define MWF77_h2d_directcdp h2d_directcdp_
+#define MWF77_h2d_directcg h2d_directcg_
+#define MWF77_h2d_directdg h2d_directdg_
 #define MWF77_h2d_directcdg h2d_directcdg_
+#define MWF77_h2d_directch h2d_directch_
+#define MWF77_h2d_directdh h2d_directdh_
+#define MWF77_h2d_directcdh h2d_directcdh_
+#elif defined(MWF77_UNDERSCORE0)
+#define MWF77_hndiv2d hndiv2d
+#define MWF77_hfmm2d_ndiv hfmm2d_ndiv
+#define MWF77_h2d_directcp h2d_directcp
+#define MWF77_h2d_directdp h2d_directdp
+#define MWF77_h2d_directcdp h2d_directcdp
+#define MWF77_h2d_directcg h2d_directcg
+#define MWF77_h2d_directdg h2d_directdg
+#define MWF77_h2d_directcdg h2d_directcdg
+#define MWF77_h2d_directch h2d_directch
+#define MWF77_h2d_directdh h2d_directdh
+#define MWF77_h2d_directcdh h2d_directcdh
 #else /* f2c convention */
-#define MWF77_hfmm2d_t_cd_g hfmm2d_t_cd_g__
-#define MWF77_cfmm2d_t_d_p cfmm2d_t_d_p__
-#define MWF77_c2d_directdp c2d_directdp__
+#define MWF77_hndiv2d hndiv2d_
+#define MWF77_hfmm2d_ndiv hfmm2d_ndiv__
+#define MWF77_h2d_directcp h2d_directcp__
+#define MWF77_h2d_directdp h2d_directdp__
+#define MWF77_h2d_directcdp h2d_directcdp__
+#define MWF77_h2d_directcg h2d_directcg__
+#define MWF77_h2d_directdg h2d_directdg__
 #define MWF77_h2d_directcdg h2d_directcdg__
+#define MWF77_h2d_directch h2d_directch__
+#define MWF77_h2d_directdh h2d_directdh__
+#define MWF77_h2d_directcdh h2d_directcdh__
 #endif
 
 #ifdef __cplusplus
@@ -1087,53 +1120,1094 @@ extern "C" { /* Prevent C++ name mangling */
 #define MWF77_RETURN int
 #endif
 
-MWF77_RETURN MWF77_hfmm2d_t_cd_g(double*, dcomplex*, int*, double*, dcomplex*, dcomplex*, double*, int*, double*, dcomplex*, dcomplex*, int*);
-MWF77_RETURN MWF77_cfmm2d_t_d_p(double*, int*, double*, dcomplex*, int*, double*, dcomplex*, int*);
-MWF77_RETURN MWF77_c2d_directdp(int*, double*, int*, dcomplex*, double*, int*, dcomplex*, double*);
+MWF77_RETURN MWF77_hndiv2d(double*, int*, int*, int*, int*, int*, int*, int*, int*);
+MWF77_RETURN MWF77_hfmm2d_ndiv(int*, double*, dcomplex*, int*, double*, int*, dcomplex*, int*, dcomplex*, double*, int*, int*, dcomplex*, dcomplex*, dcomplex*, int*, double*, int*, dcomplex*, dcomplex*, dcomplex*, int*, int*, int*, double*, int*);
+MWF77_RETURN MWF77_h2d_directcp(int*, dcomplex*, double*, int*, dcomplex*, double*, int*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directdp(int*, dcomplex*, double*, int*, dcomplex*, double*, double*, int*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directcdp(int*, dcomplex*, double*, int*, dcomplex*, dcomplex*, double*, double*, int*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directcg(int*, dcomplex*, double*, int*, dcomplex*, double*, int*, dcomplex*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directdg(int*, dcomplex*, double*, int*, dcomplex*, double*, double*, int*, dcomplex*, dcomplex*, double*);
 MWF77_RETURN MWF77_h2d_directcdg(int*, dcomplex*, double*, int*, dcomplex*, dcomplex*, double*, double*, int*, dcomplex*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directch(int*, dcomplex*, double*, int*, dcomplex*, double*, int*, dcomplex*, dcomplex*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directdh(int*, dcomplex*, double*, int*, dcomplex*, double*, double*, int*, dcomplex*, dcomplex*, dcomplex*, double*);
+MWF77_RETURN MWF77_h2d_directcdh(int*, dcomplex*, double*, int*, dcomplex*, dcomplex*, double*, double*, int*, dcomplex*, dcomplex*, dcomplex*, double*);
 
 #ifdef __cplusplus
 } /* end extern C */
 #endif
 
-/* ---- fmm2d.mw: 12 ----
- * hfmm2d_t_cd_g(double[1] eps, dcomplex[1] zk, int[1] ns, double[2, ns] sources, dcomplex[ns] charges, dcomplex[ns] dipstr, double[2, ns] dipvec, int[1] nt, double[2, nt] targ, inout dcomplex[nt] pottarg, inout dcomplex[2, nt] gradtarg, inout int[1] ier);
+/* ---- fmm2d.mw: 187 ----
+ * hndiv2d(double[1] eps, int[1] ns, int[1] nt, int[1] ifcharge, int[1] ifdipole, int[1] pg, int[1] pgt, inout int[1] ndiv, inout int[1] idivflag);
  */
-static const char* stubids1_ = "hfmm2d_t_cd_g(i double[x], i dcomplex[x], i int[x], i double[xx], i dcomplex[x], i dcomplex[x], i double[xx], i int[x], i double[xx], io dcomplex[x], io dcomplex[xx], io int[x])";
+static const char* stubids1_ = "hndiv2d(i double[x], i int[x], i int[x], i int[x], i int[x], i int[x], i int[x], io int[x], io int[x])";
 
 void mexStub1(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
 {
     const char* mw_err_txt_ = 0;
     double*     in0_ =0; /* eps        */
-    dcomplex*   in1_ =0; /* zk         */
-    int*        in2_ =0; /* ns         */
-    double*     in3_ =0; /* sources    */
-    dcomplex*   in4_ =0; /* charges    */
-    dcomplex*   in5_ =0; /* dipstr     */
-    double*     in6_ =0; /* dipvec     */
-    int*        in7_ =0; /* nt         */
-    double*     in8_ =0; /* targ       */
-    dcomplex*   in9_ =0; /* pottarg    */
-    dcomplex*   in10_ =0; /* gradtarg   */
-    int*        in11_ =0; /* ier        */
+    int*        in1_ =0; /* ns         */
+    int*        in2_ =0; /* nt         */
+    int*        in3_ =0; /* ifcharge   */
+    int*        in4_ =0; /* ifdipole   */
+    int*        in5_ =0; /* pg         */
+    int*        in6_ =0; /* pgt        */
+    int*        in7_ =0; /* ndiv       */
+    int*        in8_ =0; /* idivflag   */
+    mwSize      dim9_;   /* 1          */
+    mwSize      dim10_;   /* 1          */
+    mwSize      dim11_;   /* 1          */
     mwSize      dim12_;   /* 1          */
     mwSize      dim13_;   /* 1          */
     mwSize      dim14_;   /* 1          */
-    mwSize      dim15_;   /* 2          */
+    mwSize      dim15_;   /* 1          */
+    mwSize      dim16_;   /* 1          */
+    mwSize      dim17_;   /* 1          */
+
+    dim9_ = (mwSize) mxWrapGetScalar(prhs[9], &mw_err_txt_);
+    dim10_ = (mwSize) mxWrapGetScalar(prhs[10], &mw_err_txt_);
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim9_) {
+        mw_err_txt_ = "Bad argument size: eps";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim10_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim12_) {
+        mw_err_txt_ = "Bad argument size: ifcharge";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != dim13_) {
+        mw_err_txt_ = "Bad argument size: ifdipole";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: pg";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: pgt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim16_) {
+        mw_err_txt_ = "Bad argument size: ndiv";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: idivflag";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        if( mxGetClassID(prhs[0]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in0_ = mxGetDoubles(prhs[0]);
+#else
+        in0_ = mxGetPr(prhs[0]);
+#endif
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        in1_ = mxWrapGetArray_int(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        in2_ = mxWrapGetArray_int(prhs[2], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        in4_ = mxWrapGetArray_int(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        in5_ = mxWrapGetArray_int(prhs[5], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        in6_ = mxWrapGetArray_int(prhs[6], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        in7_ = mxWrapGetArray_int(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        in8_ = mxWrapGetArray_int(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[1]++;
+    MWF77_hndiv2d(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_);
+    plhs[0] = mxCreateDoubleMatrix(dim16_, 1, mxREAL);
+    mxWrapCopy_int(plhs[0], in7_, dim16_);
+    plhs[1] = mxCreateDoubleMatrix(dim17_, 1, mxREAL);
+    mxWrapCopy_int(plhs[1], in8_, dim17_);
+
+mw_err_label:
+    if (in1_)  mxFree(in1_);
+    if (in2_)  mxFree(in2_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in5_)  mxFree(in5_);
+    if (in6_)  mxFree(in6_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 202 ----
+ * hfmm2d_ndiv(int[1] nd, double[1] eps, dcomplex[1] zk, int[1] ns, double[2, ns] sources, int[1] ifcharge, dcomplex[nd, ns] charges, int[1] ifdipole, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, int[1] iper, int[1] pg, inout dcomplex[nd, ns] pot, inout dcomplex[nd2, ns] grad, inout dcomplex[nd3, ns] hess, int[1] nt, double[2, ntuse] targ, int[1] pgt, inout dcomplex[nd, ntuse] pottarg, inout dcomplex[nd2, ntuse] gradtarg, inout dcomplex[nd3, ntuse] hesstarg, int[1] ndiv, int[1] idivflag, int[1] ifnear, inout double[8] timeinfo, inout int[1] ier);
+ */
+static const char* stubids2_ = "hfmm2d_ndiv(i int[x], i double[x], i dcomplex[x], i int[x], i double[xx], i int[x], i dcomplex[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i int[x], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i int[x], i int[x], i int[x], io double[x], io int[x])";
+
+void mexStub2(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    double*     in1_ =0; /* eps        */
+    dcomplex*   in2_ =0; /* zk         */
+    int*        in3_ =0; /* ns         */
+    double*     in4_ =0; /* sources    */
+    int*        in5_ =0; /* ifcharge   */
+    dcomplex*   in6_ =0; /* charges    */
+    int*        in7_ =0; /* ifdipole   */
+    dcomplex*   in8_ =0; /* dipstr     */
+    double*     in9_ =0; /* dipvec     */
+    int*        in10_ =0; /* iper       */
+    int*        in11_ =0; /* pg         */
+    dcomplex*   in12_ =0; /* pot        */
+    dcomplex*   in13_ =0; /* grad       */
+    dcomplex*   in14_ =0; /* hess       */
+    int*        in15_ =0; /* nt         */
+    double*     in16_ =0; /* targ       */
+    int*        in17_ =0; /* pgt        */
+    dcomplex*   in18_ =0; /* pottarg    */
+    dcomplex*   in19_ =0; /* gradtarg   */
+    dcomplex*   in20_ =0; /* hesstarg   */
+    int*        in21_ =0; /* ndiv       */
+    int*        in22_ =0; /* idivflag   */
+    int*        in23_ =0; /* ifnear     */
+    double*     in24_ =0; /* timeinfo   */
+    int*        in25_ =0; /* ier        */
+    mwSize      dim26_;   /* 1          */
+    mwSize      dim27_;   /* 1          */
+    mwSize      dim28_;   /* 1          */
+    mwSize      dim29_;   /* 1          */
+    mwSize      dim30_;   /* 2          */
+    mwSize      dim31_;   /* ns         */
+    mwSize      dim32_;   /* 1          */
+    mwSize      dim33_;   /* nd         */
+    mwSize      dim34_;   /* ns         */
+    mwSize      dim35_;   /* 1          */
+    mwSize      dim36_;   /* nd         */
+    mwSize      dim37_;   /* ns         */
+    mwSize      dim38_;   /* nd2        */
+    mwSize      dim39_;   /* ns         */
+    mwSize      dim40_;   /* 1          */
+    mwSize      dim41_;   /* 1          */
+    mwSize      dim42_;   /* nd         */
+    mwSize      dim43_;   /* ns         */
+    mwSize      dim44_;   /* nd2        */
+    mwSize      dim45_;   /* ns         */
+    mwSize      dim46_;   /* nd3        */
+    mwSize      dim47_;   /* ns         */
+    mwSize      dim48_;   /* 1          */
+    mwSize      dim49_;   /* 2          */
+    mwSize      dim50_;   /* ntuse      */
+    mwSize      dim51_;   /* 1          */
+    mwSize      dim52_;   /* nd         */
+    mwSize      dim53_;   /* ntuse      */
+    mwSize      dim54_;   /* nd2        */
+    mwSize      dim55_;   /* ntuse      */
+    mwSize      dim56_;   /* nd3        */
+    mwSize      dim57_;   /* ntuse      */
+    mwSize      dim58_;   /* 1          */
+    mwSize      dim59_;   /* 1          */
+    mwSize      dim60_;   /* 1          */
+    mwSize      dim61_;   /* 8          */
+    mwSize      dim62_;   /* 1          */
+
+    dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
+    dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
+    dim28_ = (mwSize) mxWrapGetScalar(prhs[28], &mw_err_txt_);
+    dim29_ = (mwSize) mxWrapGetScalar(prhs[29], &mw_err_txt_);
+    dim30_ = (mwSize) mxWrapGetScalar(prhs[30], &mw_err_txt_);
+    dim31_ = (mwSize) mxWrapGetScalar(prhs[31], &mw_err_txt_);
+    dim32_ = (mwSize) mxWrapGetScalar(prhs[32], &mw_err_txt_);
+    dim33_ = (mwSize) mxWrapGetScalar(prhs[33], &mw_err_txt_);
+    dim34_ = (mwSize) mxWrapGetScalar(prhs[34], &mw_err_txt_);
+    dim35_ = (mwSize) mxWrapGetScalar(prhs[35], &mw_err_txt_);
+    dim36_ = (mwSize) mxWrapGetScalar(prhs[36], &mw_err_txt_);
+    dim37_ = (mwSize) mxWrapGetScalar(prhs[37], &mw_err_txt_);
+    dim38_ = (mwSize) mxWrapGetScalar(prhs[38], &mw_err_txt_);
+    dim39_ = (mwSize) mxWrapGetScalar(prhs[39], &mw_err_txt_);
+    dim40_ = (mwSize) mxWrapGetScalar(prhs[40], &mw_err_txt_);
+    dim41_ = (mwSize) mxWrapGetScalar(prhs[41], &mw_err_txt_);
+    dim42_ = (mwSize) mxWrapGetScalar(prhs[42], &mw_err_txt_);
+    dim43_ = (mwSize) mxWrapGetScalar(prhs[43], &mw_err_txt_);
+    dim44_ = (mwSize) mxWrapGetScalar(prhs[44], &mw_err_txt_);
+    dim45_ = (mwSize) mxWrapGetScalar(prhs[45], &mw_err_txt_);
+    dim46_ = (mwSize) mxWrapGetScalar(prhs[46], &mw_err_txt_);
+    dim47_ = (mwSize) mxWrapGetScalar(prhs[47], &mw_err_txt_);
+    dim48_ = (mwSize) mxWrapGetScalar(prhs[48], &mw_err_txt_);
+    dim49_ = (mwSize) mxWrapGetScalar(prhs[49], &mw_err_txt_);
+    dim50_ = (mwSize) mxWrapGetScalar(prhs[50], &mw_err_txt_);
+    dim51_ = (mwSize) mxWrapGetScalar(prhs[51], &mw_err_txt_);
+    dim52_ = (mwSize) mxWrapGetScalar(prhs[52], &mw_err_txt_);
+    dim53_ = (mwSize) mxWrapGetScalar(prhs[53], &mw_err_txt_);
+    dim54_ = (mwSize) mxWrapGetScalar(prhs[54], &mw_err_txt_);
+    dim55_ = (mwSize) mxWrapGetScalar(prhs[55], &mw_err_txt_);
+    dim56_ = (mwSize) mxWrapGetScalar(prhs[56], &mw_err_txt_);
+    dim57_ = (mwSize) mxWrapGetScalar(prhs[57], &mw_err_txt_);
+    dim58_ = (mwSize) mxWrapGetScalar(prhs[58], &mw_err_txt_);
+    dim59_ = (mwSize) mxWrapGetScalar(prhs[59], &mw_err_txt_);
+    dim60_ = (mwSize) mxWrapGetScalar(prhs[60], &mw_err_txt_);
+    dim61_ = (mwSize) mxWrapGetScalar(prhs[61], &mw_err_txt_);
+    dim62_ = (mwSize) mxWrapGetScalar(prhs[62], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim26_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim27_) {
+        mw_err_txt_ = "Bad argument size: eps";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != dim28_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim29_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim30_ ||
+        mxGetN(prhs[4]) != dim31_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != dim32_) {
+        mw_err_txt_ = "Bad argument size: ifcharge";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim33_ ||
+        mxGetN(prhs[6]) != dim34_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim35_) {
+        mw_err_txt_ = "Bad argument size: ifdipole";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim36_ ||
+        mxGetN(prhs[8]) != dim37_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9]) != dim38_ ||
+        mxGetN(prhs[9]) != dim39_) {
+        mw_err_txt_ = "Bad argument size: dipvec";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != dim40_) {
+        mw_err_txt_ = "Bad argument size: iper";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != dim41_) {
+        mw_err_txt_ = "Bad argument size: pg";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[12]) != dim42_ ||
+        mxGetN(prhs[12]) != dim43_) {
+        mw_err_txt_ = "Bad argument size: pot";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[13]) != dim44_ ||
+        mxGetN(prhs[13]) != dim45_) {
+        mw_err_txt_ = "Bad argument size: grad";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[14]) != dim46_ ||
+        mxGetN(prhs[14]) != dim47_) {
+        mw_err_txt_ = "Bad argument size: hess";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[15])*mxGetN(prhs[15]) != dim48_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[16]) != dim49_ ||
+        mxGetN(prhs[16]) != dim50_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[17])*mxGetN(prhs[17]) != dim51_) {
+        mw_err_txt_ = "Bad argument size: pgt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[18]) != dim52_ ||
+        mxGetN(prhs[18]) != dim53_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[19]) != dim54_ ||
+        mxGetN(prhs[19]) != dim55_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[20]) != dim56_ ||
+        mxGetN(prhs[20]) != dim57_) {
+        mw_err_txt_ = "Bad argument size: hesstarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[21])*mxGetN(prhs[21]) != dim58_) {
+        mw_err_txt_ = "Bad argument size: ndiv";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[22])*mxGetN(prhs[22]) != dim59_) {
+        mw_err_txt_ = "Bad argument size: idivflag";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[23])*mxGetN(prhs[23]) != dim60_) {
+        mw_err_txt_ = "Bad argument size: ifnear";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[24])*mxGetN(prhs[24]) != dim61_) {
+        mw_err_txt_ = "Bad argument size: timeinfo";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[25])*mxGetN(prhs[25]) != dim62_) {
+        mw_err_txt_ = "Bad argument size: ier";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in1_ = mxGetDoubles(prhs[1]);
+#else
+        in1_ = mxGetPr(prhs[1]);
+#endif
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in2_ = mxWrapGetArray_dcomplex(prhs[2], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in4_ = mxGetDoubles(prhs[4]);
+#else
+        in4_ = mxGetPr(prhs[4]);
+#endif
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        in5_ = mxWrapGetArray_int(prhs[5], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in6_ = mxWrapGetArray_dcomplex(prhs[6], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        in7_ = mxWrapGetArray_int(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in9_ = mxGetDoubles(prhs[9]);
+#else
+        in9_ = mxGetPr(prhs[9]);
+#endif
+    } else
+        in9_ = NULL;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != 0) {
+        in10_ = mxWrapGetArray_int(prhs[10], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in10_ = NULL;
+    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != 0) {
+        in11_ = mxWrapGetArray_int(prhs[11], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in11_ = NULL;
+    if (mxGetM(prhs[12])*mxGetN(prhs[12]) != 0) {
+        if( mxGetClassID(prhs[12]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in12_ = mxWrapGetArray_dcomplex(prhs[12], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in12_ = NULL;
+    if (mxGetM(prhs[13])*mxGetN(prhs[13]) != 0) {
+        if( mxGetClassID(prhs[13]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in13_ = mxWrapGetArray_dcomplex(prhs[13], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in13_ = NULL;
+    if (mxGetM(prhs[14])*mxGetN(prhs[14]) != 0) {
+        if( mxGetClassID(prhs[14]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in14_ = mxWrapGetArray_dcomplex(prhs[14], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in14_ = NULL;
+    if (mxGetM(prhs[15])*mxGetN(prhs[15]) != 0) {
+        in15_ = mxWrapGetArray_int(prhs[15], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in15_ = NULL;
+    if (mxGetM(prhs[16])*mxGetN(prhs[16]) != 0) {
+        if( mxGetClassID(prhs[16]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in16_ = mxGetDoubles(prhs[16]);
+#else
+        in16_ = mxGetPr(prhs[16]);
+#endif
+    } else
+        in16_ = NULL;
+    if (mxGetM(prhs[17])*mxGetN(prhs[17]) != 0) {
+        in17_ = mxWrapGetArray_int(prhs[17], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in17_ = NULL;
+    if (mxGetM(prhs[18])*mxGetN(prhs[18]) != 0) {
+        if( mxGetClassID(prhs[18]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in18_ = mxWrapGetArray_dcomplex(prhs[18], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in18_ = NULL;
+    if (mxGetM(prhs[19])*mxGetN(prhs[19]) != 0) {
+        if( mxGetClassID(prhs[19]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in19_ = mxWrapGetArray_dcomplex(prhs[19], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in19_ = NULL;
+    if (mxGetM(prhs[20])*mxGetN(prhs[20]) != 0) {
+        if( mxGetClassID(prhs[20]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in20_ = mxWrapGetArray_dcomplex(prhs[20], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in20_ = NULL;
+    if (mxGetM(prhs[21])*mxGetN(prhs[21]) != 0) {
+        in21_ = mxWrapGetArray_int(prhs[21], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in21_ = NULL;
+    if (mxGetM(prhs[22])*mxGetN(prhs[22]) != 0) {
+        in22_ = mxWrapGetArray_int(prhs[22], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in22_ = NULL;
+    if (mxGetM(prhs[23])*mxGetN(prhs[23]) != 0) {
+        in23_ = mxWrapGetArray_int(prhs[23], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in23_ = NULL;
+    if (mxGetM(prhs[24])*mxGetN(prhs[24]) != 0) {
+        in24_ = mxWrapGetArray_double(prhs[24], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in24_ = NULL;
+    if (mxGetM(prhs[25])*mxGetN(prhs[25]) != 0) {
+        in25_ = mxWrapGetArray_int(prhs[25], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in25_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[2]++;
+    MWF77_hfmm2d_ndiv(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_, in13_, in14_, in15_, in16_, in17_, in18_, in19_, in20_, in21_, in22_, in23_, in24_, in25_);
+    plhs[0] = mxCreateDoubleMatrix(dim42_, dim43_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in12_, dim42_*dim43_);
+    plhs[1] = mxCreateDoubleMatrix(dim44_, dim45_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in13_, dim44_*dim45_);
+    plhs[2] = mxCreateDoubleMatrix(dim46_, dim47_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[2], in14_, dim46_*dim47_);
+    plhs[3] = mxCreateDoubleMatrix(dim52_, dim53_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[3], in18_, dim52_*dim53_);
+    plhs[4] = mxCreateDoubleMatrix(dim54_, dim55_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[4], in19_, dim54_*dim55_);
+    plhs[5] = mxCreateDoubleMatrix(dim56_, dim57_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[5], in20_, dim56_*dim57_);
+    plhs[6] = mxCreateDoubleMatrix(dim61_, 1, mxREAL);
+    mxWrapCopy_double(plhs[6], in24_, dim61_);
+    plhs[7] = mxCreateDoubleMatrix(dim62_, 1, mxREAL);
+    mxWrapCopy_int(plhs[7], in25_, dim62_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in2_)  mxFree(in2_);
+    if (in3_)  mxFree(in3_);
+    if (in5_)  mxFree(in5_);
+    if (in6_)  mxFree(in6_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (in10_)  mxFree(in10_);
+    if (in11_)  mxFree(in11_);
+    if (in12_)  mxFree(in12_);
+    if (in13_)  mxFree(in13_);
+    if (in14_)  mxFree(in14_);
+    if (in15_)  mxFree(in15_);
+    if (in17_)  mxFree(in17_);
+    if (in18_)  mxFree(in18_);
+    if (in19_)  mxFree(in19_);
+    if (in20_)  mxFree(in20_);
+    if (in21_)  mxFree(in21_);
+    if (in22_)  mxFree(in22_);
+    if (in23_)  mxFree(in23_);
+    if (in24_)  mxFree(in24_);
+    if (in25_)  mxFree(in25_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 335 ----
+ * h2d_directcp(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, double[1] thresh);
+ */
+static const char* stubids3_ = "h2d_directcp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])";
+
+void mexStub3(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* charges    */
+    double*     in5_ =0; /* targ       */
+    int*        in6_ =0; /* nt         */
+    dcomplex*   in7_ =0; /* pottarg    */
+    double*     in8_ =0; /* thresh     */
+    mwSize      dim9_;   /* 1          */
+    mwSize      dim10_;   /* 1          */
+    mwSize      dim11_;   /* 2          */
+    mwSize      dim12_;   /* ns         */
+    mwSize      dim13_;   /* 1          */
+    mwSize      dim14_;   /* nd         */
+    mwSize      dim15_;   /* ns         */
+    mwSize      dim16_;   /* 2          */
+    mwSize      dim17_;   /* nt         */
+    mwSize      dim18_;   /* 1          */
+    mwSize      dim19_;   /* nd         */
+    mwSize      dim20_;   /* nt         */
+    mwSize      dim21_;   /* 1          */
+
+    dim9_ = (mwSize) mxWrapGetScalar(prhs[9], &mw_err_txt_);
+    dim10_ = (mwSize) mxWrapGetScalar(prhs[10], &mw_err_txt_);
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim9_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim10_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim11_ ||
+        mxGetN(prhs[2]) != dim12_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim13_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim14_ ||
+        mxGetN(prhs[4]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim16_ ||
+        mxGetN(prhs[5]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != dim18_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7]) != dim19_ ||
+        mxGetN(prhs[7]) != dim20_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != dim21_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in5_ = mxGetDoubles(prhs[5]);
+#else
+        in5_ = mxGetPr(prhs[5]);
+#endif
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        in6_ = mxWrapGetArray_int(prhs[6], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in7_ = mxWrapGetArray_dcomplex(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in8_ = mxGetDoubles(prhs[8]);
+#else
+        in8_ = mxGetPr(prhs[8]);
+#endif
+    } else
+        in8_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[3]++;
+    MWF77_h2d_directcp(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_);
+    plhs[0] = mxCreateDoubleMatrix(dim19_, dim20_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in7_, dim19_*dim20_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in6_)  mxFree(in6_);
+    if (in7_)  mxFree(in7_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 338 ----
+ * h2d_directdp(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, double[1] thresh);
+ */
+static const char* stubids4_ = "h2d_directdp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])";
+
+void mexStub4(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* dipstr     */
+    double*     in5_ =0; /* dipvec     */
+    double*     in6_ =0; /* targ       */
+    int*        in7_ =0; /* nt         */
+    dcomplex*   in8_ =0; /* pottarg    */
+    double*     in9_ =0; /* thresh     */
+    mwSize      dim10_;   /* 1          */
+    mwSize      dim11_;   /* 1          */
+    mwSize      dim12_;   /* 2          */
+    mwSize      dim13_;   /* ns         */
+    mwSize      dim14_;   /* 1          */
+    mwSize      dim15_;   /* nd         */
     mwSize      dim16_;   /* ns         */
-    mwSize      dim17_;   /* ns         */
+    mwSize      dim17_;   /* nd2        */
     mwSize      dim18_;   /* ns         */
     mwSize      dim19_;   /* 2          */
-    mwSize      dim20_;   /* ns         */
+    mwSize      dim20_;   /* nt         */
     mwSize      dim21_;   /* 1          */
+    mwSize      dim22_;   /* nd         */
+    mwSize      dim23_;   /* nt         */
+    mwSize      dim24_;   /* 1          */
+
+    dim10_ = (mwSize) mxWrapGetScalar(prhs[10], &mw_err_txt_);
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim10_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim12_ ||
+        mxGetN(prhs[2]) != dim13_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim15_ ||
+        mxGetN(prhs[4]) != dim16_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim17_ ||
+        mxGetN(prhs[5]) != dim18_) {
+        mw_err_txt_ = "Bad argument size: dipvec";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim19_ ||
+        mxGetN(prhs[6]) != dim20_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim21_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim22_ ||
+        mxGetN(prhs[8]) != dim23_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != dim24_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in5_ = mxGetDoubles(prhs[5]);
+#else
+        in5_ = mxGetPr(prhs[5]);
+#endif
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in6_ = mxGetDoubles(prhs[6]);
+#else
+        in6_ = mxGetPr(prhs[6]);
+#endif
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        in7_ = mxWrapGetArray_int(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in9_ = mxGetDoubles(prhs[9]);
+#else
+        in9_ = mxGetPr(prhs[9]);
+#endif
+    } else
+        in9_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[4]++;
+    MWF77_h2d_directdp(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_);
+    plhs[0] = mxCreateDoubleMatrix(dim22_, dim23_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in8_, dim22_*dim23_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 341 ----
+ * h2d_directcdp(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, double[1] thresh);
+ */
+static const char* stubids5_ = "h2d_directcdp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])";
+
+void mexStub5(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* charges    */
+    dcomplex*   in5_ =0; /* dipstr     */
+    double*     in6_ =0; /* dipvec     */
+    double*     in7_ =0; /* targ       */
+    int*        in8_ =0; /* nt         */
+    dcomplex*   in9_ =0; /* pottarg    */
+    double*     in10_ =0; /* thresh     */
+    mwSize      dim11_;   /* 1          */
+    mwSize      dim12_;   /* 1          */
+    mwSize      dim13_;   /* 2          */
+    mwSize      dim14_;   /* ns         */
+    mwSize      dim15_;   /* 1          */
+    mwSize      dim16_;   /* nd         */
+    mwSize      dim17_;   /* ns         */
+    mwSize      dim18_;   /* nd         */
+    mwSize      dim19_;   /* ns         */
+    mwSize      dim20_;   /* nd2        */
+    mwSize      dim21_;   /* ns         */
     mwSize      dim22_;   /* 2          */
     mwSize      dim23_;   /* nt         */
-    mwSize      dim24_;   /* nt         */
-    mwSize      dim25_;   /* 2          */
+    mwSize      dim24_;   /* 1          */
+    mwSize      dim25_;   /* nd         */
     mwSize      dim26_;   /* nt         */
     mwSize      dim27_;   /* 1          */
 
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
     dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
     dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
     dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
@@ -1151,71 +2225,66 @@ void mexStub1(int nlhs, mxArray* plhs[],
     dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
     dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
 
-    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim12_) {
-        mw_err_txt_ = "Bad argument size: eps";        goto mw_err_label;
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim13_) {
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim12_) {
         mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != dim14_) {
-        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[3]) != dim15_ ||
-        mxGetN(prhs[3]) != dim16_) {
+    if (mxGetM(prhs[2]) != dim13_ ||
+        mxGetN(prhs[2]) != dim14_) {
         mw_err_txt_ = "Bad argument size: sources";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != dim17_) {
-        mw_err_txt_ = "Bad argument size: charges";        goto mw_err_label;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != dim18_) {
-        mw_err_txt_ = "Bad argument size: dipstr";        goto mw_err_label;
+    if (mxGetM(prhs[4]) != dim16_ ||
+        mxGetN(prhs[4]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[6]) != dim19_ ||
-        mxGetN(prhs[6]) != dim20_) {
+    if (mxGetM(prhs[5]) != dim18_ ||
+        mxGetN(prhs[5]) != dim19_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim20_ ||
+        mxGetN(prhs[6]) != dim21_) {
         mw_err_txt_ = "Bad argument size: dipvec";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim21_) {
-        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[8]) != dim22_ ||
-        mxGetN(prhs[8]) != dim23_) {
+    if (mxGetM(prhs[7]) != dim22_ ||
+        mxGetN(prhs[7]) != dim23_) {
         mw_err_txt_ = "Bad argument size: targ";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != dim24_) {
-        mw_err_txt_ = "Bad argument size: pottarg";        goto mw_err_label;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != dim24_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[10]) != dim25_ ||
-        mxGetN(prhs[10]) != dim26_) {
-        mw_err_txt_ = "Bad argument size: gradtarg";
+    if (mxGetM(prhs[9]) != dim25_ ||
+        mxGetN(prhs[9]) != dim26_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != dim27_) {
-        mw_err_txt_ = "Bad argument size: ier";        goto mw_err_label;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != dim27_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
     }
 
     if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
-        if( mxGetClassID(prhs[0]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-#if MX_HAS_INTERLEAVED_COMPLEX
-        in0_ = mxGetDoubles(prhs[0]);
-#else
-        in0_ = mxGetPr(prhs[0]);
-#endif
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
     } else
         in0_ = NULL;
     if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
@@ -1228,20 +2297,20 @@ void mexStub1(int nlhs, mxArray* plhs[],
     } else
         in1_ = NULL;
     if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
-        in2_ = mxWrapGetArray_int(prhs[2], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in2_ = NULL;
-    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
-        if( mxGetClassID(prhs[3]) != mxDOUBLE_CLASS )
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
             mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
         if (mw_err_txt_) goto mw_err_label;
 #if MX_HAS_INTERLEAVED_COMPLEX
-        in3_ = mxGetDoubles(prhs[3]);
+        in2_ = mxGetDoubles(prhs[2]);
 #else
-        in3_ = mxGetPr(prhs[3]);
+        in2_ = mxGetPr(prhs[2]);
 #endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
     } else
         in3_ = NULL;
     if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
@@ -1274,20 +2343,20 @@ void mexStub1(int nlhs, mxArray* plhs[],
     } else
         in6_ = NULL;
     if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
-        in7_ = mxWrapGetArray_int(prhs[7], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in7_ = NULL;
-    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
-        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
             mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
         if (mw_err_txt_) goto mw_err_label;
 #if MX_HAS_INTERLEAVED_COMPLEX
-        in8_ = mxGetDoubles(prhs[8]);
+        in7_ = mxGetDoubles(prhs[7]);
 #else
-        in8_ = mxGetPr(prhs[8]);
+        in7_ = mxGetPr(prhs[7]);
 #endif
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        in8_ = mxWrapGetArray_int(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
     } else
         in8_ = NULL;
     if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
@@ -1303,70 +2372,66 @@ void mexStub1(int nlhs, mxArray* plhs[],
         if( mxGetClassID(prhs[10]) != mxDOUBLE_CLASS )
             mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
         if (mw_err_txt_) goto mw_err_label;
-        in10_ = mxWrapGetArray_dcomplex(prhs[10], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in10_ = mxGetDoubles(prhs[10]);
+#else
+        in10_ = mxGetPr(prhs[10]);
+#endif
     } else
         in10_ = NULL;
-    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != 0) {
-        in11_ = mxWrapGetArray_int(prhs[11], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in11_ = NULL;
     if (mexprofrecord_)
-        mexprofrecord_[1]++;
-    MWF77_hfmm2d_t_cd_g(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_);
-    plhs[0] = mxCreateDoubleMatrix(dim24_, 1, mxCOMPLEX);
-    mxWrapCopy_dcomplex(plhs[0], in9_, dim24_);
-    plhs[1] = mxCreateDoubleMatrix(dim25_, dim26_, mxCOMPLEX);
-    mxWrapCopy_dcomplex(plhs[1], in10_, dim25_*dim26_);
-    plhs[2] = mxCreateDoubleMatrix(dim27_, 1, mxREAL);
-    mxWrapCopy_int(plhs[2], in11_, dim27_);
+        mexprofrecord_[5]++;
+    MWF77_h2d_directcdp(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_);
+    plhs[0] = mxCreateDoubleMatrix(dim25_, dim26_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in9_, dim25_*dim26_);
 
 mw_err_label:
+    if (in0_)  mxFree(in0_);
     if (in1_)  mxFree(in1_);
-    if (in2_)  mxFree(in2_);
+    if (in3_)  mxFree(in3_);
     if (in4_)  mxFree(in4_);
     if (in5_)  mxFree(in5_);
-    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
     if (in9_)  mxFree(in9_);
-    if (in10_)  mxFree(in10_);
-    if (in11_)  mxFree(in11_);
     if (mw_err_txt_)
         mexErrMsgTxt(mw_err_txt_);
 }
 
-/* ---- fmm2d.mw: 28 ----
- * cfmm2d_t_d_p(double[1] eps, int[1] ns, double[2, ns] sources, dcomplex[ns] dipstr, int[1] nt, double[2, nt] targ, inout dcomplex[nt] pottarg, inout int[1] ier);
+/* ---- fmm2d.mw: 347 ----
+ * h2d_directcg(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, double[1] thresh);
  */
-static const char* stubids2_ = "cfmm2d_t_d_p(i double[x], i int[x], i double[xx], i dcomplex[x], i int[x], i double[xx], io dcomplex[x], io int[x])";
+static const char* stubids6_ = "h2d_directcg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])";
 
-void mexStub2(int nlhs, mxArray* plhs[],
+void mexStub6(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
 {
     const char* mw_err_txt_ = 0;
-    double*     in0_ =0; /* eps        */
-    int*        in1_ =0; /* ns         */
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
     double*     in2_ =0; /* sources    */
-    dcomplex*   in3_ =0; /* dipstr     */
-    int*        in4_ =0; /* nt         */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* charges    */
     double*     in5_ =0; /* targ       */
-    dcomplex*   in6_ =0; /* pottarg    */
-    int*        in7_ =0; /* ier        */
-    mwSize      dim8_;   /* 1          */
-    mwSize      dim9_;   /* 1          */
-    mwSize      dim10_;   /* 2          */
-    mwSize      dim11_;   /* ns         */
-    mwSize      dim12_;   /* ns         */
-    mwSize      dim13_;   /* 1          */
-    mwSize      dim14_;   /* 2          */
-    mwSize      dim15_;   /* nt         */
-    mwSize      dim16_;   /* nt         */
-    mwSize      dim17_;   /* 1          */
+    int*        in6_ =0; /* nt         */
+    dcomplex*   in7_ =0; /* pottarg    */
+    dcomplex*   in8_ =0; /* gradtarg   */
+    double*     in9_ =0; /* thresh     */
+    mwSize      dim10_;   /* 1          */
+    mwSize      dim11_;   /* 1          */
+    mwSize      dim12_;   /* 2          */
+    mwSize      dim13_;   /* ns         */
+    mwSize      dim14_;   /* 1          */
+    mwSize      dim15_;   /* nd         */
+    mwSize      dim16_;   /* ns         */
+    mwSize      dim17_;   /* 2          */
+    mwSize      dim18_;   /* nt         */
+    mwSize      dim19_;   /* 1          */
+    mwSize      dim20_;   /* nd         */
+    mwSize      dim21_;   /* nt         */
+    mwSize      dim22_;   /* nd2        */
+    mwSize      dim23_;   /* nt         */
+    mwSize      dim24_;   /* 1          */
 
-    dim8_ = (mwSize) mxWrapGetScalar(prhs[8], &mw_err_txt_);
-    dim9_ = (mwSize) mxWrapGetScalar(prhs[9], &mw_err_txt_);
     dim10_ = (mwSize) mxWrapGetScalar(prhs[10], &mw_err_txt_);
     dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
     dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
@@ -1375,56 +2440,75 @@ void mexStub2(int nlhs, mxArray* plhs[],
     dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
     dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
     dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
 
-    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim8_) {
-        mw_err_txt_ = "Bad argument size: eps";        goto mw_err_label;
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim10_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim9_) {
-        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[2]) != dim10_ ||
-        mxGetN(prhs[2]) != dim11_) {
+    if (mxGetM(prhs[2]) != dim12_ ||
+        mxGetN(prhs[2]) != dim13_) {
         mw_err_txt_ = "Bad argument size: sources";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim12_) {
-        mw_err_txt_ = "Bad argument size: dipstr";        goto mw_err_label;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != dim13_) {
-        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    if (mxGetM(prhs[4]) != dim15_ ||
+        mxGetN(prhs[4]) != dim16_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[5]) != dim14_ ||
-        mxGetN(prhs[5]) != dim15_) {
+    if (mxGetM(prhs[5]) != dim17_ ||
+        mxGetN(prhs[5]) != dim18_) {
         mw_err_txt_ = "Bad argument size: targ";
         goto mw_err_label;
     }
 
-    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != dim16_) {
-        mw_err_txt_ = "Bad argument size: pottarg";        goto mw_err_label;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != dim19_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
     }
 
-    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim17_) {
-        mw_err_txt_ = "Bad argument size: ier";        goto mw_err_label;
+    if (mxGetM(prhs[7]) != dim20_ ||
+        mxGetN(prhs[7]) != dim21_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim22_ ||
+        mxGetN(prhs[8]) != dim23_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != dim24_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
     }
 
     if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
-        if( mxGetClassID(prhs[0]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-#if MX_HAS_INTERLEAVED_COMPLEX
-        in0_ = mxGetDoubles(prhs[0]);
-#else
-        in0_ = mxGetPr(prhs[0]);
-#endif
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
     } else
         in0_ = NULL;
     if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
-        in1_ = mxWrapGetArray_int(prhs[1], &mw_err_txt_);
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
         if (mw_err_txt_)
             goto mw_err_label;
     } else
@@ -1441,16 +2525,235 @@ void mexStub2(int nlhs, mxArray* plhs[],
     } else
         in2_ = NULL;
     if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
-        if( mxGetClassID(prhs[3]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-        in3_ = mxWrapGetArray_dcomplex(prhs[3], &mw_err_txt_);
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
         if (mw_err_txt_)
             goto mw_err_label;
     } else
         in3_ = NULL;
     if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
-        in4_ = mxWrapGetArray_int(prhs[4], &mw_err_txt_);
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in5_ = mxGetDoubles(prhs[5]);
+#else
+        in5_ = mxGetPr(prhs[5]);
+#endif
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        in6_ = mxWrapGetArray_int(prhs[6], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in7_ = mxWrapGetArray_dcomplex(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in9_ = mxGetDoubles(prhs[9]);
+#else
+        in9_ = mxGetPr(prhs[9]);
+#endif
+    } else
+        in9_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[6]++;
+    MWF77_h2d_directcg(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_);
+    plhs[0] = mxCreateDoubleMatrix(dim20_, dim21_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in7_, dim20_*dim21_);
+    plhs[1] = mxCreateDoubleMatrix(dim22_, dim23_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in8_, dim22_*dim23_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in6_)  mxFree(in6_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 350 ----
+ * h2d_directdg(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, double[1] thresh);
+ */
+static const char* stubids7_ = "h2d_directdg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])";
+
+void mexStub7(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* dipstr     */
+    double*     in5_ =0; /* dipvec     */
+    double*     in6_ =0; /* targ       */
+    int*        in7_ =0; /* nt         */
+    dcomplex*   in8_ =0; /* pottarg    */
+    dcomplex*   in9_ =0; /* gradtarg   */
+    double*     in10_ =0; /* thresh     */
+    mwSize      dim11_;   /* 1          */
+    mwSize      dim12_;   /* 1          */
+    mwSize      dim13_;   /* 2          */
+    mwSize      dim14_;   /* ns         */
+    mwSize      dim15_;   /* 1          */
+    mwSize      dim16_;   /* nd         */
+    mwSize      dim17_;   /* ns         */
+    mwSize      dim18_;   /* nd2        */
+    mwSize      dim19_;   /* ns         */
+    mwSize      dim20_;   /* 2          */
+    mwSize      dim21_;   /* nt         */
+    mwSize      dim22_;   /* 1          */
+    mwSize      dim23_;   /* nd         */
+    mwSize      dim24_;   /* nt         */
+    mwSize      dim25_;   /* nd2        */
+    mwSize      dim26_;   /* nt         */
+    mwSize      dim27_;   /* 1          */
+
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
+    dim25_ = (mwSize) mxWrapGetScalar(prhs[25], &mw_err_txt_);
+    dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
+    dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim12_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim13_ ||
+        mxGetN(prhs[2]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim16_ ||
+        mxGetN(prhs[4]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim18_ ||
+        mxGetN(prhs[5]) != dim19_) {
+        mw_err_txt_ = "Bad argument size: dipvec";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim20_ ||
+        mxGetN(prhs[6]) != dim21_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim22_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim23_ ||
+        mxGetN(prhs[8]) != dim24_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9]) != dim25_ ||
+        mxGetN(prhs[9]) != dim26_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != dim27_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
         if (mw_err_txt_)
             goto mw_err_label;
     } else
@@ -1470,9 +2773,11 @@ void mexStub2(int nlhs, mxArray* plhs[],
         if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
             mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
         if (mw_err_txt_) goto mw_err_label;
-        in6_ = mxWrapGetArray_dcomplex(prhs[6], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in6_ = mxGetDoubles(prhs[6]);
+#else
+        in6_ = mxGetPr(prhs[6]);
+#endif
     } else
         in6_ = NULL;
     if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
@@ -1481,198 +2786,61 @@ void mexStub2(int nlhs, mxArray* plhs[],
             goto mw_err_label;
     } else
         in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in9_ = mxWrapGetArray_dcomplex(prhs[9], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in9_ = NULL;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != 0) {
+        if( mxGetClassID(prhs[10]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in10_ = mxGetDoubles(prhs[10]);
+#else
+        in10_ = mxGetPr(prhs[10]);
+#endif
+    } else
+        in10_ = NULL;
     if (mexprofrecord_)
-        mexprofrecord_[2]++;
-    MWF77_cfmm2d_t_d_p(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_);
-    plhs[0] = mxCreateDoubleMatrix(dim16_, 1, mxCOMPLEX);
-    mxWrapCopy_dcomplex(plhs[0], in6_, dim16_);
-    plhs[1] = mxCreateDoubleMatrix(dim17_, 1, mxREAL);
-    mxWrapCopy_int(plhs[1], in7_, dim17_);
-
-mw_err_label:
-    if (in1_)  mxFree(in1_);
-    if (in3_)  mxFree(in3_);
-    if (in4_)  mxFree(in4_);
-    if (in6_)  mxFree(in6_);
-    if (in7_)  mxFree(in7_);
-    if (mw_err_txt_)
-        mexErrMsgTxt(mw_err_txt_);
-}
-
-/* ---- fmm2d.mw: 43 ----
- * c2d_directdp(int[1] nd, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] dipstr, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, double[1] thresh);
- */
-static const char* stubids3_ = "c2d_directdp(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])";
-
-void mexStub3(int nlhs, mxArray* plhs[],
-              int nrhs, const mxArray* prhs[])
-{
-    const char* mw_err_txt_ = 0;
-    int*        in0_ =0; /* nd         */
-    double*     in1_ =0; /* sources    */
-    int*        in2_ =0; /* ns         */
-    dcomplex*   in3_ =0; /* dipstr     */
-    double*     in4_ =0; /* targ       */
-    int*        in5_ =0; /* nt         */
-    dcomplex*   in6_ =0; /* pottarg    */
-    double*     in7_ =0; /* thresh     */
-    mwSize      dim8_;   /* 1          */
-    mwSize      dim9_;   /* 2          */
-    mwSize      dim10_;   /* ns         */
-    mwSize      dim11_;   /* 1          */
-    mwSize      dim12_;   /* nd         */
-    mwSize      dim13_;   /* ns         */
-    mwSize      dim14_;   /* 2          */
-    mwSize      dim15_;   /* nt         */
-    mwSize      dim16_;   /* 1          */
-    mwSize      dim17_;   /* nd         */
-    mwSize      dim18_;   /* nt         */
-    mwSize      dim19_;   /* 1          */
-
-    dim8_ = (mwSize) mxWrapGetScalar(prhs[8], &mw_err_txt_);
-    dim9_ = (mwSize) mxWrapGetScalar(prhs[9], &mw_err_txt_);
-    dim10_ = (mwSize) mxWrapGetScalar(prhs[10], &mw_err_txt_);
-    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
-    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
-    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
-    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
-    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
-    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
-    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
-    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
-    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
-
-    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim8_) {
-        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[1]) != dim9_ ||
-        mxGetN(prhs[1]) != dim10_) {
-        mw_err_txt_ = "Bad argument size: sources";
-        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != dim11_) {
-        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[3]) != dim12_ ||
-        mxGetN(prhs[3]) != dim13_) {
-        mw_err_txt_ = "Bad argument size: dipstr";
-        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[4]) != dim14_ ||
-        mxGetN(prhs[4]) != dim15_) {
-        mw_err_txt_ = "Bad argument size: targ";
-        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != dim16_) {
-        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[6]) != dim17_ ||
-        mxGetN(prhs[6]) != dim18_) {
-        mw_err_txt_ = "Bad argument size: pottarg";
-        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim19_) {
-        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
-    }
-
-    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
-        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in0_ = NULL;
-    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
-        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-#if MX_HAS_INTERLEAVED_COMPLEX
-        in1_ = mxGetDoubles(prhs[1]);
-#else
-        in1_ = mxGetPr(prhs[1]);
-#endif
-    } else
-        in1_ = NULL;
-    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
-        in2_ = mxWrapGetArray_int(prhs[2], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in2_ = NULL;
-    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
-        if( mxGetClassID(prhs[3]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-        in3_ = mxWrapGetArray_dcomplex(prhs[3], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in3_ = NULL;
-    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
-        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-#if MX_HAS_INTERLEAVED_COMPLEX
-        in4_ = mxGetDoubles(prhs[4]);
-#else
-        in4_ = mxGetPr(prhs[4]);
-#endif
-    } else
-        in4_ = NULL;
-    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
-        in5_ = mxWrapGetArray_int(prhs[5], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in5_ = NULL;
-    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
-        if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-        in6_ = mxWrapGetArray_dcomplex(prhs[6], &mw_err_txt_);
-        if (mw_err_txt_)
-            goto mw_err_label;
-    } else
-        in6_ = NULL;
-    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
-        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
-            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
-        if (mw_err_txt_) goto mw_err_label;
-#if MX_HAS_INTERLEAVED_COMPLEX
-        in7_ = mxGetDoubles(prhs[7]);
-#else
-        in7_ = mxGetPr(prhs[7]);
-#endif
-    } else
-        in7_ = NULL;
-    if (mexprofrecord_)
-        mexprofrecord_[3]++;
-    MWF77_c2d_directdp(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_);
-    plhs[0] = mxCreateDoubleMatrix(dim17_, dim18_, mxCOMPLEX);
-    mxWrapCopy_dcomplex(plhs[0], in6_, dim17_*dim18_);
+        mexprofrecord_[7]++;
+    MWF77_h2d_directdg(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_);
+    plhs[0] = mxCreateDoubleMatrix(dim23_, dim24_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in8_, dim23_*dim24_);
+    plhs[1] = mxCreateDoubleMatrix(dim25_, dim26_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in9_, dim25_*dim26_);
 
 mw_err_label:
     if (in0_)  mxFree(in0_);
-    if (in2_)  mxFree(in2_);
+    if (in1_)  mxFree(in1_);
     if (in3_)  mxFree(in3_);
-    if (in5_)  mxFree(in5_);
-    if (in6_)  mxFree(in6_);
+    if (in4_)  mxFree(in4_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (in9_)  mxFree(in9_);
     if (mw_err_txt_)
         mexErrMsgTxt(mw_err_txt_);
 }
 
-/* ---- fmm2d.mw: 64 ----
+/* ---- fmm2d.mw: 353 ----
  * h2d_directcdg(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, double[1] thresh);
  */
-static const char* stubids4_ = "h2d_directcdg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])";
+static const char* stubids8_ = "h2d_directcdg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])";
 
-void mexStub4(int nlhs, mxArray* plhs[],
+void mexStub8(int nlhs, mxArray* plhs[],
               int nrhs, const mxArray* prhs[])
 {
     const char* mw_err_txt_ = 0;
@@ -1898,7 +3066,7 @@ void mexStub4(int nlhs, mxArray* plhs[],
     } else
         in11_ = NULL;
     if (mexprofrecord_)
-        mexprofrecord_[4]++;
+        mexprofrecord_[8]++;
     MWF77_h2d_directcdg(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_);
     plhs[0] = mxCreateDoubleMatrix(dim26_, dim27_, mxCOMPLEX);
     mxWrapCopy_dcomplex(plhs[0], in9_, dim26_*dim27_);
@@ -1914,6 +3082,764 @@ mw_err_label:
     if (in8_)  mxFree(in8_);
     if (in9_)  mxFree(in9_);
     if (in10_)  mxFree(in10_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 360 ----
+ * h2d_directch(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, inout dcomplex[nd3, nt] hesstarg, double[1] thresh);
+ */
+static const char* stubids9_ = "h2d_directch(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])";
+
+void mexStub9(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* charges    */
+    double*     in5_ =0; /* targ       */
+    int*        in6_ =0; /* nt         */
+    dcomplex*   in7_ =0; /* pottarg    */
+    dcomplex*   in8_ =0; /* gradtarg   */
+    dcomplex*   in9_ =0; /* hesstarg   */
+    double*     in10_ =0; /* thresh     */
+    mwSize      dim11_;   /* 1          */
+    mwSize      dim12_;   /* 1          */
+    mwSize      dim13_;   /* 2          */
+    mwSize      dim14_;   /* ns         */
+    mwSize      dim15_;   /* 1          */
+    mwSize      dim16_;   /* nd         */
+    mwSize      dim17_;   /* ns         */
+    mwSize      dim18_;   /* 2          */
+    mwSize      dim19_;   /* nt         */
+    mwSize      dim20_;   /* 1          */
+    mwSize      dim21_;   /* nd         */
+    mwSize      dim22_;   /* nt         */
+    mwSize      dim23_;   /* nd2        */
+    mwSize      dim24_;   /* nt         */
+    mwSize      dim25_;   /* nd3        */
+    mwSize      dim26_;   /* nt         */
+    mwSize      dim27_;   /* 1          */
+
+    dim11_ = (mwSize) mxWrapGetScalar(prhs[11], &mw_err_txt_);
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
+    dim25_ = (mwSize) mxWrapGetScalar(prhs[25], &mw_err_txt_);
+    dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
+    dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim11_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim12_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim13_ ||
+        mxGetN(prhs[2]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim16_ ||
+        mxGetN(prhs[4]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim18_ ||
+        mxGetN(prhs[5]) != dim19_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != dim20_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7]) != dim21_ ||
+        mxGetN(prhs[7]) != dim22_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim23_ ||
+        mxGetN(prhs[8]) != dim24_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9]) != dim25_ ||
+        mxGetN(prhs[9]) != dim26_) {
+        mw_err_txt_ = "Bad argument size: hesstarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != dim27_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in5_ = mxGetDoubles(prhs[5]);
+#else
+        in5_ = mxGetPr(prhs[5]);
+#endif
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        in6_ = mxWrapGetArray_int(prhs[6], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in7_ = mxWrapGetArray_dcomplex(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in9_ = mxWrapGetArray_dcomplex(prhs[9], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in9_ = NULL;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != 0) {
+        if( mxGetClassID(prhs[10]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in10_ = mxGetDoubles(prhs[10]);
+#else
+        in10_ = mxGetPr(prhs[10]);
+#endif
+    } else
+        in10_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[9]++;
+    MWF77_h2d_directch(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_);
+    plhs[0] = mxCreateDoubleMatrix(dim21_, dim22_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in7_, dim21_*dim22_);
+    plhs[1] = mxCreateDoubleMatrix(dim23_, dim24_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in8_, dim23_*dim24_);
+    plhs[2] = mxCreateDoubleMatrix(dim25_, dim26_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[2], in9_, dim25_*dim26_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in6_)  mxFree(in6_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (in9_)  mxFree(in9_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 363 ----
+ * h2d_directdh(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, inout dcomplex[nd3, nt] hesstarg, double[1] thresh);
+ */
+static const char* stubids10_ = "h2d_directdh(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])";
+
+void mexStub10(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* dipstr     */
+    double*     in5_ =0; /* dipvec     */
+    double*     in6_ =0; /* targ       */
+    int*        in7_ =0; /* nt         */
+    dcomplex*   in8_ =0; /* pottarg    */
+    dcomplex*   in9_ =0; /* gradtarg   */
+    dcomplex*   in10_ =0; /* hesstarg   */
+    double*     in11_ =0; /* thresh     */
+    mwSize      dim12_;   /* 1          */
+    mwSize      dim13_;   /* 1          */
+    mwSize      dim14_;   /* 2          */
+    mwSize      dim15_;   /* ns         */
+    mwSize      dim16_;   /* 1          */
+    mwSize      dim17_;   /* nd         */
+    mwSize      dim18_;   /* ns         */
+    mwSize      dim19_;   /* nd2        */
+    mwSize      dim20_;   /* ns         */
+    mwSize      dim21_;   /* 2          */
+    mwSize      dim22_;   /* nt         */
+    mwSize      dim23_;   /* 1          */
+    mwSize      dim24_;   /* nd         */
+    mwSize      dim25_;   /* nt         */
+    mwSize      dim26_;   /* nd2        */
+    mwSize      dim27_;   /* nt         */
+    mwSize      dim28_;   /* nd3        */
+    mwSize      dim29_;   /* nt         */
+    mwSize      dim30_;   /* 1          */
+
+    dim12_ = (mwSize) mxWrapGetScalar(prhs[12], &mw_err_txt_);
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
+    dim25_ = (mwSize) mxWrapGetScalar(prhs[25], &mw_err_txt_);
+    dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
+    dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
+    dim28_ = (mwSize) mxWrapGetScalar(prhs[28], &mw_err_txt_);
+    dim29_ = (mwSize) mxWrapGetScalar(prhs[29], &mw_err_txt_);
+    dim30_ = (mwSize) mxWrapGetScalar(prhs[30], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim12_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim13_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim14_ ||
+        mxGetN(prhs[2]) != dim15_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim16_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim17_ ||
+        mxGetN(prhs[4]) != dim18_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim19_ ||
+        mxGetN(prhs[5]) != dim20_) {
+        mw_err_txt_ = "Bad argument size: dipvec";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim21_ ||
+        mxGetN(prhs[6]) != dim22_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != dim23_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8]) != dim24_ ||
+        mxGetN(prhs[8]) != dim25_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9]) != dim26_ ||
+        mxGetN(prhs[9]) != dim27_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[10]) != dim28_ ||
+        mxGetN(prhs[10]) != dim29_) {
+        mw_err_txt_ = "Bad argument size: hesstarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != dim30_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in5_ = mxGetDoubles(prhs[5]);
+#else
+        in5_ = mxGetPr(prhs[5]);
+#endif
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in6_ = mxGetDoubles(prhs[6]);
+#else
+        in6_ = mxGetPr(prhs[6]);
+#endif
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        in7_ = mxWrapGetArray_int(prhs[7], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        if( mxGetClassID(prhs[8]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in8_ = mxWrapGetArray_dcomplex(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in9_ = mxWrapGetArray_dcomplex(prhs[9], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in9_ = NULL;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != 0) {
+        if( mxGetClassID(prhs[10]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in10_ = mxWrapGetArray_dcomplex(prhs[10], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in10_ = NULL;
+    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != 0) {
+        if( mxGetClassID(prhs[11]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in11_ = mxGetDoubles(prhs[11]);
+#else
+        in11_ = mxGetPr(prhs[11]);
+#endif
+    } else
+        in11_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[10]++;
+    MWF77_h2d_directdh(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_);
+    plhs[0] = mxCreateDoubleMatrix(dim24_, dim25_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in8_, dim24_*dim25_);
+    plhs[1] = mxCreateDoubleMatrix(dim26_, dim27_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in9_, dim26_*dim27_);
+    plhs[2] = mxCreateDoubleMatrix(dim28_, dim29_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[2], in10_, dim28_*dim29_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in7_)  mxFree(in7_);
+    if (in8_)  mxFree(in8_);
+    if (in9_)  mxFree(in9_);
+    if (in10_)  mxFree(in10_);
+    if (mw_err_txt_)
+        mexErrMsgTxt(mw_err_txt_);
+}
+
+/* ---- fmm2d.mw: 366 ----
+ * h2d_directcdh(int[1] nd, dcomplex[1] zk, double[2, ns] sources, int[1] ns, dcomplex[nd, ns] charges, dcomplex[nd, ns] dipstr, double[nd2, ns] dipvec, double[2, nt] targ, int[1] nt, inout dcomplex[nd, nt] pottarg, inout dcomplex[nd2, nt] gradtarg, inout dcomplex[nd3, nt] hesstarg, double[1] thresh);
+ */
+static const char* stubids11_ = "h2d_directcdh(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])";
+
+void mexStub11(int nlhs, mxArray* plhs[],
+              int nrhs, const mxArray* prhs[])
+{
+    const char* mw_err_txt_ = 0;
+    int*        in0_ =0; /* nd         */
+    dcomplex*   in1_ =0; /* zk         */
+    double*     in2_ =0; /* sources    */
+    int*        in3_ =0; /* ns         */
+    dcomplex*   in4_ =0; /* charges    */
+    dcomplex*   in5_ =0; /* dipstr     */
+    double*     in6_ =0; /* dipvec     */
+    double*     in7_ =0; /* targ       */
+    int*        in8_ =0; /* nt         */
+    dcomplex*   in9_ =0; /* pottarg    */
+    dcomplex*   in10_ =0; /* gradtarg   */
+    dcomplex*   in11_ =0; /* hesstarg   */
+    double*     in12_ =0; /* thresh     */
+    mwSize      dim13_;   /* 1          */
+    mwSize      dim14_;   /* 1          */
+    mwSize      dim15_;   /* 2          */
+    mwSize      dim16_;   /* ns         */
+    mwSize      dim17_;   /* 1          */
+    mwSize      dim18_;   /* nd         */
+    mwSize      dim19_;   /* ns         */
+    mwSize      dim20_;   /* nd         */
+    mwSize      dim21_;   /* ns         */
+    mwSize      dim22_;   /* nd2        */
+    mwSize      dim23_;   /* ns         */
+    mwSize      dim24_;   /* 2          */
+    mwSize      dim25_;   /* nt         */
+    mwSize      dim26_;   /* 1          */
+    mwSize      dim27_;   /* nd         */
+    mwSize      dim28_;   /* nt         */
+    mwSize      dim29_;   /* nd2        */
+    mwSize      dim30_;   /* nt         */
+    mwSize      dim31_;   /* nd3        */
+    mwSize      dim32_;   /* nt         */
+    mwSize      dim33_;   /* 1          */
+
+    dim13_ = (mwSize) mxWrapGetScalar(prhs[13], &mw_err_txt_);
+    dim14_ = (mwSize) mxWrapGetScalar(prhs[14], &mw_err_txt_);
+    dim15_ = (mwSize) mxWrapGetScalar(prhs[15], &mw_err_txt_);
+    dim16_ = (mwSize) mxWrapGetScalar(prhs[16], &mw_err_txt_);
+    dim17_ = (mwSize) mxWrapGetScalar(prhs[17], &mw_err_txt_);
+    dim18_ = (mwSize) mxWrapGetScalar(prhs[18], &mw_err_txt_);
+    dim19_ = (mwSize) mxWrapGetScalar(prhs[19], &mw_err_txt_);
+    dim20_ = (mwSize) mxWrapGetScalar(prhs[20], &mw_err_txt_);
+    dim21_ = (mwSize) mxWrapGetScalar(prhs[21], &mw_err_txt_);
+    dim22_ = (mwSize) mxWrapGetScalar(prhs[22], &mw_err_txt_);
+    dim23_ = (mwSize) mxWrapGetScalar(prhs[23], &mw_err_txt_);
+    dim24_ = (mwSize) mxWrapGetScalar(prhs[24], &mw_err_txt_);
+    dim25_ = (mwSize) mxWrapGetScalar(prhs[25], &mw_err_txt_);
+    dim26_ = (mwSize) mxWrapGetScalar(prhs[26], &mw_err_txt_);
+    dim27_ = (mwSize) mxWrapGetScalar(prhs[27], &mw_err_txt_);
+    dim28_ = (mwSize) mxWrapGetScalar(prhs[28], &mw_err_txt_);
+    dim29_ = (mwSize) mxWrapGetScalar(prhs[29], &mw_err_txt_);
+    dim30_ = (mwSize) mxWrapGetScalar(prhs[30], &mw_err_txt_);
+    dim31_ = (mwSize) mxWrapGetScalar(prhs[31], &mw_err_txt_);
+    dim32_ = (mwSize) mxWrapGetScalar(prhs[32], &mw_err_txt_);
+    dim33_ = (mwSize) mxWrapGetScalar(prhs[33], &mw_err_txt_);
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != dim13_) {
+        mw_err_txt_ = "Bad argument size: nd";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != dim14_) {
+        mw_err_txt_ = "Bad argument size: zk";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[2]) != dim15_ ||
+        mxGetN(prhs[2]) != dim16_) {
+        mw_err_txt_ = "Bad argument size: sources";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != dim17_) {
+        mw_err_txt_ = "Bad argument size: ns";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[4]) != dim18_ ||
+        mxGetN(prhs[4]) != dim19_) {
+        mw_err_txt_ = "Bad argument size: charges";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[5]) != dim20_ ||
+        mxGetN(prhs[5]) != dim21_) {
+        mw_err_txt_ = "Bad argument size: dipstr";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[6]) != dim22_ ||
+        mxGetN(prhs[6]) != dim23_) {
+        mw_err_txt_ = "Bad argument size: dipvec";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[7]) != dim24_ ||
+        mxGetN(prhs[7]) != dim25_) {
+        mw_err_txt_ = "Bad argument size: targ";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != dim26_) {
+        mw_err_txt_ = "Bad argument size: nt";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[9]) != dim27_ ||
+        mxGetN(prhs[9]) != dim28_) {
+        mw_err_txt_ = "Bad argument size: pottarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[10]) != dim29_ ||
+        mxGetN(prhs[10]) != dim30_) {
+        mw_err_txt_ = "Bad argument size: gradtarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[11]) != dim31_ ||
+        mxGetN(prhs[11]) != dim32_) {
+        mw_err_txt_ = "Bad argument size: hesstarg";
+        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[12])*mxGetN(prhs[12]) != dim33_) {
+        mw_err_txt_ = "Bad argument size: thresh";        goto mw_err_label;
+    }
+
+    if (mxGetM(prhs[0])*mxGetN(prhs[0]) != 0) {
+        in0_ = mxWrapGetArray_int(prhs[0], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in0_ = NULL;
+    if (mxGetM(prhs[1])*mxGetN(prhs[1]) != 0) {
+        if( mxGetClassID(prhs[1]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in1_ = mxWrapGetArray_dcomplex(prhs[1], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in1_ = NULL;
+    if (mxGetM(prhs[2])*mxGetN(prhs[2]) != 0) {
+        if( mxGetClassID(prhs[2]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in2_ = mxGetDoubles(prhs[2]);
+#else
+        in2_ = mxGetPr(prhs[2]);
+#endif
+    } else
+        in2_ = NULL;
+    if (mxGetM(prhs[3])*mxGetN(prhs[3]) != 0) {
+        in3_ = mxWrapGetArray_int(prhs[3], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in3_ = NULL;
+    if (mxGetM(prhs[4])*mxGetN(prhs[4]) != 0) {
+        if( mxGetClassID(prhs[4]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in4_ = mxWrapGetArray_dcomplex(prhs[4], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in4_ = NULL;
+    if (mxGetM(prhs[5])*mxGetN(prhs[5]) != 0) {
+        if( mxGetClassID(prhs[5]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in5_ = mxWrapGetArray_dcomplex(prhs[5], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in5_ = NULL;
+    if (mxGetM(prhs[6])*mxGetN(prhs[6]) != 0) {
+        if( mxGetClassID(prhs[6]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in6_ = mxGetDoubles(prhs[6]);
+#else
+        in6_ = mxGetPr(prhs[6]);
+#endif
+    } else
+        in6_ = NULL;
+    if (mxGetM(prhs[7])*mxGetN(prhs[7]) != 0) {
+        if( mxGetClassID(prhs[7]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in7_ = mxGetDoubles(prhs[7]);
+#else
+        in7_ = mxGetPr(prhs[7]);
+#endif
+    } else
+        in7_ = NULL;
+    if (mxGetM(prhs[8])*mxGetN(prhs[8]) != 0) {
+        in8_ = mxWrapGetArray_int(prhs[8], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in8_ = NULL;
+    if (mxGetM(prhs[9])*mxGetN(prhs[9]) != 0) {
+        if( mxGetClassID(prhs[9]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in9_ = mxWrapGetArray_dcomplex(prhs[9], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in9_ = NULL;
+    if (mxGetM(prhs[10])*mxGetN(prhs[10]) != 0) {
+        if( mxGetClassID(prhs[10]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in10_ = mxWrapGetArray_dcomplex(prhs[10], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in10_ = NULL;
+    if (mxGetM(prhs[11])*mxGetN(prhs[11]) != 0) {
+        if( mxGetClassID(prhs[11]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+        in11_ = mxWrapGetArray_dcomplex(prhs[11], &mw_err_txt_);
+        if (mw_err_txt_)
+            goto mw_err_label;
+    } else
+        in11_ = NULL;
+    if (mxGetM(prhs[12])*mxGetN(prhs[12]) != 0) {
+        if( mxGetClassID(prhs[12]) != mxDOUBLE_CLASS )
+            mw_err_txt_ = "Invalid array argument, mxDOUBLE_CLASS expected";
+        if (mw_err_txt_) goto mw_err_label;
+#if MX_HAS_INTERLEAVED_COMPLEX
+        in12_ = mxGetDoubles(prhs[12]);
+#else
+        in12_ = mxGetPr(prhs[12]);
+#endif
+    } else
+        in12_ = NULL;
+    if (mexprofrecord_)
+        mexprofrecord_[11]++;
+    MWF77_h2d_directcdh(in0_, in1_, in2_, in3_, in4_, in5_, in6_, in7_, in8_, in9_, in10_, in11_, in12_);
+    plhs[0] = mxCreateDoubleMatrix(dim27_, dim28_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[0], in9_, dim27_*dim28_);
+    plhs[1] = mxCreateDoubleMatrix(dim29_, dim30_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[1], in10_, dim29_*dim30_);
+    plhs[2] = mxCreateDoubleMatrix(dim31_, dim32_, mxCOMPLEX);
+    mxWrapCopy_dcomplex(plhs[2], in11_, dim31_*dim32_);
+
+mw_err_label:
+    if (in0_)  mxFree(in0_);
+    if (in1_)  mxFree(in1_);
+    if (in3_)  mxFree(in3_);
+    if (in4_)  mxFree(in4_);
+    if (in5_)  mxFree(in5_);
+    if (in8_)  mxFree(in8_);
+    if (in9_)  mxFree(in9_);
+    if (in10_)  mxFree(in10_);
+    if (in11_)  mxFree(in11_);
     if (mw_err_txt_)
         mexErrMsgTxt(mw_err_txt_);
 }
@@ -1939,12 +3865,26 @@ void mexFunction(int nlhs, mxArray* plhs[],
         mexStub3(nlhs,plhs, nrhs-1,prhs+1);
     else if (strcmp(id, stubids4_) == 0)
         mexStub4(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids5_) == 0)
+        mexStub5(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids6_) == 0)
+        mexStub6(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids7_) == 0)
+        mexStub7(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids8_) == 0)
+        mexStub8(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids9_) == 0)
+        mexStub9(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids10_) == 0)
+        mexStub10(nlhs,plhs, nrhs-1,prhs+1);
+    else if (strcmp(id, stubids11_) == 0)
+        mexStub11(nlhs,plhs, nrhs-1,prhs+1);
     else if (strcmp(id, "*profile on*") == 0) {
         if (!mexprofrecord_) {
-            mexprofrecord_ = (int*) malloc(5 * sizeof(int));
+            mexprofrecord_ = (int*) malloc(12 * sizeof(int));
             mexLock();
         }
-        memset(mexprofrecord_, 0, 5 * sizeof(int));
+        memset(mexprofrecord_, 0, 12 * sizeof(int));
     } else if (strcmp(id, "*profile off*") == 0) {
         if (mexprofrecord_) {
             free(mexprofrecord_);
@@ -1954,10 +3894,17 @@ void mexFunction(int nlhs, mxArray* plhs[],
     } else if (strcmp(id, "*profile report*") == 0) {
         if (!mexprofrecord_)
             mexPrintf("Profiler inactive\n");
-        mexPrintf("%d calls to fmm2d.mw:12\n", mexprofrecord_[1]);
-        mexPrintf("%d calls to fmm2d.mw:28\n", mexprofrecord_[2]);
-        mexPrintf("%d calls to fmm2d.mw:43\n", mexprofrecord_[3]);
-        mexPrintf("%d calls to fmm2d.mw:64\n", mexprofrecord_[4]);
+        mexPrintf("%d calls to fmm2d.mw:187\n", mexprofrecord_[1]);
+        mexPrintf("%d calls to fmm2d.mw:202\n", mexprofrecord_[2]);
+        mexPrintf("%d calls to fmm2d.mw:335\n", mexprofrecord_[3]);
+        mexPrintf("%d calls to fmm2d.mw:338\n", mexprofrecord_[4]);
+        mexPrintf("%d calls to fmm2d.mw:341\n", mexprofrecord_[5]);
+        mexPrintf("%d calls to fmm2d.mw:347\n", mexprofrecord_[6]);
+        mexPrintf("%d calls to fmm2d.mw:350\n", mexprofrecord_[7]);
+        mexPrintf("%d calls to fmm2d.mw:353\n", mexprofrecord_[8]);
+        mexPrintf("%d calls to fmm2d.mw:360\n", mexprofrecord_[9]);
+        mexPrintf("%d calls to fmm2d.mw:363\n", mexprofrecord_[10]);
+        mexPrintf("%d calls to fmm2d.mw:366\n", mexprofrecord_[11]);
     } else if (strcmp(id, "*profile log*") == 0) {
         FILE* logfp;
         if (nrhs != 2 || mxGetString(prhs[1], id, sizeof(id)) != 0)
@@ -1967,10 +3914,17 @@ void mexFunction(int nlhs, mxArray* plhs[],
             mexErrMsgTxt("Cannot open log for output");
         if (!mexprofrecord_)
             fprintf(logfp, "Profiler inactive\n");
-        fprintf(logfp, "%d calls to fmm2d.mw:12\n", mexprofrecord_[1]);
-        fprintf(logfp, "%d calls to fmm2d.mw:28\n", mexprofrecord_[2]);
-        fprintf(logfp, "%d calls to fmm2d.mw:43\n", mexprofrecord_[3]);
-        fprintf(logfp, "%d calls to fmm2d.mw:64\n", mexprofrecord_[4]);
+        fprintf(logfp, "%d calls to fmm2d.mw:187\n", mexprofrecord_[1]);
+        fprintf(logfp, "%d calls to fmm2d.mw:202\n", mexprofrecord_[2]);
+        fprintf(logfp, "%d calls to fmm2d.mw:335\n", mexprofrecord_[3]);
+        fprintf(logfp, "%d calls to fmm2d.mw:338\n", mexprofrecord_[4]);
+        fprintf(logfp, "%d calls to fmm2d.mw:341\n", mexprofrecord_[5]);
+        fprintf(logfp, "%d calls to fmm2d.mw:347\n", mexprofrecord_[6]);
+        fprintf(logfp, "%d calls to fmm2d.mw:350\n", mexprofrecord_[7]);
+        fprintf(logfp, "%d calls to fmm2d.mw:353\n", mexprofrecord_[8]);
+        fprintf(logfp, "%d calls to fmm2d.mw:360\n", mexprofrecord_[9]);
+        fprintf(logfp, "%d calls to fmm2d.mw:363\n", mexprofrecord_[10]);
+        fprintf(logfp, "%d calls to fmm2d.mw:366\n", mexprofrecord_[11]);
         fclose(logfp);
     } else
         mexErrMsgTxt("Unknown identifier");

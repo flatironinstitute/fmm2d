@@ -679,7 +679,7 @@ ipass(itest) = 1;
 
 srcinfo = rmfield(srcinfo,'charges');
 srcinfo.dipvec= rand(nd,2,ns); 
-srcinfo.dipstr = rand(nd,ns) + 1j*rand(nd,ns);
+srcinfo.dipstr = rand(nd,ns) + 1j*rand(nd,ns)
 
 
 
@@ -1092,6 +1092,6 @@ ipass(itest) = 1;
 
 
 isum = sum(ipass);
-fprintf("Successfully cleared %d out of 54 tests in laplace testing suite\n",isum);
+fprintf("Successfully cleared %d out of 54 tests in helmholtz testing suite\n",isum);
 
 

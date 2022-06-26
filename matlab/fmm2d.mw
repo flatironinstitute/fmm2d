@@ -370,3 +370,1097 @@ end
     U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt]));
   end
 end
+%
+%
+%
+% ---------------------------------------------------------------------
+@function [U,varargout] = lfmm2d(eps,srcinfo,pg,varargin)
+%
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+% 
+%  Args:
+%
+%  -  eps: double   
+%        precision requested
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: complex(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: complex(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%     *  srcinfo.dipvec: double(nd,2,n) 
+%           dipole orientation vectors, $v_{j}$ (optional
+%           default - term corresponding to dipoles dropped) 
+%  -  pg: integer
+%        | source eval flag
+%        | potential at sources evaluated if pg = 1
+%        | potential and gradient at sources evaluated if pg=2
+%        | potential, gradient, and hessians at sources evaluated if pg=3
+%        
+%  Optional args
+%  -  targ: double(2,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2 
+%  -  opts: options structure, values in brackets indicate default
+%           values wherever applicable
+%        opts.ndiv: set number of points for subdivision criterion
+%        opts.idivflag: set subdivision criterion (0)
+%           opts.idivflag = 0, subdivide on sources only
+%           opts.idivflag = 1, subdivide on targets only
+%           opts.idivflag = 2, subdivide on sources and targets
+%        opts.ifnear: include near (list 1) interactions (true)
+%
+%  
+%  Returns:
+%  
+%  -  U.pot: potential at source locations, if requested, $u(x_{j})$
+%  -  U.grad: gradient at source locations, if requested, $\nabla u(x_{j})$
+%  -  U.hess: hessian at source locations, if requested, $\nabla \nabla u(x_{j})$
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $\nabla u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $\nabla \nabla u(t_{i})$
+%
+%  - ier: error code for fmm run
+%  - timeinfo: time taken in each step of the fmm
+%       timeinfo(1): form multipole step
+%       timeinfo(2): multipole->multipole translation step
+%       timeinfo(3): multipole to local translation, form local + multipole eval step
+%       timeinfo(4): local->local translation step
+%       timeinfo(5): local eval step
+%       timeinfo(6): direct evaluation step
+%
+%
+%  Examples:
+%  U = lfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments
+%  U = lfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with default arguments
+%  U = lfmm2d(eps,srcinfo,pg,opts)
+%     Call the FMM for sources only with user specified arguments
+%  U = lfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with user specified arguments 
+%  [U,ier] = lfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments and returns
+%     the error code for the FMM as well
+%  [U,ier,timeinfo] = lfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments, returns
+%     the error code for the FMM as well and the time split
+%      
+ 
+
+
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+  pot = complex(zeros(nd,ns)); 
+  grad = complex(zeros(nd*2,ns));
+  hess = complex(zeros(nd*3,ns));
+  
+  if( nargin < 3)
+    disp('Not enough input arguments, exiting\n');
+    return;
+  end
+  if( nargin == 3 )
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = [];
+  elseif (nargin == 4)
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = varargin{1};
+  elseif (nargin == 5)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = [];
+  elseif (nargin == 6)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = varargin{3};
+  end
+  ntuse = max(nt,1);
+  pottarg = complex(zeros(nd,ntuse));
+  gradtarg = complex(zeros(nd*2,ntuse));
+  hesstarg = complex(zeros(nd*3,ntuse));
+
+
+  if((pg ==0 && pgt ==0) || (ns == 0)), disp('Nothing to compute, set eigher pg or pgt to 1 or 2'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = complex(zeros(nd,ns));
+  end
+
+  if(isfield(srcinfo,'dipstr') || isfield(srcinfo,'dipvec'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+    dipvec = srcinfo.dipvec;
+    if(nd == 1), [a,b] = size(squeeze(dipvec)); assert(a==2 && b==ns,'Dipvec must be of shape[2,ns], where ns is the number of sources'); end;
+    if(nd>1), [a,b,c] = size(dipvec); assert(a==nd && b==2 && c==ns, 'Dipvec must be of shape[nd,2,ns], where nd is number of densities, and ns is the number of sources'); end;
+    dipvec = reshape(dipvec,[2*nd,ns]);
+  else
+    ifdipole = 0;
+    dipvec = zeros(nd*2,ns);
+    dipstr = complex(zeros(nd,ns));
+  end
+
+  nd2 = 2*nd;
+  nd3 = 3*nd;
+  ier = 0;
+
+  ndiv = 20;
+  idivflag = 0;
+  # FORTRAN hndiv2d(double[1] eps,int[1] ns,int[1] nt,int[1] ifcharge,int[1] ifdipole,int[1] pg, int[1] pgt, inout int[1] ndiv, inout int[1] idivflag); 
+  if(isfield(opts,'ndiv'))
+    ndiv = opts.ndiv;
+  end
+
+  if(isfield(opts,'idivflag'))
+    idivflag = opts.idivflag;
+  end
+
+  ifnear = 1;
+  if(isfield(opts,'ifnear'))
+    ifnear = opts.ifnear;
+  end
+  iper = 1;
+  timeinfo = zeros(8,1);
+  # FORTRAN lfmm2d_ndiv(int[1] nd, double[1] eps, int[1] ns, double[2,ns] sources, int[1] ifcharge, dcomplex[nd,ns] charges, int[1] ifdipole, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, int[1] iper, int[1] pg, inout dcomplex[nd,ns] pot, inout dcomplex[nd2,ns] grad, inout dcomplex[nd3,ns] hess, int[1] nt, double[2,ntuse] targ, int[1] pgt, inout dcomplex[nd,ntuse] pottarg, inout dcomplex [nd2,ntuse] gradtarg, inout dcomplex[nd3,ntuse] hesstarg, int[1] ndiv, int[1] idivflag, int[1] ifnear, inout double[8] timeinfo, inout int[1] ier); 
+
+  U.pot = [];
+  U.grad = [];
+  U.hess = [];
+  U.pottarg = [];
+  U.gradtarg = [];
+  U.hesstarg = [];
+  if(pg >= 1), U.pot = squeeze(reshape(pot,[nd,ns])); end;
+  if(pg >= 2), U.grad = squeeze(reshape(grad,[nd,2,ns])); end;
+  if(pg >= 3), U.hess = squeeze(reshape(hess,[nd,3,ns])); end;
+  if(pgt >= 1), U.pottarg = squeeze(reshape(pottarg,[nd,nt])); end;
+  if(pgt >= 2), U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt])); end;
+  if(pgt >= 3), U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt])); end;
+
+  varargout{1} = ier;
+  varargout{2} = timeinfo;
+end
+
+% ---------------------------------------------------------------------
+@function [U] = l2ddir(srcinfo,targ,pgt)
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+% 
+%  
+%  The sum is evaluated directly - (slow code for testing)
+% 
+%  Args:
+%
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: complex(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: complex(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%     *  srcinfo.dipvec: double(nd,2,n) 
+%           dipole orientation vectors, $v_{j}$ (optional
+%           default - term corresponding to dipoles dropped) 
+%  
+%  -  targ: double(3,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2  
+%  
+%  Returns:
+%  
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $\nabla u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $\nabla \nabla u(t_{i})$
+ 
+
+  thresh = 1e-15;
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+
+  pottarg = complex(zeros(nd,1));
+  gradtarg = complex(zeros(nd*2,1));
+  hesstarg = complex(zeros(nd*3,1));
+  [m,nt] = size(targ);
+  assert(m==2,'First dimension of targets must be 2');
+  if(pgt >=1), pottarg = complex(zeros(nd,nt)); end;
+  if(pgt >= 2), gradtarg = complex(zeros(nd*2,nt)); end;
+  if(pgt == 3), hesstarg = complex(zeros(nd*3,nt)); end;
+
+  if(pgt ==0), disp('Nothing to compute, set pgt to 1,2 or 3'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = complex(zeros(nd,1));
+  end
+
+  if(isfield(srcinfo,'dipstr') || isfield(srcinfo,'dipvec'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+    dipvec = srcinfo.dipvec;
+    if(nd == 1), [a,b] = size(squeeze(dipvec)); assert(a==2 && b==ns,'Dipvec must be of shape[2,ns], where ns is the number of sources'); end;
+    if(nd>1), [a,b,c] = size(dipvec); assert(a==nd && b==2 && c==ns, 'Dipvec must be of shape[nd,2,ns], where nd is number of densities, and ns is the number of sources'); end;
+    dipvec = reshape(dipvec,[2*nd,ns]);
+  else
+    ifdipole = 0;
+    dipvec = zeros(nd*2,ns);
+    dipstr = complex(zeros(nd,ns));
+  end
+
+  nd2 = 2*nd;
+  nd3 = 3*nd;
+
+  if(pgt == 1)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN l2d_directcp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN l2d_directdp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN l2d_directcdp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+  end
+  if(pgt == 2)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN l2d_directcg(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN l2d_directdg(int[1] nd, double[2,ns] sources,int[1] ns, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN l2d_directcdg(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
+  end
+  if(pgt == 3)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN l2d_directch(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, inout dcomplex[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN l2d_directdh(int[1] nd, double[2,ns] sources,int[1] ns, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, inout dcomplex[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN l2d_directcdh(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd2,nt] gradtarg, inout dcomplex[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
+    U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt]));
+  end
+end
+%
+%
+% ---------------------------------------------------------------------
+@function [U,varargout] = rfmm2d(eps,srcinfo,pg,varargin)
+%
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+%
+%  Note: The charge, dipstr, pot,grad,hess,pottarg,gradtarg,hesstarg are
+%  real valued for these routines
+% 
+%  Args:
+%
+%  -  eps: double   
+%        precision requested
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: double(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: double(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%     *  srcinfo.dipvec: double(nd,2,n) 
+%           dipole orientation vectors, $v_{j}$ (optional
+%           default - term corresponding to dipoles dropped) 
+%  -  pg: integer
+%        | source eval flag
+%        | potential at sources evaluated if pg = 1
+%        | potential and gradient at sources evaluated if pg=2
+%        | potential, gradient, and hessians at sources evaluated if pg=3
+%        
+%  Optional args
+%  -  targ: double(2,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2 
+%  -  opts: options structure, values in brackets indicate default
+%           values wherever applicable
+%        opts.ndiv: set number of points for subdivision criterion
+%        opts.idivflag: set subdivision criterion (0)
+%           opts.idivflag = 0, subdivide on sources only
+%           opts.idivflag = 1, subdivide on targets only
+%           opts.idivflag = 2, subdivide on sources and targets
+%        opts.ifnear: include near (list 1) interactions (true)
+%
+%  
+%  Returns:
+%  
+%  -  U.pot: potential at source locations, if requested, $u(x_{j})$
+%  -  U.grad: gradient at source locations, if requested, $\nabla u(x_{j})$
+%  -  U.hess: hessian at source locations, if requested, $\nabla \nabla u(x_{j})$
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $\nabla u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $\nabla \nabla u(t_{i})$
+%
+%  - ier: error code for fmm run
+%  - timeinfo: time taken in each step of the fmm
+%       timeinfo(1): form multipole step
+%       timeinfo(2): multipole->multipole translation step
+%       timeinfo(3): multipole to local translation, form local + multipole eval step
+%       timeinfo(4): local->local translation step
+%       timeinfo(5): local eval step
+%       timeinfo(6): direct evaluation step
+%
+%
+%  Examples:
+%  U = rfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments
+%  U = rfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with default arguments
+%  U = rfmm2d(eps,srcinfo,pg,opts)
+%     Call the FMM for sources only with user specified arguments
+%  U = rfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with user specified arguments 
+%  [U,ier] = rfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments and returns
+%     the error code for the FMM as well
+%  [U,ier,timeinfo] = rfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments, returns
+%     the error code for the FMM as well and the time split
+%      
+ 
+
+
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+  pot = zeros(nd,ns); 
+  grad = zeros(nd*2,ns);
+  hess = zeros(nd*3,ns);
+  
+  if( nargin < 3)
+    disp('Not enough input arguments, exiting\n');
+    return;
+  end
+  if( nargin == 3 )
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = [];
+  elseif (nargin == 4)
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = varargin{1};
+  elseif (nargin == 5)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = [];
+  elseif (nargin == 6)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = varargin{3};
+  end
+  ntuse = max(nt,1);
+  pottarg = zeros(nd,ntuse);
+  gradtarg = zeros(nd*2,ntuse);
+  hesstarg = zeros(nd*3,ntuse);
+
+
+  if((pg ==0 && pgt ==0) || (ns == 0)), disp('Nothing to compute, set eigher pg or pgt to 1 or 2'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = zeros(nd,ns);
+  end
+
+  if(isfield(srcinfo,'dipstr') || isfield(srcinfo,'dipvec'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+    dipvec = srcinfo.dipvec;
+    if(nd == 1), [a,b] = size(squeeze(dipvec)); assert(a==2 && b==ns,'Dipvec must be of shape[2,ns], where ns is the number of sources'); end;
+    if(nd>1), [a,b,c] = size(dipvec); assert(a==nd && b==2 && c==ns, 'Dipvec must be of shape[nd,2,ns], where nd is number of densities, and ns is the number of sources'); end;
+    dipvec = reshape(dipvec,[2*nd,ns]);
+  else
+    ifdipole = 0;
+    dipvec = zeros(nd*2,ns);
+    dipstr = zeros(nd,ns);
+  end
+
+  nd2 = 2*nd;
+  nd3 = 3*nd;
+  ier = 0;
+
+  ndiv = 20;
+  idivflag = 0;
+  # FORTRAN hndiv2d(double[1] eps,int[1] ns,int[1] nt,int[1] ifcharge,int[1] ifdipole,int[1] pg, int[1] pgt, inout int[1] ndiv, inout int[1] idivflag); 
+  if(isfield(opts,'ndiv'))
+    ndiv = opts.ndiv;
+  end
+
+  if(isfield(opts,'idivflag'))
+    idivflag = opts.idivflag;
+  end
+
+  ifnear = 1;
+  if(isfield(opts,'ifnear'))
+    ifnear = opts.ifnear;
+  end
+  iper = 1;
+  timeinfo = zeros(8,1);
+  # FORTRAN rfmm2d_ndiv(int[1] nd, double[1] eps, int[1] ns, double[2,ns] sources, int[1] ifcharge, double[nd,ns] charges, int[1] ifdipole, double[nd,ns] dipstr, double[nd2,ns] dipvec, int[1] iper, int[1] pg, inout double[nd,ns] pot, inout double[nd2,ns] grad, inout double[nd3,ns] hess, int[1] nt, double[2,ntuse] targ, int[1] pgt, inout double[nd,ntuse] pottarg, inout double [nd2,ntuse] gradtarg, inout double[nd3,ntuse] hesstarg, int[1] ndiv, int[1] idivflag, int[1] ifnear, inout double[8] timeinfo, inout int[1] ier); 
+
+  U.pot = [];
+  U.grad = [];
+  U.hess = [];
+  U.pottarg = [];
+  U.gradtarg = [];
+  U.hesstarg = [];
+  if(pg >= 1), U.pot = squeeze(reshape(pot,[nd,ns])); end;
+  if(pg >= 2), U.grad = squeeze(reshape(grad,[nd,2,ns])); end;
+  if(pg >= 3), U.hess = squeeze(reshape(hess,[nd,3,ns])); end;
+  if(pgt >= 1), U.pottarg = squeeze(reshape(pottarg,[nd,nt])); end;
+  if(pgt >= 2), U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt])); end;
+  if(pgt >= 3), U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt])); end;
+
+  varargout{1} = ier;
+  varargout{2} = timeinfo;
+end
+
+% ---------------------------------------------------------------------
+@function [U] = r2ddir(srcinfo,targ,pgt)
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+% 
+%  
+%  The sum is evaluated directly - (slow code for testing)
+% 
+%
+%  Note: The charge, dipstr, pot,grad,hess,pottarg,gradtarg,hesstarg are
+%  real valued for these routines
+% 
+%  Args:
+%
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: double(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: double(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%     *  srcinfo.dipvec: double(nd,2,n) 
+%           dipole orientation vectors, $v_{j}$ (optional
+%           default - term corresponding to dipoles dropped) 
+%  
+%  -  targ: double(3,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2  
+%  
+%  Returns:
+%  
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $\nabla u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $\nabla \nabla u(t_{i})$
+ 
+
+  thresh = 1e-15;
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+
+  pottarg = zeros(nd,1);
+  gradtarg = zeros(nd*2,1);
+  hesstarg = zeros(nd*3,1);
+  [m,nt] = size(targ);
+  assert(m==2,'First dimension of targets must be 2');
+  if(pgt >=1), pottarg = zeros(nd,nt); end;
+  if(pgt >= 2), gradtarg = zeros(nd*2,nt); end;
+  if(pgt == 3), hesstarg = zeros(nd*3,nt); end;
+
+  if(pgt ==0), disp('Nothing to compute, set pgt to 1,2 or 3'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = zeros(nd,1);
+  end
+
+  if(isfield(srcinfo,'dipstr') || isfield(srcinfo,'dipvec'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+    dipvec = srcinfo.dipvec;
+    if(nd == 1), [a,b] = size(squeeze(dipvec)); assert(a==2 && b==ns,'Dipvec must be of shape[2,ns], where ns is the number of sources'); end;
+    if(nd>1), [a,b,c] = size(dipvec); assert(a==nd && b==2 && c==ns, 'Dipvec must be of shape[nd,2,ns], where nd is number of densities, and ns is the number of sources'); end;
+    dipvec = reshape(dipvec,[2*nd,ns]);
+  else
+    ifdipole = 0;
+    dipvec = zeros(nd*2,ns);
+    dipstr = zeros(nd,ns);
+  end
+
+  nd2 = 2*nd;
+  nd3 = 3*nd;
+
+  if(pgt == 1)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN r2d_directcp(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN r2d_directdp(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN r2d_directcdp(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+  end
+  if(pgt == 2)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN r2d_directcg(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN r2d_directdg(int[1] nd, double[2,ns] sources,int[1] ns, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN r2d_directcdg(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
+  end
+  if(pgt == 3)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN r2d_directch(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, inout double[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN r2d_directdh(int[1] nd, double[2,ns] sources,int[1] ns, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, inout double[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN r2d_directcdh(int[1] nd, double[2,ns] sources, int[1] ns, double[nd,ns] charges, double[nd,ns] dipstr, double[nd2,ns] dipvec, double[2,nt] targ, int[1] nt, inout double[nd,nt] pottarg, inout double[nd2,nt] gradtarg, inout double[nd3,nt] hesstarg, double[1] thresh); 
+    end
+    U.pottarg = pottarg;
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
+    U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt]));
+  end
+end
+
+
+% ---------------------------------------------------------------------
+@function [U,varargout] = cfmm2d(eps,srcinfo,pg,varargin)
+%
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+%
+%  Note: Here gradients and hessians are complex gradients and hessians
+%  as opposed to cartesian gradients and hessians, also dipvec is dropped
+%
+% 
+%  Args:
+%
+%  -  eps: double   
+%        precision requested
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: complex(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: complex(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%  -  pg: integer
+%        | source eval flag
+%        | potential at sources evaluated if pg = 1
+%        | potential and gradient at sources evaluated if pg=2
+%        | potential, gradient, and hessians at sources evaluated if pg=3
+%        
+%  Optional args
+%  -  targ: double(2,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2 
+%  -  opts: options structure, values in brackets indicate default
+%           values wherever applicable
+%        opts.ndiv: set number of points for subdivision criterion
+%        opts.idivflag: set subdivision criterion (0)
+%           opts.idivflag = 0, subdivide on sources only
+%           opts.idivflag = 1, subdivide on targets only
+%           opts.idivflag = 2, subdivide on sources and targets
+%        opts.ifnear: include near (list 1) interactions (true)
+%
+%  
+%  Returns:
+%  
+%  -  U.pot: potential at source locations, if requested, $u(x_{j})$
+%  -  U.grad: gradient at source locations, if requested, $d/dz u(x_{j})$
+%  -  U.hess: hessian at source locations, if requested, $d/dz d/dz u(x_{j})$
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $d/dz u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $d/dz d/dz u(t_{i})$
+%
+%  - ier: error code for fmm run
+%  - timeinfo: time taken in each step of the fmm
+%       timeinfo(1): form multipole step
+%       timeinfo(2): multipole->multipole translation step
+%       timeinfo(3): multipole to local translation, form local + multipole eval step
+%       timeinfo(4): local->local translation step
+%       timeinfo(5): local eval step
+%       timeinfo(6): direct evaluation step
+%
+%
+%  Examples:
+%  U = cfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments
+%  U = cfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with default arguments
+%  U = cfmm2d(eps,srcinfo,pg,opts)
+%     Call the FMM for sources only with user specified arguments
+%  U = cfmm2d(eps,srcinfo,pg,targ,pgt)
+%     Call the FMM for sources + targets with user specified arguments 
+%  [U,ier] = cfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments and returns
+%     the error code for the FMM as well
+%  [U,ier,timeinfo] = cfmm2d(eps,srcinfo,pg)
+%     Call the FMM for sources only with default arguments, returns
+%     the error code for the FMM as well and the time split
+%      
+ 
+
+
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+  pot = complex(zeros(nd,ns)); 
+  grad = complex(zeros(nd,ns));
+  hess = complex(zeros(nd,ns));
+  
+  if( nargin < 3)
+    disp('Not enough input arguments, exiting\n');
+    return;
+  end
+  if( nargin == 3 )
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = [];
+  elseif (nargin == 4)
+    nt = 0;
+    pgt = 0;
+    targ = zeros(2,1);
+    opts = varargin{1};
+  elseif (nargin == 5)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = [];
+  elseif (nargin == 6)
+    targ = varargin{1};
+    pgt = varargin{2};
+    [m,nt] = size(targ);
+    assert(m==2,'First dimension of targets must be 2');
+    opts = varargin{3};
+  end
+  ntuse = max(nt,1);
+  pottarg = complex(zeros(nd,ntuse));
+  gradtarg = complex(zeros(nd,ntuse));
+  hesstarg = complex(zeros(nd,ntuse));
+
+
+  if((pg ==0 && pgt ==0) || (ns == 0)), disp('Nothing to compute, set eigher pg or pgt to 1 or 2'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = complex(zeros(nd,ns));
+  end
+
+  if(isfield(srcinfo,'dipstr'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifdipole = 0;
+    dipstr = complex(zeros(nd,ns));
+  end
+
+  ier = 0;
+
+  ndiv = 20;
+  idivflag = 0;
+  # FORTRAN hndiv2d(double[1] eps,int[1] ns,int[1] nt,int[1] ifcharge,int[1] ifdipole,int[1] pg, int[1] pgt, inout int[1] ndiv, inout int[1] idivflag); 
+  if(isfield(opts,'ndiv'))
+    ndiv = opts.ndiv;
+  end
+
+  if(isfield(opts,'idivflag'))
+    idivflag = opts.idivflag;
+  end
+
+  ifnear = 1;
+  if(isfield(opts,'ifnear'))
+    ifnear = opts.ifnear;
+  end
+  iper = 1;
+  timeinfo = zeros(8,1);
+  # FORTRAN cfmm2d_ndiv(int[1] nd, double[1] eps, int[1] ns, double[2,ns] sources, int[1] ifcharge, dcomplex[nd,ns] charges, int[1] ifdipole, dcomplex[nd,ns] dipstr, int[1] iper, int[1] pg, inout dcomplex[nd,ns] pot, inout dcomplex[nd,ns] grad, inout dcomplex[nd,ns] hess, int[1] nt, double[2,ntuse] targ, int[1] pgt, inout dcomplex[nd,ntuse] pottarg, inout dcomplex [nd,ntuse] gradtarg, inout dcomplex[nd,ntuse] hesstarg, int[1] ndiv, int[1] idivflag, int[1] ifnear, inout double[8] timeinfo, inout int[1] ier); 
+
+  U.pot = [];
+  U.grad = [];
+  U.hess = [];
+  U.pottarg = [];
+  U.gradtarg = [];
+  U.hesstarg = [];
+  if(pg >= 1), U.pot = squeeze(reshape(real(pot),[nd,ns])); end;
+  if(pg >= 2), U.grad = squeeze(reshape(grad,[nd,ns])); end;
+  if(pg >= 3), U.hess = squeeze(reshape(hess,[nd,ns])); end;
+  if(pgt >= 1), U.pottarg = squeeze(reshape(real(pottarg),[nd,nt])); end;
+  if(pgt >= 2), U.gradtarg = squeeze(reshape(gradtarg,[nd,nt])); end;
+  if(pgt >= 3), U.hesstarg = squeeze(reshape(hesstarg,[nd,nt])); end;
+
+  varargout{1} = ier;
+  varargout{2} = timeinfo;
+end
+
+% ---------------------------------------------------------------------
+@function [U] = c2ddir(srcinfo,targ,pgt)
+%
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
+% 
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
+%
+%  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
+%  densities,
+%  $v_{j}$ are the dipole orientation vectors, and
+%  $x_{j}$ are the source locations.
+%  When $\|x-x_{j}\| <= L \eps_{m}$, with $L$ being the size of the bounding
+%  box of sources and targets and $\eps_{m}$ being machine precision, 
+%  the term corresponding to $x_{j}$ is dropped
+%  from the sum.
+% 
+%  
+%  The sum is evaluated directly - (slow code for testing)
+% 
+%
+%  Note: Here gradients and hessians are complex gradients and hessians
+%  as opposed to cartesian gradients and hessians. Also, dipvec is dropped
+% 
+%  Args:
+%
+%  -  srcinfo: structure
+%        structure containing sourceinfo
+%     
+%     *  srcinfo.sources: double(2,n)    
+%           source locations, $x_{j}$
+%     *  srcinfo.nd: integer
+%           number of charge/dipole vectors (optional, 
+%           default - nd = 1)
+%     *  srcinfo.charges: complex(nd,n) 
+%           charge densities, $c_{j}$ (optional, 
+%           default - term corresponding to charges dropped)
+%     *  srcinfo.dipstr: complex(nd,n)
+%           dipole densities, $d_{j}$ (optional, 
+%           default - term corresponding to dipoles dropped)
+%  
+%  -  targ: double(3,nt)
+%        target locations, $t_{i}$ 
+%  -  pgt: integer
+%        | target eval flag 
+%        | potential at targets evaluated if pgt = 1
+%        | potential and gradient at targets evaluated if pgt=2  
+%  
+%  Returns:
+%  
+%  -  U.pottarg: potential at target locations, if requested, $u(t_{i})$
+%  -  U.gradtarg: gradient at target locations, if requested, $d/dz u(t_{i})$
+%  -  U.hesstarg: hessian at target locations, if requested, $d/dz d/dz u(t_{i})$
+ 
+
+  thresh = 1e-15;
+  sources = srcinfo.sources;
+  [m,ns] = size(sources);
+  assert(m==2,'The first dimension of sources must be 2');
+  if(~isfield(srcinfo,'nd'))
+    nd = 1;
+  end
+  if(isfield(srcinfo,'nd'))
+    nd = srcinfo.nd;
+  end
+
+
+  pottarg = complex(zeros(nd,1));
+  gradtarg = complex(zeros(nd,1));
+  hesstarg = complex(zeros(nd,1));
+  [m,nt] = size(targ);
+  assert(m==2,'First dimension of targets must be 2');
+  if(pgt >=1), pottarg = complex(zeros(nd,nt)); end;
+  if(pgt >= 2), gradtarg = complex(zeros(nd,nt)); end;
+  if(pgt == 3), hesstarg = complex(zeros(nd,nt)); end;
+
+  if(pgt ==0), disp('Nothing to compute, set pgt to 1,2 or 3'); return; end;
+
+  if(isfield(srcinfo,'charges'))
+    ifcharge = 1;
+    charges = srcinfo.charges;
+    if(nd==1), assert(length(charges)==ns,'Charges must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(charges); assert(a==nd && b==ns,'Charges must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifcharge = 0;
+    charges = complex(zeros(nd,1));
+  end
+
+  if(isfield(srcinfo,'dipstr'))
+    ifdipole = 1;
+    dipstr = srcinfo.dipstr;
+    if(nd==1), assert(length(dipstr)==ns,'Dipole strength must be same length as second dimension of sources'); end;
+    if(nd>1), [a,b] = size(dipstr); assert(a==nd && b==ns,'Dipstr must be of shape [nd,ns] where nd is the number of densities, and ns is the number of sources'); end;
+  else
+    ifdipole = 0;
+    dipstr = complex(zeros(nd,ns));
+  end
+
+
+  if(pgt == 1)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN c2d_directcp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN c2d_directdp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN c2d_directcdp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
+    end
+    U.pottarg = real(pottarg);
+  end
+  if(pgt == 2)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN c2d_directcg(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN c2d_directdg(int[1] nd, double[2,ns] sources,int[1] ns, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN c2d_directcdg(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, double[1] thresh); 
+    end
+    U.pottarg = real(pottarg);
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
+  end
+  if(pgt == 3)
+    if(ifcharge==1 && ifdipole == 0)
+      # FORTRAN c2d_directch(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, inout dcomplex[nd,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==0 && ifdipole == 1)
+      # FORTRAN c2d_directdh(int[1] nd, double[2,ns] sources,int[1] ns, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, inout dcomplex[nd,nt] hesstarg, double[1] thresh); 
+    end
+    if(ifcharge==1 && ifdipole == 1)
+      # FORTRAN c2d_directcdh(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, inout dcomplex[nd,nt] hesstarg, double[1] thresh); 
+    end
+    U.pottarg = real(pottarg);
+    U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
+    U.hesstarg = squeeze(reshape(hesstarg,[nd,nt]));
+  end
+end
+%
+%
+% ---------------------------------------------------------------------

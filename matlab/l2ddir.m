@@ -1,14 +1,11 @@
-function [U] = h2ddir(zk,srcinfo,targ,pgt)
+function [U] = l2ddir(srcinfo,targ,pgt)
 %
-%
-%  This subroutine computes the N-body Helmholtz
-%  interactions, its gradients and, its hessians in two dimensions where 
-%  the interaction kernel is given by $i/4 H_{0}^{(1)}kr)$, with
-%  $H_{0}^{(1)}$ being the Hankel function of the first kind of order
-%  0
+%  This subroutine computes the N-body Laplace
+%  interactions and its gradients in two dimensions where 
+%  the interaction kernel is given by $\log(r)$
 % 
-%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} H_{0}(k\|x-x_{j}\|) - d_{j} v_{j}
-%    \cdot \nabla \left( H_{0}(k\|x-x_{j} \|) \right)
+%    u(x) = \frac{i}{4}\sum_{j=1}^{N} c_{j} \log(\|x-x_{j}\|) - d_{j} v_{j}
+%    \cdot \nabla \left( \log(\|x-x_{j} \|) \right)
 %
 %  where $c_{j}$ are the charge densities, $d_{j}$ are the dipole
 %  densities,
@@ -24,8 +21,6 @@ function [U] = h2ddir(zk,srcinfo,targ,pgt)
 % 
 %  Args:
 %
-%  -  zk: complex
-%        Helmholtz parameter, k
 %  -  srcinfo: structure
 %        structure containing sourceinfo
 %     
@@ -111,54 +106,53 @@ function [U] = h2ddir(zk,srcinfo,targ,pgt)
 
   if(pgt == 1)
     if(ifcharge==1 && ifdipole == 0)
-      mex_id_ = 'h2d_directcp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
-[pottarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, targ, nt, pottarg, thresh, 1, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, 1);
+      mex_id_ = 'l2d_directcp(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
+[pottarg] = fmm2d(mex_id_, nd, sources, ns, charges, targ, nt, pottarg, thresh, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, 1);
     end
     if(ifcharge==0 && ifdipole == 1)
-      mex_id_ = 'h2d_directdp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
-[pottarg] = fmm2d(mex_id_, nd, zk, sources, ns, dipstr, dipvec, targ, nt, pottarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, 1);
+      mex_id_ = 'l2d_directdp(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
+[pottarg] = fmm2d(mex_id_, nd, sources, ns, dipstr, dipvec, targ, nt, pottarg, thresh, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, 1);
     end
     if(ifcharge==1 && ifdipole == 1)
-      mex_id_ = 'h2d_directcdp(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
-[pottarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, 1);
+      mex_id_ = 'l2d_directcdp(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
+[pottarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, 1);
     end
     U.pottarg = pottarg;
   end
   if(pgt == 2)
     if(ifcharge==1 && ifdipole == 0)
-      mex_id_ = 'h2d_directcg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, targ, nt, pottarg, gradtarg, thresh, 1, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
+      mex_id_ = 'l2d_directcg(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg] = fmm2d(mex_id_, nd, sources, ns, charges, targ, nt, pottarg, gradtarg, thresh, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
     end
     if(ifcharge==0 && ifdipole == 1)
-      mex_id_ = 'h2d_directdg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg] = fmm2d(mex_id_, nd, zk, sources, ns, dipstr, dipvec, targ, nt, pottarg, gradtarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
+      mex_id_ = 'l2d_directdg(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg] = fmm2d(mex_id_, nd, sources, ns, dipstr, dipvec, targ, nt, pottarg, gradtarg, thresh, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
     end
     if(ifcharge==1 && ifdipole == 1)
-      mex_id_ = 'h2d_directcdg(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, gradtarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
+      mex_id_ = 'l2d_directcdg(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, gradtarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, 1);
     end
     U.pottarg = pottarg;
     U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
   end
   if(pgt == 3)
     if(ifcharge==1 && ifdipole == 0)
-      mex_id_ = 'h2d_directch(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
+      mex_id_ = 'l2d_directch(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, sources, ns, charges, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 2, ns, 1, nd, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
     end
     if(ifcharge==0 && ifdipole == 1)
-      mex_id_ = 'h2d_directdh(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, zk, sources, ns, dipstr, dipvec, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
+      mex_id_ = 'l2d_directdh(i int[x], i double[xx], i int[x], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, sources, ns, dipstr, dipvec, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 2, ns, 1, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
     end
     if(ifcharge==1 && ifdipole == 1)
-      mex_id_ = 'h2d_directcdh(i int[x], i dcomplex[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
-[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, zk, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
+      mex_id_ = 'l2d_directcdh(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
+[pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, dipvec, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, nd2, ns, 2, nt, 1, nd, nt, nd2, nt, nd3, nt, 1);
     end
     U.pottarg = pottarg;
     U.gradtarg = squeeze(reshape(gradtarg,[nd,2,nt]));
     U.hesstarg = squeeze(reshape(hesstarg,[nd,3,nt]));
   end
 end
-%
 %
 %
 % ---------------------------------------------------------------------

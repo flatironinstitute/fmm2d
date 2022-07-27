@@ -220,6 +220,7 @@ $(DYNAMICLIB): $(OBJS)
 #test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
 #		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d test/hfmm2d_mps
 test: $(STATICLIB) $(TOBJS) test/hfmm2d_mps 
+#	(cd test/helmholtz; ./run_helmtest.sh; valgrind ./int2-test-hfmm2d-mps)
 	(cd test/helmholtz; ./run_helmtest.sh)
 #	(cd test/laplace; ./run_laptest.sh)
 #	(cd test/biharmonic; ./run_bhtest.sh)

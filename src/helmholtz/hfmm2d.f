@@ -1130,7 +1130,7 @@ C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp,dlam,boxlam)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             nchild = itree(iptr(4)+ibox-1)

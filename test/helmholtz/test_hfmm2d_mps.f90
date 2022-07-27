@@ -36,7 +36,7 @@ program test_hfmm3d_mp2loc
   nd = 1
 
 
-  n1 = 3
+  n1 = 7
   ns = n1**2
   nc = ns
 
@@ -54,10 +54,10 @@ program test_hfmm3d_mp2loc
   allocate(pottarg(nd,nt))
   allocate(gradtarg(nd,2,nt))
   allocate(hesstarg(nd,3,nt))
-  eps = 0.5d-9
+  eps = 0.5d-12
 
   write(*,*) "=========================================="
-  write(*,*) "Testing suite for hfmm3d_mps"
+  write(*,*) "Testing suite for hfmm2d_mps"
   write(*,'(a,e12.5)') "Requested precision = ",eps
 
   boxsize = 1
@@ -80,6 +80,7 @@ program test_hfmm3d_mp2loc
       source(2,ijk) = h*j
     end do
   end do
+  call prin2('source=*',source,2*ns)
   
   
   dnorm = 0
@@ -121,7 +122,7 @@ program test_hfmm3d_mp2loc
 
   ! call prin2('min source separation = *', ssep, 1)
   
-  shift = h/1000
+  shift = h/100
   call prin2('shift = *', shift, 1)
   do i = 1,ns
     centers(1,i) = source(1,i) + shift
@@ -135,10 +136,11 @@ program test_hfmm3d_mp2loc
   !
   allocate(nterms(nc), impole(nc))
 
-  ntm = 7
+  ntm = 30
   ntot1 = 0
   do i = 1,nc
     nterms(i) = ntm + 2*cos(pi/2*i)
+    nterms(i) = ntm
     ntot1 = ntot1 + (2*nterms(i)+1)
 
   end do
@@ -171,10 +173,11 @@ program test_hfmm3d_mp2loc
   allocate(rscales(nc))
   do i = 1,nc
     rscales(i) = rscale
-    call h2dformmpc(nd,zk,rscale,source(1,i),ns1,charge(1,i), &
+    rscales(i) = 1.0d0
+    call h2dformmpc(nd,zk,rscales(i),source(1,i),ns1,charge(1,i), &
        centers(1,i),nterms(i),mpole(impole(i)))
   end do
-  call prin2('mpole=*',mpole,2*ntot)
+!  call prin2('mpole=*',mpole,2*ntot)
 
   
   !
@@ -187,7 +190,7 @@ program test_hfmm3d_mp2loc
   ntarg = 0
   ifpghtarg = 0
   call hfmm2d(nd, eps, zk, ns, source, ifcharge, &
-      charge, ifdipole, dipstr,dipvec, iper, ifpgh, pot, grad, &
+      charge, ifdipole,dipstr,dipvec, iper, ifpgh, pot, grad, &
       hess, ntarg, targ, ifpghtarg, pottarg, gradtarg, hesstarg, ier)
   
   call prin2('via fmm, potential = *', pot, nd*nc)
@@ -211,6 +214,8 @@ program test_hfmm3d_mp2loc
 
   call hfmm2d_mps(nd, eps, zk, &
       nc, centers, rscales, nterms, ntot,mpole, impole, local,ier)
+  
+!  call prin2('local=*',local,2*ntot)
 
   call zinitialize(nd*nc, pot2)
   npts = 1
@@ -220,32 +225,35 @@ program test_hfmm3d_mp2loc
         nterms(i), source(1,i), npts, pot2(1,i))
   end do
   
-  call prin2('from hfmm3d_mps, potential = *', pot2, nd*nc)
+  call prin2('from hfmm3d_mps, potential = *', pot2, 2*nd*nc)
+  call prin2('via fmm, potential = *', pot, 2*nd*nc)
 
-  err = 0
+  erra = 0
   dnorm = 0
   do j = 1,nc
     do i = 1,nd
-      err = err + abs(pot(i,j)-pot2(i,j))**2
+      erra = erra + abs(pot(i,j)-pot2(i,j))**2
       dnorm = dnorm + abs(pot(i,j))**2
-      pot2(i,j) = pot2(i,j) - pot(i,j)
     end do
   end do
+
+  call prin2('source=*',source(1,17),2)
+  call prin2('center=*',centers(1,17),2)
 
   !call prin2('diff = *', pot2, 2*nd*ns)
   !call prin2('err = *', err, 1)
   !call prin2('dnorm = *', dnorm, 1)
   
-  err = sqrt(err/dnorm)
-  call prin2('l2 rel err=*',err,1)
+  erra = sqrt(erra/dnorm)
+  call prin2('l2 rel err=*',erra,1)
 
   open(unit=33,file='print_testres.txt',access='append')
   isuccess = 0
   ntest = 1
-  if(err.lt.eps) isuccess = 1
+  if(erra.lt.eps) isuccess = 1
 
   write(33,'(a,i1,a,i1,a)') 'Successfully completed ', &
-    isuccess,' out of ',ntest,' tests in helm3d_mps testing suite'
+    isuccess,' out of ',ntest,' tests in helm2d_mps testing suite'
   close(33)
 
   

@@ -144,6 +144,7 @@ c
       call prinf('nmpole=*',nmpole,1)
       call prinf('idivflag=*',idivflag,1)
       call prinf('ndiv=*',ndiv,1)
+      call prinf('ntarg=*',ntarg,1)
       
       call pts_tree_mem(cmpole,nmpole,targ,ntarg,idivflag,ndiv,
      1  nlmin,nlmax,ifunif,iper,nlevels,nboxes,ltree)
@@ -175,8 +176,6 @@ c
       
       call dreorderf(2,nmpole,cmpole,cmpolesort,isrc)
       call dreorderf(1,nmpole,rmpole,rmpolesort,isrc)
-      call prin2('rmpole=*',rmpole,nmpole)
-      call prin2('rmpolesort=*',rmpolesort,nmpole)
       call ireorderf(1,nmpole,mterms,mtermssort,isrc)
 
       impolesort(1) = 1
@@ -198,7 +197,7 @@ c
       enddo
       call prinf('mtermssort=*',mtermssort,nmpole)
       call prinf('impolesort=*',impolesort,nmpole)
-      call prin2('mpolesort=*',mpolesort,2*ntot)
+cc      call prin2('mpolesort=*',mpolesort,2*ntot)
 
 c
 cc      compute scaling factor for multipole/local expansions
@@ -210,6 +209,7 @@ c
       ier = 0
       do i=0,nlevels
         rscales(i) = min(abs(zk*boxsize(i)/(2.0d0*pi)),1.0d0)
+        rscales(i) = 1
         call h2dterms(boxsize(i),zk,eps,nterms(i),ier)
         nterms(i) = nterms(i) 
         if(nterms(i).gt.nmax) nmax = nterms(i)
@@ -217,6 +217,7 @@ c
 
       if(ifprint.eq.1) call prinf('nmax=*',nmax,1)
       if(ifprint.eq.1) call prinf('nterms=*',nterms,nlevels+1)
+      call prin2('rscales=*',rscales,nlevels+1)
 
 c       
 c     Multipole and local expansions will be held in workspace
@@ -441,7 +442,7 @@ c     temp variables
       integer istart,iend,istarts,iends
       integer isstart,isend,jsstart,jsend
       integer jstart,jend
-      integer istarte,iende,istartt,iendt
+      integer istarte,iende,istartt,iendt,mt
 
       integer ifprint
 
@@ -486,6 +487,10 @@ c
         call computelists(nlevels,nboxes,itree,ltree,iptr,centers,
      1    boxsize,iper,mnlist1,nlist1s,list1,mnlist2,nlist2s,list2,
      2    mnlist3,nlist3s,list3,mnlist4,nlist4s,list4)
+c        call prinf('mnlist4=*',mnlist4,1)
+c        call prinf('nlist4s=*',nlist4s,nboxes)
+c        call prinf('mnlist3=*',mnlist3,1)
+c        call prinf('nlist3s=*',nlist3s,nboxes)
 
 
 C
@@ -560,19 +565,20 @@ C$        time1=omp_get_wtime()
       do ilev = 2,nlevels
          if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,nlist4,istart,iend,npts,i,j)
+C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,i,j,jstart,jend)
 C$OMP$SCHEDULE(DYNAMIC)
             do ibox = laddr(1,ilev),laddr(2,ilev)
-               npts = 0
                istart = isrcse(1,ibox)
                iend = isrcse(2,ibox)
-               npts = npts + iend-istart+1
-               if(npts.gt.0) then
+               npts = iend-istart+1
+               if(npts.ge.0) then
                   do i=1,nlist4s(ibox)
                      jbox = list4(i,ibox)
-                     istart = isrcse(1,jbox)
-                     iend = isrcse(2,jbox)
-                     do j=istart,iend
+                     jstart = isrcse(1,jbox)
+                     jend = isrcse(2,jbox)
+                     do j=jstart,jend
+                       print *, j, ibox,rmpolesort(j)
+                       print *, cmpolesort(1,j),cmpolesort(2,j)
                        call h2dmploc(nd,zk,rmpolesort(j),
      $                    cmpolesort(1,j),mpolesort(impolesort(j)),
      $                    mtermssort(j),rscales(ilev),centers(1,ibox),
@@ -726,12 +732,13 @@ C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,dlam,boxlam)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             istart = isrcse(1,ibox)
             iend = isrcse(2,ibox)
             npts = iend-istart+1
+            nchild = itree(iptr(4)+ibox-1)
 
             if(npts.gt.0) then
                do i=1,nchild
@@ -766,8 +773,6 @@ c
 c
 c
 
-
-
       call cpu_time(time1)
 C$    time1=omp_get_wtime()
       if(ifprint.ge.1)
@@ -776,25 +781,33 @@ C$    time1=omp_get_wtime()
 cc      call prinf('ifpgh=*',ifpgh,1)
 cc      call prinf('ifpghtarg=*',ifpghtarg,1)
 cc      call prinf('laddr=*',laddr,2*(nlevels+1))
+      mt = 2*mtermssort(9)+1
       do ilev=1,nlevels-1
        if(zi*boxsize(ilev+1).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,istart,iend,npts,j,i)
+C$OMP$PRIVATE(ibox,istart,iend,npts,j,i,mt)
 C$OMP$PRIVATE(jbox)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox=laddr(1,ilev),laddr(2,ilev)
             istart = isrcse(1,ibox)
             iend = isrcse(2,ibox)
             npts = iend-istart+1
-            do j=istart,iend
-               do i=1,nlist3s(ibox)
-                  jbox = list3(i,ibox)
+            do i=1,nlist3s(ibox)
+               jbox = list3(i,ibox)
+
+               do j=istart,iend
+cc                  print *, j,jbox,rmpolesort(j)
+cc                  print *, cmpolesort(1,j),cmpolesort(2,j)
+                  print *, "ilevp1=",ilev+1
+cc                  mt = 2*(2*mtermssort(j)+1)
+
 c                 shift multipole expansion directly to box
 c                 for all expansion centers
                   call h2dmploc(nd,zk,rscales(ilev+1),
      $             centers(1,jbox),rmlexp(iaddr(1,jbox)),nterms(ilev+1),
      $             rmpolesort(j),cmpolesort(1,j),
      $             localsort(impolesort(j)),mtermssort(j))
+               
                enddo
             enddo
          enddo
@@ -808,7 +821,6 @@ C$OMP END PARALLEL DO
       call cpu_time(time2)
 C$    time2=omp_get_wtime()
       timeinfo(6) = time2-time1
-
 
       if(ifprint.ge.1)
      $    call prinf('=== step 7 (LOC to CEN) ===*',i,0)
@@ -875,8 +887,8 @@ C$OMP$SCHEDULE(DYNAMIC)
                  jstart = isrcse(1,jbox)
                  jend = isrcse(2,jbox)
                  do j=jstart,jend
-                   d = (cmpolesort(1,j)-cmpolesort(1,i))**2 + 
-     1               (cmpolesort(2,j)-cmpolesort(2,i))**2
+                   d = (cmpolesort(1,j)-cmpolesort(1,iloc))**2 + 
+     1               (cmpolesort(2,j)-cmpolesort(2,iloc))**2
                    d = sqrt(d)
                    if(d.gt.thresh) then
                      call h2dmploc(nd,zk,rmpolesort(j),

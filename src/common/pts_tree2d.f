@@ -186,6 +186,7 @@ c
 
       nbctr = 1
 
+
      
 
       do ilev=0,nlmax-1
@@ -218,7 +219,9 @@ C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nss,ntt,nn)
 C$OMP END PARALLEL DO      
            irefine = maxval(irefinebox(1:nbloc))
            if(ifunif.eq.1) then
-             irefinebox(i) = irefine
+             do i=1,nbloc
+               irefinebox(i) = irefine
+             enddo
            endif
         else
            irefine = 1
@@ -323,6 +326,7 @@ C$OMP END PARALLEL DO
       nlevels = ilev
 
 
+
       if(nlevels.ge.2) then
         nbtot = 8*nboxes
         if(nbtot.gt.nbmax) then
@@ -387,6 +391,7 @@ C$OMP END PARALLEL DO
      2         nbors)
         endif
       endif
+
 
       ltree = 17*nboxes + 2*(nlevels+1) 
 

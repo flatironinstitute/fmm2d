@@ -106,7 +106,7 @@ HELM = src/helmholtz
 HOBJS = $(HELM)/h2dcommon.o $(HELM)/h2dterms.o \
 	$(HELM)/helmrouts2d.o $(HELM)/hfmm2d.o $(HELM)/hfmm2dwrap.o \
 	$(HELM)/wideband2d.o $(HELM)/hfmm2dwrap_vec.o \
-	$(HELM)/hndiv2d.o $(HELM)/hfmm2d_ndiv.o
+	$(HELM)/hndiv2d.o $(HELM)/hfmm2d_ndiv.o $(HELM)/hfmm2d_mps.o
 
 # laplace objects
 LAP = src/laplace
@@ -217,23 +217,27 @@ $(DYNAMICLIB): $(OBJS)
 
 # testing routines
 #
-test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
-		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d
+#test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
+#		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d test/hfmm2d_mps
+test: $(STATICLIB) $(TOBJS) test/hfmm2d_mps 
 	(cd test/helmholtz; ./run_helmtest.sh)
-	(cd test/laplace; ./run_laptest.sh)
-	(cd test/biharmonic; ./run_bhtest.sh)
+#	(cd test/laplace; ./run_laptest.sh)
+#	(cd test/biharmonic; ./run_bhtest.sh)
 	cat print_testreshelm.txt
-	cat print_testreslap.txt
-	cat print_testresbh.txt
+#	cat print_testreslap.txt
+#	cat print_testresbh.txt
 	rm print_testreshelm.txt
-	rm print_testreslap.txt
-	rm print_testresbh.txt
+#	rm print_testreslap.txt
+#	rm print_testresbh.txt
 
 test/hfmm2d:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d $(LIBS)
 
 test/hfmm2d_vec:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d_vec.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d-vec  $(LIBS)
+
+test/hfmm2d_mps:
+	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d_mps.f90 $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d-mps  $(LIBS)
 
 test/lfmm2d:
 	$(FC) $(FFLAGS) test/laplace/test_lfmm2d.f $(TOBJS) $(COMOBJS) $(LOBJS) -o test/laplace/int2-test-lfmm2d $(LIBS)

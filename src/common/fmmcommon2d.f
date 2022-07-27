@@ -1,5 +1,32 @@
 c----------------------------------------------------------------     
 
+      subroutine ireorderf(ndim,n,arr,arrsort,iarr)
+c
+cc       this subroutine sorts the array arr and stores
+c        it in arrsort using the sorting order defined by
+c        iarr
+c
+c        arrsort(j,i) = arr(j,iarr(i)), j =1,2,\ldots ndim
+c                                       i=1,2,\ldots n
+c
+
+      implicit none
+      integer ndim,idim,i,n
+      integer arr(ndim,n),arrsort(ndim,n)
+      integer iarr(n)
+
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,idim)      
+      do i=1,n
+         do idim=1,ndim
+            arrsort(idim,i) = arr(idim,iarr(i))
+         enddo
+      enddo
+C$OMP END PARALLEL DO      
+
+      return
+      end
+c----------------------------------------------------------------     
+
       subroutine dreorderf(ndim,n,arr,arrsort,iarr)
 c
 cc       this subroutine sorts the array arr and stores
@@ -12,8 +39,8 @@ c
 
       implicit none
       integer ndim,idim,i,n
-      double precision arr(ndim,1),arrsort(ndim,1)
-      integer iarr(1)
+      double precision arr(ndim,n),arrsort(ndim,n)
+      integer iarr(n)
 
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,idim)      
       do i=1,n

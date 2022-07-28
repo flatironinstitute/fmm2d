@@ -18,7 +18,7 @@
       done = 1
       pi = atan(done)*4
 
-      nsrc = 4000
+      nsrc = 1000
       ntarg = nsrc+10
 
       nd = 3

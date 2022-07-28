@@ -1245,7 +1245,7 @@ C     jexp   :   coefficients of shifted local expansion are incremented
 C---------------------------------------------------------------------
       integer nterms1,nterms2,nterms,i,j,ifder,ii,nd
       real *8 rscale1,rscale2,r,theta,center1(2),center2(2),zdiff(2)
-      real *8 rsi,rsj,rsi2,rsj2,pi,done
+      real *8 rsi,rsj,rsi2,rsj2,pi,done,rs12
       complex *16 zk,hexp(nd,-nterms1:nterms1),jexp(nd,-nterms2:nterms2)
       complex *16 z,ima, zmul,zinv,ztemp1,ztemp2
       complex *16, allocatable :: hval(:), hder(:), htemp(:)
@@ -1255,6 +1255,8 @@ c
       pi=4*atan(done)
 c
       nterms = nterms1+nterms2
+cc      call prin2('hexp=*',hexp,2*nd*(2*nterms1+1))
+cc      call prin2('jexp=*',jexp,2*nd*(2*nterms2+1))
 c
       allocate(hval(0:nterms+5))
       allocate(hder(0:nterms+5))
@@ -1267,6 +1269,8 @@ c
       theta=theta-pi
 c
       z=zk*r
+cc      print *, "z=",z
+cc      print *, "rscale1=",rscale1
       ifder=0
       call h2dall(nterms+1,z,rscale1,hval,ifder,hder)
 c        
@@ -1294,43 +1298,47 @@ c
 c
       rsi=rscale1
       rsi2=rscale1**2
+      rs12 = rscale2/rscale1
       do i = 1,nterms2
          do ii=1,nd
-            jexp(ii,i) = jexp(ii,i) + hexp(ii,0)*htemp(i)
-            jexp(ii,-i) = jexp(ii,-i) + hexp(ii,0)*htemp(-i)
+            jexp(ii,i) = jexp(ii,i) + hexp(ii,0)*htemp(i)*rs12
+            jexp(ii,-i) = jexp(ii,-i) + hexp(ii,0)*htemp(-i)*rs12
          enddo
          rsj=rscale1
          rsj2=rscale1**2
          do j = 1,min(nterms1,i)
             do ii=1,nd
-               jexp(ii,i) = jexp(ii,i)+(hexp(ii,+j)*htemp(i-j))*rsj2
-               jexp(ii,i) = jexp(ii,i)+(hexp(ii,-j)*htemp(i+j))
-               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,+j)*htemp(-i-j))
-               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,-j)*htemp(-i+j))*rsj2
+              jexp(ii,i) = jexp(ii,i)+(hexp(ii,+j)*htemp(i-j))*rsj2*rs12
+               jexp(ii,i) = jexp(ii,i)+(hexp(ii,-j)*htemp(i+j))*rs12
+               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,+j)*htemp(-i-j))*rs12
+               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,-j)*htemp(-i+j))*rsj2*
+     1            rs12
             enddo
             rsj=rsj*rscale1
             rsj2=rsj2*rscale1**2
          enddo
          do j = i+1,nterms1
             do ii=1,nd
-               jexp(ii,i) = jexp(ii,i)+(hexp(ii,+j)*htemp(i-j))*rsi2
-               jexp(ii,i) = jexp(ii,i)+(hexp(ii,-j)*htemp(i+j))
-               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,+j)*htemp(-i-j))
-               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,-j)*htemp(-i+j))*rsi2
+              jexp(ii,i) = jexp(ii,i)+(hexp(ii,+j)*htemp(i-j))*rsi2*rs12
+               jexp(ii,i) = jexp(ii,i)+(hexp(ii,-j)*htemp(i+j))*rs12
+               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,+j)*htemp(-i-j))*rs12
+               jexp(ii,-i) = jexp(ii,-i)+(hexp(ii,-j)*htemp(-i+j))*rsi2*
+     1            rs12
             enddo
          enddo
          rsi=rsi*rscale1
          rsi2=rsi2*rscale1**2
+         rs12 = rs12*rscale2/rscale1
       enddo
 c
-      rsi=rscale2/rscale1
-      do i = 1,nterms2
-         do ii=1,nd
-            jexp(ii,+i) = jexp(ii,+i)*rsi
-            jexp(ii,-i) = jexp(ii,-i)*rsi
-         enddo
-         rsi=rsi*rscale2/rscale1
-      enddo
+c      rsi=rscale2/rscale1
+c      do i = 1,nterms2
+c         do ii=1,nd
+c            jexp(ii,+i) = jexp(ii,+i)*rsi
+c           jexp(ii,-i) = jexp(ii,-i)*rsi
+c         enddo
+c         rsi=rsi*rscale2/rscale1
+c      enddo
       return
       end
 c

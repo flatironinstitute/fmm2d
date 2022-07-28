@@ -36,12 +36,10 @@ program test_hfmm3d_mp2loc
   nd = 1
 
 
-  n1 = 7
+  n1 = 10
   ns = n1**2
   nc = ns
 
-  call prinf('ns = *', ns, 1)
-  call prinf('nc = *', nc, 1)
   
   nt = 22
 
@@ -54,7 +52,7 @@ program test_hfmm3d_mp2loc
   allocate(pottarg(nd,nt))
   allocate(gradtarg(nd,2,nt))
   allocate(hesstarg(nd,3,nt))
-  eps = 0.5d-12
+  eps = 0.5d-9
 
   write(*,*) "=========================================="
   write(*,*) "Testing suite for hfmm2d_mps"
@@ -80,7 +78,6 @@ program test_hfmm3d_mp2loc
       source(2,ijk) = h*j
     end do
   end do
-  call prin2('source=*',source,2*ns)
   
   
   dnorm = 0
@@ -115,7 +112,10 @@ program test_hfmm3d_mp2loc
   do i=1,ns
     do idim = 1,nd
       charge(idim,i) = charge(idim,i)/dnorm
+      charge(idim,i) = 0
+      charge(idim,1) = 1.0d0
       dipstr(idim,i) = dipstr(idim,i)/dnormd
+      dipstr(idim,i) = 0
     end do
   end do
   
@@ -123,7 +123,6 @@ program test_hfmm3d_mp2loc
   ! call prin2('min source separation = *', ssep, 1)
   
   shift = h/100
-  call prin2('shift = *', shift, 1)
   do i = 1,ns
     centers(1,i) = source(1,i) + shift
     centers(2,i) = source(2,i)
@@ -146,9 +145,6 @@ program test_hfmm3d_mp2loc
   end do
 
   ntot = nd*ntot1
-  print *, "ntot=",ntot
-  print *, "ntot1=",ntot1
-  call prinf('nterms=*',nterms,nc)
 
 
   allocate(mpole(ntot))
@@ -158,8 +154,6 @@ program test_hfmm3d_mp2loc
     ilen = (2*nterms(i)+1)
     impole(i+1) = impole(i) + nd*ilen
   end do
-  call prinf('impole=*',impole,nc)
-
   
   call zinitialize(ntot, mpole)
   
@@ -168,16 +162,13 @@ program test_hfmm3d_mp2loc
   sc = abs(zk)*shift
   if (sc .lt. 1) rscale = sc
 
-  call prin2('rscale = *', rscale, 1)
   
   allocate(rscales(nc))
   do i = 1,nc
     rscales(i) = rscale
-    rscales(i) = 1.0d0
     call h2dformmpc(nd,zk,rscales(i),source(1,i),ns1,charge(1,i), &
        centers(1,i),nterms(i),mpole(impole(i)))
   end do
-!  call prin2('mpole=*',mpole,2*ntot)
 
   
   !
@@ -193,7 +184,6 @@ program test_hfmm3d_mp2loc
       charge, ifdipole,dipstr,dipvec, iper, ifpgh, pot, grad, &
       hess, ntarg, targ, ifpghtarg, pottarg, gradtarg, hesstarg, ier)
   
-  call prin2('via fmm, potential = *', pot, nd*nc)
 
   
   allocate(local(ntot))
@@ -215,7 +205,6 @@ program test_hfmm3d_mp2loc
   call hfmm2d_mps(nd, eps, zk, &
       nc, centers, rscales, nterms, ntot,mpole, impole, local,ier)
   
-!  call prin2('local=*',local,2*ntot)
 
   call zinitialize(nd*nc, pot2)
   npts = 1
@@ -225,8 +214,9 @@ program test_hfmm3d_mp2loc
         nterms(i), source(1,i), npts, pot2(1,i))
   end do
   
-  call prin2('from hfmm3d_mps, potential = *', pot2, 2*nd*nc)
-  call prin2('via fmm, potential = *', pot, 2*nd*nc)
+  nprin = min(2*nd*nc,24)
+  call prin2('from hfmm3d_mps, potential = *', pot2, nprin)
+  call prin2('via fmm, potential = *', pot, nprin)
 
   erra = 0
   dnorm = 0
@@ -234,15 +224,11 @@ program test_hfmm3d_mp2loc
     do i = 1,nd
       erra = erra + abs(pot(i,j)-pot2(i,j))**2
       dnorm = dnorm + abs(pot(i,j))**2
+      if(abs(pot(i,j)-pot2(i,j)).ge.1.0d-6) print *, real(pot(1,j)),real(pot2(1,j))
+
     end do
   end do
 
-  call prin2('source=*',source(1,17),2)
-  call prin2('center=*',centers(1,17),2)
-
-  !call prin2('diff = *', pot2, 2*nd*ns)
-  !call prin2('err = *', err, 1)
-  !call prin2('dnorm = *', dnorm, 1)
   
   erra = sqrt(erra/dnorm)
   call prin2('l2 rel err=*',erra,1)

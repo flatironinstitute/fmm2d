@@ -141,15 +141,9 @@ c       code to determine number of boxes,
 c       number of levels and length of tree
 c
 
-      call prinf('nmpole=*',nmpole,1)
-      call prinf('idivflag=*',idivflag,1)
-      call prinf('ndiv=*',ndiv,1)
-      call prinf('ntarg=*',ntarg,1)
       
       call pts_tree_mem(cmpole,nmpole,targ,ntarg,idivflag,ndiv,
      1  nlmin,nlmax,ifunif,iper,nlevels,nboxes,ltree)
-      call prinf('nlevels=*',nlevels,1)
-      call prinf('nboxes=*',nboxes,1)
 
 
       allocate(itree(ltree))
@@ -195,10 +189,6 @@ c
         enddo
         if(i.lt.nmpole) impolesort(i+1) = impolesort(i) + nd*ilen
       enddo
-      call prinf('mtermssort=*',mtermssort,nmpole)
-      call prinf('impolesort=*',impolesort,nmpole)
-cc      call prin2('mpolesort=*',mpolesort,2*ntot)
-
 c
 cc      compute scaling factor for multipole/local expansions
 c       and lengths of multipole and local expansions
@@ -209,7 +199,7 @@ c
       ier = 0
       do i=0,nlevels
         rscales(i) = min(abs(zk*boxsize(i)/(2.0d0*pi)),1.0d0)
-        rscales(i) = 1
+cc        rscales(i) = 1
         call h2dterms(boxsize(i),zk,eps,nterms(i),ier)
         nterms(i) = nterms(i) 
         if(nterms(i).gt.nmax) nmax = nterms(i)
@@ -217,7 +207,7 @@ c
 
       if(ifprint.eq.1) call prinf('nmax=*',nmax,1)
       if(ifprint.eq.1) call prinf('nterms=*',nterms,nlevels+1)
-      call prin2('rscales=*',rscales,nlevels+1)
+      if(ifprint.ge.1) call prin2('rscales=*',rscales,nlevels+1)
 
 c       
 c     Multipole and local expansions will be held in workspace
@@ -577,8 +567,6 @@ C$OMP$SCHEDULE(DYNAMIC)
                      jstart = isrcse(1,jbox)
                      jend = isrcse(2,jbox)
                      do j=jstart,jend
-                       print *, j, ibox,rmpolesort(j)
-                       print *, cmpolesort(1,j),cmpolesort(2,j)
                        call h2dmploc(nd,zk,rmpolesort(j),
      $                    cmpolesort(1,j),mpolesort(impolesort(j)),
      $                    mtermssort(j),rscales(ilev),centers(1,ibox),
@@ -796,11 +784,6 @@ C$OMP$SCHEDULE(DYNAMIC)
                jbox = list3(i,ibox)
 
                do j=istart,iend
-cc                  print *, j,jbox,rmpolesort(j)
-cc                  print *, cmpolesort(1,j),cmpolesort(2,j)
-                  print *, "ilevp1=",ilev+1
-cc                  mt = 2*(2*mtermssort(j)+1)
-
 c                 shift multipole expansion directly to box
 c                 for all expansion centers
                   call h2dmploc(nd,zk,rscales(ilev+1),

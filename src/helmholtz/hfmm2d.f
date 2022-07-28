@@ -1193,7 +1193,7 @@ cc      call prinf('laddr=*',laddr,2*(nlevels+1))
        if(zi*boxsize(ilev+1).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,istart,iend,npts,j,i,mptemp)
-C$OMP$PRIVATE(jbox)
+C$OMP$PRIVATE(jbox,dlam,boxlam)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox=laddr(1,ilev),laddr(2,ilev)
             istart = iexpcse(1,ibox)
@@ -1206,18 +1206,10 @@ c                 for all expansion centers
                   dlam = zk
                   dlam = 1/(dlam/(2*pi))                 
                   boxlam = boxsize(ilev)/dlam
-cc                  if (boxlam .gt. 8.0d0) then
-cc                    call h2dmploc_fft(zk,rscales(ilev+1),
-cc     1                  centers(1,jbox),rmlexp(iaddr(1,jbox)),
-cc     1                  nterms(ilev+1),scjsort(j),
-cc     2                  expcsort(1,j),mptemp,ntj)
-cc                    call h2dadd2(mptemp,ntj,jsort(-ntj,j),ntj)
-cc                  else
                     call h2dmploc(nd,zk,rscales(ilev+1),
      $                  centers(1,jbox),
      1                  rmlexp(iaddr(1,jbox)),nterms(ilev+1),scjsort(j),
      2                  expcsort(1,j),jsort(1,-ntj,j),ntj)
-cc                  endif
                   
                enddo
             enddo

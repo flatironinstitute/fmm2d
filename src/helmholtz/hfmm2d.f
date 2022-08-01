@@ -150,7 +150,7 @@ c
       ifunif = 0
       iper = 0
 
-      ifprint = 0
+      ifprint = 1
 
 c
 c  turn on computation of list 1
@@ -690,7 +690,7 @@ c     Suppressed if ifprint=0.
 c     Prints timing breakdown and other things if ifprint=1.
 c     Prints timing breakdown, list information, and other things if ifprint=2.
 c      
-        ifprint=0
+        ifprint=1
 
         pi = 4*atan(1.0d0)
 c
@@ -992,7 +992,7 @@ c
          dlam = 1/(dlam/(2*pi))                 
          boxlam = boxsize(ilev)/dlam
 
-         if(boxlam.le.8.0d0) then
+         if(boxlam.le.16.0d0) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
 C$OMP$SCHEDULE(DYNAMIC)
@@ -1014,7 +1014,7 @@ C$OMP$SCHEDULE(DYNAMIC)
 C$OMP END PARALLEL DO    
          endif
 
-         if(boxlam.gt.8.0d0) then
+         if(boxlam.gt.16.0d0) then
            if(ifprint.ge.1) print *, "Doing mpmp using hf"
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
@@ -1055,7 +1055,7 @@ C$    time1=omp_get_wtime()
         dlam = zk
         dlam = 1/(dlam/(2*pi))                 
         boxlam = boxsize(ilev)/dlam
-        if(boxlam.gt.8.and.ifprint.ge.1) print *, "in high freq"
+        if(boxlam.gt.16.and.ifprint.ge.1) print *, "in high freq"
 
 cc        call zffti(nsig, wsave)
        
@@ -1091,7 +1091,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                do i=1,nlist2s(ibox)
                   jbox = list2(i,ibox) 
 
-                  if (boxlam .gt. 8.0d0) then
+                  if (boxlam .gt. 16.0d0) then
                     call h2dmplochf(nd,zk,rscales(ilev),
      $                  centers(1,jbox),
      1                  rmlexp(iaddr(1,jbox)),nterms(ilev),
@@ -1158,7 +1158,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                   dlam = zk
                   dlam = 1/(dlam/(2*pi))                 
                   boxlam = boxsize(ilev)/dlam
-                  if (boxlam .gt. 8.0d0) then
+                  if (boxlam .gt. 16.0d0) then
                    call h2dmpmphf(nd,zk,rscales(ilev),
      1                  centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2                  nterms(ilev),rscales(ilev+1),centers(1,jbox),

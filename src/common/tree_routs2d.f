@@ -74,7 +74,7 @@ c
        integer i,j,nel
 
 
-C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i)
        do i=1,nb
          centers2(1,i) = centers(1,i)
          centers2(2,i) = centers(2,i)
@@ -354,7 +354,7 @@ c
       enddo
       if(nbloc.gt.0) call cumsum(nbloc,itmp,isum)
       
-C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nbl,j,jbox)
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,ibox,nbl,j,jbox,l,ii)
       do i = 1,nbloc
         ibox = ifirstbox + i-1
         if(iflag(ibox).gt.0) then

@@ -994,7 +994,7 @@ c
 
          if(boxlam.le.16.0d0) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
@@ -1066,7 +1066,7 @@ C$    tt1=omp_get_wtime()
 
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,mptemp,i,nlist2)
+C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,i,nlist2)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             npts = 0
@@ -1130,7 +1130,7 @@ C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp,dlam,boxlam)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,dlam,boxlam)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             nchild = itree(iptr(4)+ibox-1)
@@ -1192,7 +1192,7 @@ cc      call prinf('laddr=*',laddr,2*(nlevels+1))
       do ilev=1,nlevels-1
        if(zi*boxsize(ilev+1).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,istart,iend,npts,j,i,mptemp)
+C$OMP$PRIVATE(ibox,istart,iend,npts,j,i)
 C$OMP$PRIVATE(jbox,dlam,boxlam)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox=laddr(1,ilev),laddr(2,ilev)
@@ -1308,7 +1308,7 @@ C$    time1=omp_get_wtime()
       do ilev = 0,nlevels
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,mptemp,istart,iend,i,npts)
+C$OMP$PRIVATE(ibox,istart,iend,i,npts,nchild)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             nchild = itree(iptr(4)+ibox-1)

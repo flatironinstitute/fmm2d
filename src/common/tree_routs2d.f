@@ -280,7 +280,7 @@ c     Temporary variables
 c     Loop over all boxes at the current level     
 
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,i,jbox,j,kbox,xdis,ydis)
-C$OMP$PRIVATE(zdis,ict)
+C$OMP$PRIVATE(ict)
       do ibox = laddr(1,curlev),laddr(2,curlev)
          if(iflag(ibox).eq.3) then
             iflag(ibox) = 0

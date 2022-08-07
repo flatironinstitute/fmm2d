@@ -45,9 +45,10 @@ c     works for boxes up to 1000 wavelengths in size
 c
 c-----------------------------------------------------------------------------
 c
-      complex *16  zk, z1, z2, z3, jfun(0:20000), ht0,
+      complex *16  zk, z1, z2, z3, ht0,
      1             ht1, ht2, fjder(0:1), ztmp,
-     1             hfun(0:20000), fhder(0:1)
+     1             fhder(0:1)
+      complex *16, allocatable :: jfun(:),hfun(:)
 c
       ier = 0
       pi2 = 8*datan(1.0d0)
@@ -60,7 +61,8 @@ c       approximately the same for all small frequencies
 c       
 ccc        if( abs(z1) .lt. 1d-6 ) z1=1d-6
 c
-      ntmax = 10000
+      ntmax = 50000
+      allocate(jfun(0:ntmax+100),hfun(0:ntmax+100))
       ifder = 0
       rscale = 1.0d0
       if (cdabs(zk*bsize) .lt. pi2) rscale = cdabs(zk*bsize)

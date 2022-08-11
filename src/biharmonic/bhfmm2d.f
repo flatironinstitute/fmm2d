@@ -22,6 +22,10 @@ c    $Revision$
      1            ifdipole,dip,iper,ifpgh,pot,grad,
      2            hess,nt,targ,ifpghtarg,pottarg,gradtarg,
      3            hesstarg,ier)
+cf2py intent(in) nd,eps,ns,sources,ifcharge,charge,ifdipole,dip
+cf2py intent(in) iper,ifpgh,nt,targ,ifpghtarg
+cf2py intent(out) pot,grad,hess,pottarg,gradtarg,hesstarg,ier
+c
 c----------------------------------------------
 c
 c   This subroutine evaluates biharmonic sums related to stokes
@@ -119,11 +123,11 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,*),dip(nd,2,*)
+      complex *16 charge(nd,ns),dip(nd,2,ns)
 
-      complex *16 pot(nd,*),grad(nd,2,*), hess(nd,3,*)
-      complex *16 pottarg(nd,*),gradtarg(nd,2,*)
-      complex *16 hesstarg(nd,3,*)
+      complex *16 pot(nd,ns),grad(nd,2,ns), hess(nd,3,ns)
+      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      complex *16 hesstarg(nd,3,nt)
 
 c
 cc      Tree variables
@@ -1023,7 +1027,7 @@ c
       do ilev=nlevels-1,1,-1
 
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox = laddr(1,ilev),laddr(2,ilev)
           nchild = itree(iptr(4)+ibox-1)
@@ -1057,7 +1061,7 @@ C$    time1=omp_get_wtime()
 
        tt1 = second()
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,mptemp,i,nlist2)
+C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,i,nlist2)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox = laddr(1,ilev),laddr(2,ilev)
           npts = 0
@@ -1102,7 +1106,7 @@ C$    time2=omp_get_wtime()
 C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox = laddr(1,ilev),laddr(2,ilev)
           nchild = itree(iptr(4)+ibox-1)
@@ -1149,7 +1153,7 @@ cc      call prinf('ifpghtarg=*',ifpghtarg,1)
 cc      call prinf('laddr=*',laddr,2*(nlevels+1))
       do ilev=1,nlevels-1
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,nlist3,istart,iend,npts,j,i,mptemp)
+C$OMP$PRIVATE(ibox,nlist3,istart,iend,npts,j,i)
 C$OMP$PRIVATE(jbox)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox=laddr(1,ilev),laddr(2,ilev)
@@ -1225,7 +1229,7 @@ c     ... step 7, evaluate all local expansions
 C$    time1=omp_get_wtime()
       do ilev = 0,nlevels
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,mptemp,istart,iend,i,npts)
+C$OMP$PRIVATE(ibox,istart,iend,i,npts,nchild)
 C$OMP$SCHEDULE(DYNAMIC)
         do ibox = laddr(1,ilev),laddr(2,ilev)
           nchild = itree(iptr(4)+ibox-1)
@@ -1424,7 +1428,7 @@ c-------------------------------------------------------
         implicit none
 c
         integer istart,iend,jstart,jend,ns,j,i
-        integer ifcharge,ifdipole
+        integer ifcharge,ifdipole,nt
 
         integer nd
 
@@ -1443,58 +1447,48 @@ c
 
 c
         ns = iend - istart + 1
+        nt = jend - jstart + 1
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
-               call bh2d_directcp(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),thresh)
-             enddo
+             call bh2d_directcp(nd,source(1,istart),ns,
+     1         charge(1,istart),targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
-               call bh2d_directcg(nd,source(1,istart),ns,
-     1            charge(1,istart),targ(1,j),pot(1,j),grad(1,1,j),
-     2            thresh)
-             enddo
+            call bh2d_directcg(nd,source(1,istart),ns,
+     1         charge(1,istart),targ(1,jstart),nt,pot(1,jstart),
+     1         grad(1,1,jstart),thresh)
           endif
         endif
 
         if(ifcharge.eq.0.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
-               call bh2d_directdp(nd,source(1,istart),ns,
-     1            dip(1,1,istart),
-     2            targ(1,j),pot(1,j),thresh)
-             enddo
+             call bh2d_directdp(nd,source(1,istart),ns,
+     1         dip(1,1,istart),
+     2         targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
                call bh2d_directdg(nd,source(1,istart),ns,
      1            dip(1,1,istart),
-     2            targ(1,j),pot(1,j),grad(1,1,j),
-     2            thresh)
-             enddo
+     2            targ(1,jstart),nt,pot(1,jstart),
+     2            grad(1,1,jstart),thresh)
           endif
         endif
 
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
-             do j=jstart,jend
                call bh2d_directcdp(nd,source(1,istart),ns,
      1            charge(1,istart),dip(1,1,istart),
-     2            targ(1,j),pot(1,j),thresh)
-             enddo
+     2            targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
-             do j=jstart,jend
                call bh2d_directcdg(nd,source(1,istart),ns,
      1            charge(1,istart),dip(1,1,istart),
-     2            targ(1,j),pot(1,j),grad(1,1,j),
+     2            targ(1,jstart),nt,pot(1,jstart),
+     2            grad(1,1,jstart),
      2            thresh)
-             enddo
           endif
         endif
 

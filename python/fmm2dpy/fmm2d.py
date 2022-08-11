@@ -1,5 +1,6 @@
 from . import hfmm2d_fortran as hfmm
 from . import lfmm2d_fortran as lfmm
+from . import bhfmm2d_fortran as bhfmm
 import numpy as np
 import numpy.linalg as la
 
@@ -971,6 +972,115 @@ def cfmm2d(*,eps,sources,charges=None,dipstr=None,
 
     return out
 
+
+def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
+          targets=None,pg=0,pgt=0,nd=1):
+    r"""
+      This subroutine computes the N-body biharmonic interactions 
+      in two dimensions where the interaction kernel is related to the
+      biharmonic greens function r^2 log (r) and its derivatives
+
+
+      .. math:: 
+
+          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
+          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) - 
+          d_{j,2}/(\overline{x-x_{j}}) - 
+          \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
+
+      where $c_{j}$ are the charge densities, $d_{j,1}$, $d_{j,2}$ are the dipole strengths,
+      and $x_{j}$ are the source locations.
+
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      sum
+
+
+      Args:
+        eps: float
+             precision requested
+
+        sources: float(2,n)   
+               source locations (x_{j})
+        charges: complex(nd,n) or complex(n)
+               charge densities (c_{j})
+        dipoles: complex(nd,2,n) or complex(2,n)
+               dipole densities (d_{j,1}, d_{j,2})
+        targets: float(2,nt)
+                target locations (x)
+        pg:  integer
+               source eval flag
+               potential at sources evaluated if pg = 1
+               potenial and gradient at sources evaluated if pg=2
+
+        pgt:  integer
+               target eval flag
+               potential at targets evaluated if pgt = 1
+               potenial and gradient at targets evaluated if pgt=2
+        
+        nd:   integer
+               number of densities
+
+      Returns:
+        out.pot: potential at source locations if requested
+        out.grad: gradient at source locations if requested
+        out.pottarg: potential at target locations if requested
+        out.gradtarg: gradient at target locations if requested
+      
+      Example:
+        see bhfmmexample.py
+    r"""
+
+    out = Output()
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    ifcharge = 0
+    ifdipole = 0
+    iftarg = 0
+    if(pg == 0 and pgt == 0):
+        print("Nothing to compute, set either pg or pgt to non-zero")
+        return out
+    if charges is not None:
+        if nd == 1:
+            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
+            charges = charges.reshape(1,ns)
+        if nd>1:
+            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
+        ifcharge = 1
+        charges = charges.reshape([nd,ns])
+    else:
+       charges = np.zeros([nd,ns],dtype='complex') 
+
+    if(dipoles is not None):
+        if nd == 1 and ns>1:
+            assert dipoles.shape[0] == 2 and dipoles.shape[1] == ns, "Dipole must of shape [2, number of sources]"
+        if nd == 1 and ns==1:
+            assert dipoles.shape[0] == 2, "Dipole must of shape [2, number of sources]"
+        if nd>1:
+            assert dipoles.shape[0] == nd and dipoles.shape[1] == 2 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
+        dipoles = dipoles.reshape([nd,2,ns])
+        ifdipole = 1
+    else:
+        dipoles = np.zeros([nd,2,ns],dtype='complex')
+    if(targets is not None):
+        assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+        iftarg = 1
+    else:
+        targets = np.zeros([2,0],dtype='double')
+        nt = 0 
+    iper = 0
+    out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2d(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
+    out.hess = None
+    out.hesstarg = None
+    if(pg<2):
+        out.grad = None
+    if(pgt<2):
+        out.gradtarg = None
+
+    return out
+
 def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
           pgt=0,nd=1,thresh=1e-16):
     r"""
@@ -1028,7 +1138,7 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
     r"""
 
     out = Output()
-    assert sources.shape[0] == 2, "The first dimension of sources must be 3"
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
     if(np.size(np.shape(sources))==2):
         ns = sources.shape[1]
     if(np.size(np.shape(sources))==1):
@@ -1144,7 +1254,7 @@ def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
     r"""
 
     out = Output()
-    assert sources.shape[0] == 2, "The first dimension of sources must be 3"
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
     if(np.size(np.shape(sources))==2):
         ns = sources.shape[1]
     if(np.size(np.shape(sources))==1):
@@ -1267,7 +1377,7 @@ def l2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
     r"""
 
     out = Output()
-    assert sources.shape[0] == 2, "The first dimension of sources must be 3"
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
     if(np.size(np.shape(sources))==2):
         ns = sources.shape[1]
     if(np.size(np.shape(sources))==1):
@@ -1387,7 +1497,7 @@ def c2ddir(*,sources,targets,charges=None,dipstr=None,
     r"""
 
     out = Output()
-    assert sources.shape[0] == 2, "The first dimension of sources must be 3"
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
     if(np.size(np.shape(sources))==2):
         ns = sources.shape[1]
     if(np.size(np.shape(sources))==1):
@@ -1449,6 +1559,130 @@ def c2ddir(*,sources,targets,charges=None,dipstr=None,
             out.hesstarg = out.hesstarg.reshape(nt,)
 
     return out
+
+
+def bh2ddir(*,sources,targets,charges=None,dipoles=None,
+          pgt=0,nd=1,thresh=1e-16):
+
+    r"""
+      This subroutine computes the N-body biharmonic interactions 
+      in two dimensions where the interaction kernel is related to the
+      biharmonic greens function r^2 log (r) and its derivatives
+
+
+      .. math:: 
+
+          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
+          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) - 
+          d_{j,2}/(\overline{x-x_{j}}) - 
+          \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
+
+      where $c_{j}$ are the charge densities, $d_{j,1}$, $d_{j,2}$ are the dipole strengths,
+      and $x_{j}$ are the source locations.
+
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      sum
+
+
+      Args:
+        eps: float
+             precision requested
+
+        sources: float(2,n)   
+               source locations (x_{j})
+        charges: complex(nd,n) or complex(n)
+               charge densities (c_{j})
+        dipoles: complex(nd,2,n) or complex(2,n)
+               dipole densities (d_{j,1}, d_{j,2})
+        targets: float(2,nt)
+                target locations (x)
+        pgt:  integer
+               target eval flag
+               potential at targets evaluated if pgt = 1
+               potenial and gradient at targets evaluated if pgt=2
+        
+        nd:   integer
+               number of densities
+        thresh: contribution of source x_i, at location x ignored if |x-x_i|<=thresh
+
+      Returns:
+        out.pottarg: potential at target locations if requested
+        out.gradtarg: gradient at target locations if requested
+      
+      Example:
+        see bhfmmexample.py
+    r"""
+
+
+    out = Output()
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    ifcharge = 0
+    ifdipole = 0
+    if(pgt == 0):
+        print("Nothing to compute, set either pg or pgt to non-zero")
+        return out
+    ifcharge = 0
+    ifdipole = 0
+    iftarg = 0
+    if(pg == 0 and pgt == 0):
+        print("Nothing to compute, set either pg or pgt to non-zero")
+        return out
+    if charges is not None:
+        if nd == 1:
+            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
+            charges = charges.reshape(1,ns)
+        if nd>1:
+            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
+        charges = charges.reshape([nd,ns])
+        ifcharge = 1
+    else:
+       charges = np.zeros([nd,ns],dtype='complex') 
+
+    if(dipoles is not None):
+        if nd == 1 and ns>1:
+            assert dipoles.shape[0] == 2 and dipoles.shape[1] == ns, "Dipole must of shape [2, number of sources]"
+        if nd == 1 and ns==1:
+            assert dipoles.shape[0] == 2, "Dipole must of shape [2, number of sources]"
+        if nd>1:
+            assert dipoles.shape[0] == nd and dipoles.shape[1] == 2 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
+        dipoles = dipoles.reshape([nd,ns])
+        ifdipole = 1
+    else:
+        dipoles = np.zeros([nd,2,ns],dtype='complex')
+
+    assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+    nt = targets.shape[1]
+#
+    if(pgt == 1 and ifcharge == 1 and ifdipole == 0):
+        out.pottarg = bhfmm.bh2d_directcp(sources,charges,targets,thresh)
+    if(pgt == 2 and ifcharge == 1 and ifdipole == 0):
+        out.pottarg,out.gradtarg = bhfmm.bh2d_directcg(sources,charges,targets,thresh)
+    if(pgt == 1 and ifcharge == 0 and ifdipole == 1):
+        out.pottarg = bhfmm.bh2d_directdp(sources,dipoles,targets,thresh)
+    if(pgt == 2 and ifcharge == 0 and ifdipole == 1):
+        out.pottarg,out.gradtarg = bhfmm.bh2d_directdg(sources,dipoles,targets,thresh)
+    if(pgt == 1 and ifcharge == 1 and ifdipole == 1):
+        out.pottarg = bhfmm.bh2d_directcdp(sources,charges,dipoles,targets,thresh)
+    if(pgt == 2 and ifcharge == 1 and ifdipole == 1):
+        out.pottarg,out.gradtarg = bhfmm.bh2d_directcdg(sources,charges,dipoles,targets,thresh)
+
+    if(nd == 1):
+        if(ifcharge == 1):
+            charges = charges.reshape(ns,)
+        if(ifdipole ==1): 
+            dipstr = dipstr.reshape(ns,)
+        if(pgt>0):
+            out.pottarg = out.pottarg.reshape(nt,)
+        if(pgt==2):
+            out.gradtarg = out.gradtarg.reshape(nt,)
+
+    return out
+
+
 
 def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
     r = 0

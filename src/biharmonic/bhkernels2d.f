@@ -3,8 +3,11 @@ c
 c
 c
 
-      subroutine bh2d_directcp(nd,sources,ns,charges,targ,vel,
+      subroutine bh2d_directcp(nd,sources,ns,charges,targ,nt,vel,
      1         thresh)
+c
+cf2py intent(in) nd,sources,ns,charges,targ,thresh,nt
+cf2py intent(out) vel
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
 c      at the targets at targ(2) due to a collection of ns
@@ -44,6 +47,7 @@ c      sources(2,ns): location of the sources
 c      ns           : number of sources
 c      charges      : charge strength
 c      targ         : target location
+c      nt           : number of targets
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
@@ -52,24 +56,26 @@ c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
       integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 charges(nd,ns)
       complex *16 zdis1,zdis2
       complex *16 eye
 
       eye = dcmplx(0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         do idim=1,nd
-           vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
-        enddo
+           enddo
  1111 continue
+         enddo
       enddo
    
       return
@@ -81,7 +87,9 @@ c
 c
 
       subroutine bh2d_directcg(nd,sources,ns,charges,
-     1         targ,vel,grad,thresh)
+     1         targ,nt,vel,grad,thresh)
+cf2py intent(in) nd,sources,ns,charges,targ,thresh,nt
+cf2py intent(out) vel,grad
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -122,6 +130,7 @@ c      sources(2,ns): location of the sources
 c      ns           : number of sources
 c      charges      : charge strength
 c      targ         : target location
+c      nt           : number of targets
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
@@ -131,29 +140,32 @@ c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
       integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 charges(nd,ns)
       complex *16 zdis1,zdis2
-      complex *16 grad(nd,2),eye
+      complex *16 grad(nd,2,nt),eye
 
       eye = dcmplx(0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         zdis2=zdis1**2
-         do idim=1,nd
-           vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           zdis2=zdis1**2
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           grad(idim,1)=grad(idim,1)+charges(idim,i)*zdis1
-           grad(idim,2)=grad(idim,2)+charges(idim,i)*dconjg(zdis1)
-           grad(idim,2)=grad(idim,2)-dconjg(charges(idim,i)*zdis2)*zdis
-        enddo
+             grad(idim,1,j)=grad(idim,1,j)+charges(idim,i)*zdis1
+             grad(idim,2,j)=grad(idim,2,j)+charges(idim,i)*dconjg(zdis1)
+             grad(idim,2,j)=grad(idim,2,j)-
+     1          dconjg(charges(idim,i)*zdis2)*zdis
+          enddo
  1111 continue
+        enddo
       enddo
    
       return
@@ -167,7 +179,9 @@ c
 c
 
       subroutine bh2d_directdp(nd,sources,ns,dippar,
-     1         targ,vel,thresh)
+     1         targ,nt,vel,thresh)
+cf2py intent(in) nd,sources,ns,dippar,targ,thresh,nt
+cf2py intent(out) vel
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
 c      at the
@@ -209,6 +223,7 @@ c      ns           : number of sources
 c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
+c      nt           : number of targets
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
@@ -216,27 +231,29 @@ c
 c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
-      integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      integer ns,nt
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 dippar(nd,2,ns)
       complex *16 zdis1,zdis2
       complex *16 eye
 
       eye = dcmplx(0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         zdis2=zdis1**2
-         do idim=1,nd
-           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           zdis2=zdis1**2
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+dippar(idim,1,i)*zdis1 + 
      1         dippar(idim,2,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
-        enddo
+             vel(idim,j)=vel(idim,j)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+          enddo
  1111 continue
+        enddo
       enddo
    
       return
@@ -248,7 +265,9 @@ c
 c
 
       subroutine bh2d_directdg(nd,sources,ns,dippar,
-     1         targ,vel,grad,thresh)
+     1         targ,nt,vel,grad,thresh)
+cf2py intent(in) nd,sources,ns,dippar,targ,thresh,nt
+cf2py intent(out) vel,grad
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -290,6 +309,7 @@ c      ns           : number of sources
 c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
+c      nt           : number of targets
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
@@ -298,32 +318,35 @@ c
 c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
-      integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      integer ns,nt
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 dippar(nd,2,ns)
       complex *16 zdis1,zdis2
-      complex *16 grad(nd,2),eye
+      complex *16 grad(nd,2,nt),eye
 
 
       eye = dcmplx(0.0d0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         zdis2=zdis1**2
-         do idim=1,nd
-           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           zdis2=zdis1**2
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+dippar(idim,1,i)*zdis1 + 
      1         dippar(idim,2,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
-           grad(idim,1)=grad(idim,1)-dippar(idim,1,i)*(zdis2)
-           grad(idim,2)=grad(idim,2)-dippar(idim,2,i)*dconjg(zdis2)
-           grad(idim,2)=grad(idim,2)+
-     1         2*dconjg(dippar(idim,1,i)*zdis2*zdis1)*zdis
-        enddo
+             vel(idim,j)=vel(idim,j)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+             grad(idim,1,j)=grad(idim,1,j)-dippar(idim,1,i)*(zdis2)
+             grad(idim,2,j)=grad(idim,2,j)-
+     1           dippar(idim,2,i)*dconjg(zdis2)
+             grad(idim,2,j)=grad(idim,2,j)+
+     1           2*dconjg(dippar(idim,1,i)*zdis2*zdis1)*zdis
+          enddo
  1111 continue
+        enddo
       enddo
    
       return
@@ -334,7 +357,9 @@ c
 c
 
       subroutine bh2d_directcdp(nd,sources,ns,charges,dippar,
-     1         targ,vel,thresh)
+     1         targ,nt,vel,thresh)
+cf2py intent(in) nd,sources,ns,charges,dippar,targ,thresh,nt
+cf2py intent(out) vel
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL 
 c      at the
@@ -377,6 +402,7 @@ c      charges      : charge strength
 c      dippar       : dipole parameters (corresponding to c2,c3 in
 c                     above expression)
 c      targ         : target location
+c      nt           : number of targets
 c--------------------------------------------------------------------
 c      OUTPUT
 c      vel          : Complex velocity at target
@@ -385,29 +411,31 @@ c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
       integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 charges(nd,ns),dippar(nd,2,ns)
       complex *16 zdis1,zdis2
       complex *16 eye
 
       eye = dcmplx(0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         zdis2=zdis1**2
-         do idim=1,nd
-           vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           zdis2=zdis1**2
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+             vel(idim,j)=vel(idim,j)+dippar(idim,1,i)*zdis1 + 
      1         dippar(idim,2,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
-        enddo
+             vel(idim,j)=vel(idim,j)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+          enddo
  1111 continue
+        enddo
       enddo
    
       return
@@ -419,7 +447,9 @@ c
 c
 
       subroutine bh2d_directcdg(nd,sources,ns,charges,dippar,
-     1         targ,vel,grad,thresh)
+     1         targ,nt,vel,grad,thresh)
+cf2py intent(in) nd,sources,ns,charges,dippar,targ,thresh,nt
+cf2py intent(out) vel,grad
 c********************************************************************
 c      This subroutine INCREMENTS the complex velocity VEL and its
 c      gradients GRADA, GRADAA, at the
@@ -470,37 +500,41 @@ c
 c--------------------------------------------------------------------
 
       implicit real *8 (a-h,o-z)
-      integer ns
-      real *8 sources(2,ns), targ(2)
-      complex *16 vel(nd),zs,zt,zdis
+      integer ns,nt
+      real *8 sources(2,ns), targ(2,nt)
+      complex *16 vel(nd,nt),zs,zt,zdis
       complex *16 charges(nd,ns),dippar(nd,2,ns)
       complex *16 zdis1,zdis2
-      complex *16 grad(nd,2),eye
+      complex *16 grad(nd,2,nt),eye
 
       eye = dcmplx(0,1.0d0)
-      zt = dcmplx(targ(1),targ(2))
-      do i=1,ns
-         zs = dcmplx(sources(1,i),sources(2,i))
-         zdis = zt-zs
-         if(abs(zdis).le.thresh) goto 1111
-         zdis1 = 1.0d0/zdis
-         zdis2=zdis1**2
-         do idim=1,nd
-           vel(idim)=vel(idim)+2*charges(idim,i)*log(cdabs(zdis))+
+      do j=1,nt
+        zt = dcmplx(targ(1,j),targ(2,j))
+        do i=1,ns
+           zs = dcmplx(sources(1,i),sources(2,i))
+           zdis = zt-zs
+           if(abs(zdis).le.thresh) goto 1111
+           zdis1 = 1.0d0/zdis
+           zdis2=zdis1**2
+           do idim=1,nd
+             vel(idim,j)=vel(idim,j)+2*charges(idim,i)*log(cdabs(zdis))+
      1                     dconjg(charges(idim,i)*zdis1)*zdis
      
-           vel(idim)=vel(idim)+dippar(idim,1,i)*zdis1 + 
+             vel(idim,j)=vel(idim,j)+dippar(idim,1,i)*zdis1 + 
      1         dippar(idim,2,i)*dconjg(zdis1)
-           vel(idim)=vel(idim)-dconjg(dippar(idim,1,i)*zdis2)*zdis
-           grad(idim,1)=grad(idim,1)+charges(idim,i)*zdis1
-           grad(idim,1)=grad(idim,1)-dippar(idim,1,i)*(zdis2)
-           grad(idim,2)=grad(idim,2)+charges(idim,i)*dconjg(zdis1)
-           grad(idim,2)=grad(idim,2)-dconjg(charges(idim,i)*zdis2)*zdis
-           grad(idim,2)=grad(idim,2)-dippar(idim,2,i)*dconjg(zdis2)
-           grad(idim,2)=grad(idim,2)+
+             vel(idim,j)=vel(idim,j)-dconjg(dippar(idim,1,i)*zdis2)*zdis
+             grad(idim,1,j)=grad(idim,1,j)+charges(idim,i)*zdis1
+             grad(idim,1,j)=grad(idim,1,j)-dippar(idim,1,i)*(zdis2)
+             grad(idim,2,j)=grad(idim,2,j)+charges(idim,i)*dconjg(zdis1)
+             grad(idim,2,j)=grad(idim,2,j)-
+     1          dconjg(charges(idim,i)*zdis2)*zdis
+             grad(idim,2,j)=grad(idim,2,j)-
+     1          dippar(idim,2,i)*dconjg(zdis2)
+             grad(idim,2,j)=grad(idim,2,j)+
      1         2*dconjg(dippar(idim,1,i)*zdis2*zdis1)*zdis
-        enddo
+          enddo
  1111 continue
+        enddo
       enddo
    
       return

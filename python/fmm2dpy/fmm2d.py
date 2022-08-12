@@ -1067,6 +1067,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
     if(targets is not None):
         assert targets.shape[0] == 2, "The first dimension of targets must be 2"
         iftarg = 1
+        nt = np.shape(targets)[1]
     else:
         targets = np.zeros([2,0],dtype='double')
         nt = 0 
@@ -1074,6 +1075,16 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
     out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2d(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
     out.hess = None
     out.hesstarg = None
+    if(nd == 1):
+        if(pgt>0):
+            out.pottarg = out.pottarg.reshape(nt,)
+        if(pgt==2):
+            out.gradtarg = out.gradtarg.reshape(2,nt)
+        if(pg>0):
+            out.pot = out.pot.reshape(ns,)
+        if(pg==2):
+            out.grad = out.grad.reshape(2,ns)
+
     if(pg<2):
         out.grad = None
     if(pgt<2):
@@ -1628,9 +1639,6 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
     ifcharge = 0
     ifdipole = 0
     iftarg = 0
-    if(pg == 0 and pgt == 0):
-        print("Nothing to compute, set either pg or pgt to non-zero")
-        return out
     if charges is not None:
         if nd == 1:
             assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
@@ -1649,7 +1657,7 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
             assert dipoles.shape[0] == 2, "Dipole must of shape [2, number of sources]"
         if nd>1:
             assert dipoles.shape[0] == nd and dipoles.shape[1] == 2 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
-        dipoles = dipoles.reshape([nd,ns])
+        dipoles = dipoles.reshape([nd,2,ns])
         ifdipole = 1
     else:
         dipoles = np.zeros([nd,2,ns],dtype='complex')
@@ -1671,14 +1679,10 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
         out.pottarg,out.gradtarg = bhfmm.bh2d_directcdg(sources,charges,dipoles,targets,thresh)
 
     if(nd == 1):
-        if(ifcharge == 1):
-            charges = charges.reshape(ns,)
-        if(ifdipole ==1): 
-            dipstr = dipstr.reshape(ns,)
         if(pgt>0):
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):
-            out.gradtarg = out.gradtarg.reshape(nt,)
+            out.gradtarg = out.gradtarg.reshape(2,nt,)
 
     return out
 

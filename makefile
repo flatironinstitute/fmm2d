@@ -168,6 +168,8 @@ usage:
 	@echo "  make install PREFIX=(INSTALL_DIR) - compile and install the main library at custom location given by PREFIX"
 	@echo "  make lib - compile the main library (in lib/ and lib-static/)"
 	@echo "  make test - compile and run validation tests (will take a couple of mins)"
+	@echo "  make matlab - compile matlab interfaces"
+	@echo "  make python - compile and test python interfaces"
 	@echo "  make objclean - removal all object files, preserving lib & MEX"
 	@echo "  make clean - also remove lib, MEX, py, and demo executables"
 	@echo "For faster (multicore) making, append the flag -j"

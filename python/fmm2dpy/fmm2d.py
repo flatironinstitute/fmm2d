@@ -984,7 +984,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
       .. math:: 
 
           u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
-          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) - 
+          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) + 
           d_{j,2}/(\overline{x-x_{j}}) - 
           \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 

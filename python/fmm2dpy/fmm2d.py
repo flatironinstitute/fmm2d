@@ -1072,7 +1072,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
         targets = np.zeros([2,0],dtype='double')
         nt = 0 
     iper = 0
-    out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2d(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
+    out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2dwrap_guru(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
     out.hess = None
     out.hesstarg = None
     if(nd == 1):

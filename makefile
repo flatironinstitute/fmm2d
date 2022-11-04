@@ -124,6 +124,7 @@ LOBJS = $(LAP)/l2dterms.o \
 BH = src/biharmonic
 BHOBJS = $(BH)/bh2dterms.o \
 	$(BH)/bhrouts2d.o $(BH)/bhfmm2d.o $(BH)/bhndiv2d.o \
+	$(BH)/bhfmm2dwrap.o
 
 ST = src/stokes
 STOBJS = $(ST)/stfmm2d.o 

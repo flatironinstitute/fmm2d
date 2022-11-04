@@ -19,6 +19,9 @@ FLIBS = os.getenv('FMM_FLIBS')
 FLIBS = FLIBS.rstrip().split(' ')
 FLIBS = list(filter(None, FLIBS))
 FLIBS.append('../lib-static/libfmm2d.a')
+FFLAGS = os.getenv('FMM_FFLAGS')
+FFLAGS = FFLAGS.rstrip().split(' ')
+FFLAGS = list(filter(None, FFLAGS))
 
 
 
@@ -68,8 +71,8 @@ ext_helm = Extension(
     name='fmm2dpy.hfmm2d_fortran',
     sources=['../src/helmholtz/'+item for item in list_helm]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_helm+list_int_helm_vec+list_int_helm_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 
@@ -77,8 +80,8 @@ ext_lap = Extension(
     name='fmm2dpy.lfmm2d_fortran',
     sources=['../src/laplace/'+item for item in list_lap]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_lap+list_int_lap_vec+list_int_lap_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 
@@ -86,8 +89,8 @@ ext_bh = Extension(
     name='fmm2dpy.bhfmm2d_fortran',
     sources=['../src/biharmonic/'+item for item in list_bh]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_bh+list_int_bh_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 

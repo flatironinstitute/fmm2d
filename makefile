@@ -267,7 +267,11 @@ test/bhfmm2d:
 #python
 python: $(STATICLIB)
 	cd python && \
-	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e .
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) -m pip install -e .
+
+python-dist: $(STATICLIB)
+	cd python && \
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) setup.py bdist_wheel
 
 # matlab..
 MWRAPFILE = fmm2d

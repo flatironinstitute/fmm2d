@@ -1,0 +1,2 @@
+PYTHON=python3
+FFLAGS= -fPIC -O3 -funroll-loops -march=x86-64 -mtune=generic -msse4 -fcx-limited-range -std=legacy -w

@@ -1081,13 +1081,14 @@ ccc        write(6,*) 'wsave is',(wsave(istart),istart=1,3)
         if(boxlam.gt.16.and.ifprint.ge.1) print *, "in high freq"
 
 cc        call zffti(nsig, wsave)
-       
+c
+c     TEST NEEDED HERE?
+c       
           if (boxlam .gt. 16.0d0) then
              do ibox = laddr(1,ilev),laddr(2,ilev)
                call h2d_mptosig(nd,nterms(ilev),nsig,
      1              rmlexp(iaddr(1,ibox)),rmlexp(iaddr(3,ibox)),
      2              wsave)
-ccc               call prin2(' sig is *',rmlexp(iaddr(3,ibox)),6)
              enddo
              c1(1) = 0.0d0
              c1(2) = 0.0d0
@@ -1103,8 +1104,7 @@ ccc               call prin2(' sig is *',rmlexp(iaddr(3,ibox)),6)
 
       call cpu_time(tt1)
 C$    tt1=omp_get_wtime()
-
-
+c
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,i,nlist2)

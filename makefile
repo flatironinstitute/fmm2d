@@ -124,6 +124,7 @@ LOBJS = $(LAP)/l2dterms.o \
 BH = src/biharmonic
 BHOBJS = $(BH)/bh2dterms.o \
 	$(BH)/bhrouts2d.o $(BH)/bhfmm2d.o $(BH)/bhndiv2d.o \
+	$(BH)/bhfmm2dwrap.o
 
 ST = src/stokes
 STOBJS = $(ST)/stfmm2d.o 
@@ -168,6 +169,8 @@ usage:
 	@echo "  make install PREFIX=(INSTALL_DIR) - compile and install the main library at custom location given by PREFIX"
 	@echo "  make lib - compile the main library (in lib/ and lib-static/)"
 	@echo "  make test - compile and run validation tests (will take a couple of mins)"
+	@echo "  make matlab - compile matlab interfaces"
+	@echo "  make python - compile and test python interfaces"
 	@echo "  make objclean - removal all object files, preserving lib & MEX"
 	@echo "  make clean - also remove lib, MEX, py, and demo executables"
 	@echo "For faster (multicore) making, append the flag -j"
@@ -264,7 +267,11 @@ test/bhfmm2d:
 #python
 python: $(STATICLIB)
 	cd python && \
-	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' $(PYTHON) -m pip install -e .
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) -m pip install -e .
+
+python-dist: $(STATICLIB)
+	cd python && \
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) setup.py bdist_wheel
 
 # matlab..
 MWRAPFILE = fmm2d

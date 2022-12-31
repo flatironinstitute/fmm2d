@@ -984,7 +984,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
       .. math:: 
 
           u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
-          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) - 
+          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) + 
           d_{j,2}/(\overline{x-x_{j}}) - 
           \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 
@@ -1072,7 +1072,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
         targets = np.zeros([2,0],dtype='double')
         nt = 0 
     iper = 0
-    out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2d(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
+    out.pot,out.grad,out.hess,out.pottarg,out.gradtarg,out.hesstarg,out.ier = bhfmm.bhfmm2dwrap_guru(eps,sources,ifcharge,charges,ifdipole,dipoles,iper,pg,targets,pgt)
     out.hess = None
     out.hesstarg = None
     if(nd == 1):

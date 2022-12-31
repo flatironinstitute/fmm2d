@@ -12,13 +12,18 @@ pkg_name = "fmm2dpy"
 
 list_helm=['hfmm2dwrap.f','hfmm2dwrap_vec.f','helmkernels2d.f']
 list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f','lfmm2dwrap.f','lfmm2dwrap_vec.f','lapkernels2d.f','cfmm2dwrap.f','cfmm2dwrap_vec.f','cauchykernels2d.f']
-list_bh=['bhfmm2d.f','bhkernels2d.f']
+list_bh=['bhfmm2dwrap.f','bhkernels2d.f']
 list_common=[]
 
 FLIBS = os.getenv('FMM_FLIBS')
 FLIBS = FLIBS.rstrip().split(' ')
 FLIBS = list(filter(None, FLIBS))
 FLIBS.append('../lib-static/libfmm2d.a')
+FFLAGS = os.getenv('FMM_FFLAGS')
+FFLAGS = FFLAGS.rstrip().split(' ')
+FFLAGS = list(filter(None, FFLAGS))
+
+
 
 c_opts = ['_c','_d','_cd']
 c_opts2 = ['c','d','cd']
@@ -60,14 +65,14 @@ for cd in c_opts2:
         list_int_lap_dir.append('r2d_direct'+cd+pg)
         list_int_lap_dir.append('l2d_direct'+cd+pg)
         list_int_lap_dir.append('c2d_direct'+cd+pg)
-list_int_bh.append('bhfmm2d')
+list_int_bh.append('bhfmm2dwrap_guru')
 
 ext_helm = Extension(
     name='fmm2dpy.hfmm2d_fortran',
     sources=['../src/helmholtz/'+item for item in list_helm]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_helm+list_int_helm_vec+list_int_helm_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 
@@ -75,8 +80,8 @@ ext_lap = Extension(
     name='fmm2dpy.lfmm2d_fortran',
     sources=['../src/laplace/'+item for item in list_lap]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_lap+list_int_lap_vec+list_int_lap_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 
@@ -84,8 +89,8 @@ ext_bh = Extension(
     name='fmm2dpy.bhfmm2d_fortran',
     sources=['../src/biharmonic/'+item for item in list_bh]+['../src/common/'+item for item in list_common],
     f2py_options=['only:']+list_int_bh+list_int_bh_dir+[':'],
-    extra_f90_compile_args=["-std=legacy"],
-    extra_f77_compile_args=["-std=legacy"],
+    extra_f90_compile_args=FFLAGS,
+    extra_f77_compile_args=FFLAGS,
     extra_link_args=FLIBS
 )
 

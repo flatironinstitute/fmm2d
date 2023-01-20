@@ -1264,6 +1264,7 @@ c
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
 C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,dlam,boxlam)
+C$OMP$PRIVATE(transvecmpmp,c1,c2,k)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             nchild = itree(iptr(4)+ibox-1)
@@ -1290,8 +1291,21 @@ C$OMP$SCHEDULE(DYNAMIC)
 
                   dlam = zk
                   dlam = 1/(dlam/(2*pi))                 
-                  boxlam = boxsize(ilev)/dlam
+c        c1(1) = 0.0d0
+c        c1(2) = 0.0d0
+c           k=2
+c           if (i.le.2) k=1
+c            c2(1) = 0.25d0*boxsize(ilev)*(-1)**i
+c            c2(2) = 0.25d0*boxsize(ilev)*(-1)**k
+c                  call h2d_mkmpshift(zk,c1,nterms(ilev+1),
+c     1              c2,nterms(ilev),nsig,wsave,transvecmpmp(1,i))
                   if (boxlam .gt. 16.0d0) then
+                     print *, "Here1"
+c                    call h2dlocloc(nd,zk,rscales(ilev),
+c     1                  centers(1,ibox),
+c     1                  rmlexp(iaddr(2,ibox)),nterms(ilev),
+c     2                  rscales(ilev+1),centers(1,jbox),
+c     3                  rmlexp(iaddr(2,jbox)),nterms(ilev+1))
                    call h2dmpmphf(nd,zk,rscales(ilev),
      1                  centers(1,ibox),rmlexp(iaddr(2,ibox)),
      2                  nterms(ilev),rscales(ilev+1),centers(1,jbox),

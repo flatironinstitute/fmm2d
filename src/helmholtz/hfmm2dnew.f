@@ -693,8 +693,8 @@ ccc      double complex, allocatable :: sig(:), wsave(:)
       double complex, allocatable :: wsave(:)
       double complex, allocatable :: transvecall(:,:,:)
       double complex, allocatable :: transvecmpmp(:,:)
-ccc      double complex, allocatable :: sig(:,:)
-ccc      double complex, allocatable :: sig2(:,:)
+      double complex, allocatable :: sig(:,:)
+      double complex, allocatable :: sig2(:,:,:)
       
       double precision dlam, pi, boxlam
       
@@ -764,7 +764,7 @@ C$OMP$PRIVATE(ibox,nn,dn)
             call h2dsigzero(nd,rmlexp(iaddr(4,ibox)),nn)
          enddo
 C$OMP END PARALLEL DO         
-       enddo
+      enddo
 
 c     Set scjsort
       do ilev = 0,nlevels
@@ -1247,7 +1247,9 @@ C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
         dn = 2*(nterms(ilev)+nterms(ilev+1)) + 1
         nsig = next235(dn)
+ccc        write(6,*)' nsig =',nsig
         allocate(wsave(4*nsig+100))
+        allocate(sig(nd,nsig))
         allocate(transvecmpmp(nsig,4))
         call zffti(nsig, wsave)
         c1(1) = 0.0d0
@@ -1260,17 +1262,25 @@ C$    time1=omp_get_wtime()
             call h2d_mkmpshift(zk,c1,nterms(ilev+1),
      1           c2,nterms(ilev),nsig,wsave,transvecmpmp(1,jbox))
         enddo
+        dlam = zk
+        dlam = 1/(dlam/(2*pi))                 
+        boxlam = boxsize(ilev)/dlam
+        do ibox = laddr(1,ilev),laddr(2,ilev)
+            call h2d_mptosig(nd,nterms(ilev),nsig,
+     1           rmlexp(iaddr(2,ibox)),rmlexp(iaddr(4,ibox)),wsave)
+        enddo
 c
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,dlam,boxlam)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             nchild = itree(iptr(4)+ibox-1)
             istart = iexpcse(1,ibox)
             iend = iexpcse(2,ibox)
             npts = iend - istart + 1
-
+ccc            call h2d_mptosig(nd,nterms(ilev),nsig,
+ccc     1           rmlexp(iaddr(2,ibox)),sig,wsave)
 
             if(ifpghtarg.gt.0) then
               istart = itargse(1,ibox)
@@ -1288,16 +1298,12 @@ C$OMP$SCHEDULE(DYNAMIC)
                do i=1,nchild
                   jbox = itree(iptr(5)+4*(ibox-1)+i-1)
 
-                  dlam = zk
-                  dlam = 1/(dlam/(2*pi))                 
-                  boxlam = boxsize(ilev)/dlam
                   if (boxlam .gt. 16.0d0) then
-                   call h2dmpmphf(nd,zk,rscales(ilev),
-     1                  centers(1,ibox),rmlexp(iaddr(2,ibox)),
-     2                  nterms(ilev),rscales(ilev+1),centers(1,jbox),
-ccc     3                  rmlexp(iaddr(2,jbox)),nterms(ilev+1))
-     3               rmlexp(iaddr(2,jbox)),nterms(ilev+1),nsig,wsave,
-     4                transvecmpmp(1,i))
+                   call h2dmpmphf2(nd,zk,rscales(ilev),
+     1                  centers(1,ibox),rmlexp(iaddr(4,ibox)),
+     2                  nterms(ilev),nsig,rscales(ilev+1),
+     3                  centers(1,jbox),rmlexp(iaddr(2,jbox)),
+     4                  nterms(ilev+1),transvecmpmp(1,i),wsave)
                   else
                     call h2dlocloc(nd,zk,rscales(ilev),
      1                  centers(1,ibox),
@@ -1313,6 +1319,7 @@ C$OMP END PARALLEL DO
        endif
        deallocate(wsave)
        deallocate(transvecmpmp)
+       deallocate(sig)
       enddo
       call cpu_time(time2)
 C$    time2=omp_get_wtime()

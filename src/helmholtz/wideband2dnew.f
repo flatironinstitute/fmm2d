@@ -1,5 +1,71 @@
 c      
 C***********************************************************************
+      subroutine h2dmpmphf2(nd,zk,rscale1,center1,sig,nterms1,nsig,
+     1                rscale2,center2,hexp2,
+     2                nterms2,transvec,wsave)
+      implicit none
+C***********************************************************************
+c      
+c     This routine shifts a signature expansion SIG to a new center,
+C     generating the multipole expansions HEXP2, using FFT convolution.
+C     THIS IS AN INCREMENTING ROUTINE - hexp2 is incremented, not
+C     overwritten. In the upward pass, this allows accumulation of data 
+C     from children. In the downward pass, this allows hexp2 to be 
+C     incremented, assuming other data has come in through 
+C     <<list 3/4>> considerations.
+C
+C---------------------------------------------------------------------
+c      INPUT:
+c      
+c      nd      : vector length (number of expansions)
+c      zk      : Helmholtz parameter (ignored in opt. version here)
+c      rscale1 : scaling parameter (IGNORED and assumed equal to 1)
+c      center1 : center of original multiple expansion
+c      sig     : coefficients of original signature expansion
+c      nterms1 : order of original multipole expansion
+c      rscale2 : scaling parameter (IGNORED and assumed equal to 1)
+c      center2 : center of shifted multipole expansion
+c      nterms2 : order of shifted multipole expansion
+c      transvec: precomputed translation operator
+c      wsave   : fftpack precomputed array - needs threadsafe dfft if
+c                using openmp.
+C---------------------------------------------------------------------
+c      OUTPUT:
+c      
+c      hexp2   = coefficients of shifted multipole expansion
+c      
+c      Note:
+c      The FFT accelerated convolution is only valid at high
+c      frequencies, and therefore rscale1 and rscale2 parameters
+c      are assumed to be 1 (i.e. ignored) inside this routine.
+C---------------------------------------------------------------------
+      integer nterms1,nterms2,nsig,j,next235,nd,ii
+      double precision center1(2),center2(2),dn,rscale1,rscale2
+      double complex zk
+      double complex hexp2(nd,-nterms2:nterms2)
+      double complex sig(nd,nsig)
+      double complex, allocatable :: sig2(:,:)
+      double complex transvec(*)
+      double complex wsave(*)
+c     
+c     do the convolution via fft
+c     
+      allocate(sig2(nd,nsig))
+c
+      do ii = 1,nd
+      do j = 1,nsig
+         sig2(ii,j) = 0.0d0
+      enddo
+      enddo
+c
+      call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
+      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, hexp2)
+      return
+      end 
+c
+c
+c      
+C***********************************************************************
       subroutine h2dmpmphf(nd,zk,rscale1,center1,hexp1,nterms1,rscale2,
      1                center2,hexp2,nterms2,nsig,wsave,transvec)
       implicit none

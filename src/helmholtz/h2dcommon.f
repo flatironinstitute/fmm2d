@@ -204,3 +204,34 @@ c
       end
 c
 c
+c----------------------------------------------------------------     
+c
+c
+C***********************************************************************
+      subroutine h2dsigzero(nd,sig,nsig)
+      implicit none
+C***********************************************************************
+c
+c     This subroutine sets a signature expansion to zero.
+c-----------------------------------------------------------------------
+c     INPUT:
+c
+c     nd     :   number of expansions
+c     nsig :   order of multipole expansion
+C---------------------------------------------------------------------
+c     OUTPUT:
+c
+c    sigmpole  :   coeffs for the expansion set to zero.
+C---------------------------------------------------------------------
+      integer n,nsig,nd,idim
+      complex *16 sig(nd,nsig)
+c
+      do n=1,nsig
+        do idim=1,nd
+          sig(idim,n)=0.0d0
+        enddo
+      enddo
+      return
+      end
+c
+c

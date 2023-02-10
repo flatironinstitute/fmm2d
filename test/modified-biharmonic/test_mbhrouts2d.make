@@ -53,7 +53,7 @@ OBJECTS =  test_mbhrouts2d.o \
   $(HFMM)/hndiv2d.o \
   $(COM)/fmmcommon2d.o \
   $(COM)/cdjseval2d.o \
-  $(COM)/dfft.o \
+  $(COM)/dfft_threadsafe.o \
   $(COM)/next235.o \
   $(HFMM)/helmrouts2d.o \
   $(HFMM)/helmkernels2d.o \

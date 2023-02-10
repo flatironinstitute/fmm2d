@@ -219,7 +219,7 @@ c
 c       ... allocate iaddr and temporary arrays
 c
 
-      allocate(iaddr(2,nboxes))
+      allocate(iaddr(4,nboxes))
 
       lmptmp = (2*nmax+1)*nd
       allocate(mptemp(lmptmp))
@@ -317,7 +317,7 @@ c   mpolesort: complex *16 (ntot)
 c      sorted multipole expanson array
 c   impolesort: integer (nmpole)
 c      how to index into multipole expansionarray
-c   iaddr: (2,nboxes): pointer in rmlexp where multipole
+c   iaddr: (4,nboxes): pointer in rmlexp where multipole
 c                      and local expansions for each
 c                      box is stored
 c                      iaddr(1,ibox) is the
@@ -387,7 +387,7 @@ c------------------------------------------------------------------
       real *8 zi
 
       integer nmpole,ier
-      integer ndiv,nlevels
+      integer ndiv,nlevels,ix,iy
 
       real *8 eps
       integer iper,ifnear
@@ -397,7 +397,7 @@ c------------------------------------------------------------------
       complex *16 mpolesort(ntot),localsort(ntot)
       integer impolesort(nmpole)
 
-      integer iaddr(2,nboxes),lmptmp,lmptot
+      integer iaddr(4,nboxes),lmptmp,lmptot
       real *8 rmlexp(*)
       complex *16 mptemp(lmptmp)
        
@@ -414,13 +414,14 @@ c------------------------------------------------------------------
       real *8 rscales(0:nlevels),boxsize(0:nlevels)
 
 
-      real *8 zkiupbound,thresh
+      real *8 zkiupbound,thresh,dn,dx,dy
+      real *8 c1(2),c2(2)
 
       integer nterms_eval(4,0:200)
 
 c     temp variables
       integer i,j,k,l,idim,iloc
-      integer ibox,jbox,ilev,npts
+      integer ibox,jbox,ilev,npts,next235,ilevhf
       integer nchild,nlist1,nlist2,nlist3,nlist4
       integer mnlist1,mnlist2,mnlist3,mnlist4
       integer, allocatable :: list1(:,:),list2(:,:),list3(:,:)
@@ -442,7 +443,12 @@ c     temp variables
       complex *16 pottmp,gradtmp(2),hesstmp(3)
 
       integer :: ni, nsig
-      double complex, allocatable :: sig(:), wsave(:)
+      double complex, allocatable :: wsave(:)
+      double complex, allocatable :: transvecall(:,:,:)
+      double complex, allocatable :: transvecmpmp(:,:)
+      double complex, allocatable :: sig(:,:)
+      double complex, allocatable :: sig2(:,:,:)
+      
       
       double precision dlam, pi, boxlam
       
@@ -500,10 +506,14 @@ c       ... set all multipole and local expansions to zero
 c
       do ilev = 0,nlevels
 C$OMP PARALLEL DO DEFAULT (SHARED)
-C$OMP$PRIVATE(ibox)
+C$OMP$PRIVATE(ibox,nn,dn)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             call h2dmpzero(nd,rmlexp(iaddr(1,ibox)),nterms(ilev))
             call h2dmpzero(nd,rmlexp(iaddr(2,ibox)),nterms(ilev))
+            dn = 2*(nterms(ilev)+nterms(ilev)) + 1
+            nn = next235(dn)
+            call h2dsigzero(nd,rmlexp(iaddr(3,ibox)),nn)
+            call h2dsigzero(nd,rmlexp(iaddr(4,ibox)),nn)
          enddo
 C$OMP END PARALLEL DO         
        enddo
@@ -582,21 +592,35 @@ C$OMP END PARALLEL DO
 C$    time2=omp_get_wtime()
       timeinfo(2)=time2-time1
 
+
+c
+c     Identify level ilevhf where HF regine begins
+c
+      ilevhf = 0
+      do ilev=nlevels-1,1,-1
+         if(zi*boxsize(ilev).lt.zkiupbound) then
+            dlam = zk
+            dlam = 1/(dlam/(2*pi))                 
+            boxlam = boxsize(ilev)/dlam
+            if(boxlam.gt.16.0d0) then
+               ilevhf = ilev
+               goto 111
+            endif
+          endif
+      enddo
+111   continue
+      if(ifprint.ge.1) call prinf(' ilevhf is *',ilevhf,1)
+
       if(ifprint .ge. 1)
-     $      call prinf('=== STEP 3 (merge mp) ====*',i,0)
+     $      call prinf('=== STEP 3a (merge mp low freq) ====*',i,0)
       call cpu_time(time1)
 C$    time1=omp_get_wtime()
 c
-      do ilev=nlevels-1,1,-1
-
-       if(zi*boxsize(ilev).lt.zkiupbound) then
-         dlam = zk
-         dlam = 1/(dlam/(2*pi))                 
-         boxlam = boxsize(ilev)/dlam
-
-         if(boxlam.le.8.0d0) then
+      do ilev=nlevels-1,ilevhf+1,-1
+c
+        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,mptemp)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
@@ -614,12 +638,41 @@ C$OMP$SCHEDULE(DYNAMIC)
               enddo
            enddo
 C$OMP END PARALLEL DO    
-         endif
+        endif
+      enddo
+      if(ifprint .ge. 1)
+     $      call prinf('=== STEP 3b (merge mp high freq) ====*',i,0)
+c
+c    convert to diag form at level ilev
+c
 
-         if(boxlam.gt.8.0d0) then
+      do ilev=ilevhf,1,-1
+
+        if(zi*boxsize(ilev).lt.zkiupbound) then
+           dn = 2*(nterms(ilev)+nterms(ilev+1)) + 1
+           nsig = next235(dn)
+           allocate(wsave(4*nsig+100))
+           allocate(transvecmpmp(nsig,4))
+           call zffti(nsig, wsave)
            if(ifprint.ge.1) print *, "Doing mpmp using hf"
+           c2(1) = 0.0d0
+           c2(2) = 0.0d0
+           do jbox=1,4
+              k=2
+              if (jbox.le.2) k=1
+              c1(1) = 0.25d0*boxsize(ilev)*(-1)**jbox
+              c1(2) = 0.25d0*boxsize(ilev)*(-1)**k
+              call h2d_mkmpshift(zk,c1,nterms(ilev+1),
+     1           c2,nterms(ilev),nsig,wsave,transvecmpmp(1,jbox))
+           enddo
+
+           allocate(sig(nd,nsig))
+
+C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ibox,nchild,i)
+C$OMP$PRIVATE(jbox,istart,iend,npts,sig)
            do ibox = laddr(1,ilev),laddr(2,ilev)
               nchild = itree(iptr(4)+ibox-1)
+              call h2dsigzero(nd,sig,nsig)
               do i=1,nchild
                  jbox = itree(iptr(5)+4*(ibox-1)+i-1)
                  istart = isrcse(1,jbox)
@@ -629,14 +682,19 @@ C$OMP END PARALLEL DO
                    call h2dmpmphf(nd,zk,rscales(ilev+1),
      1               centers(1,jbox),rmlexp(iaddr(1,jbox)),
      2               nterms(ilev+1),rscales(ilev),centers(1,ibox),
-     3               rmlexp(iaddr(1,ibox)),nterms(ilev))
+     3               sig,nterms(ilev),nsig,wsave,
+     4                transvecmpmp(1,i))
                  endif
               enddo
+              call h2d_sig2exp(nd,nsig,sig,wsave,nterms(ilev),
+     1          rmlexp(iaddr(1,ibox)))
            enddo
-
-         endif
+C$OMP END PARALLEL DO           
+           deallocate(wsave)
+           deallocate(transvecmpmp,sig)
         endif
       enddo
+c
       call cpu_time(time2)
 C$    time2=omp_get_wtime()
       timeinfo(3)=time2-time1
@@ -651,28 +709,56 @@ C$    time1=omp_get_wtime()
       do ilev = 2,nlevels
 
         ni = nterms(ilev)
-        nsig = 2*(ni + ni)+1
-        allocate(sig(nsig))
+        dn = 2*(ni + ni)+1
+        nsig = next235(dn)
         allocate(wsave(4*nsig+100))        
+        allocate(transvecall(nsig,-3:3,-3:3))
         dlam = zk
         dlam = 1/(dlam/(2*pi))                 
         boxlam = boxsize(ilev)/dlam
-        if(boxlam.gt.8.and.ifprint.ge.1) print *, "in high freq"
+        call zffti(nsig,wsave)
+        if(boxlam.gt.16.and.ifprint.ge.1) print *, "in high freq"
+c
+c   precompute mp to sig for all boxes 
+c       
+        if (boxlam .gt. 16.0d0) then
+C$OMP PARALLEL DO DEFAULT(SHARED)          
+           do ibox = laddr(1,ilev),laddr(2,ilev)
+             call h2d_mptosig(nd,nterms(ilev),nsig,
+     1            rmlexp(iaddr(1,ibox)),rmlexp(iaddr(3,ibox)),
+     2            wsave)
+           enddo
+C$OMP END PARALLEL DO  
 
-cc        call zffti(nsig, wsave)
-       
+c
+c  evaluate diagonal shifts for translation operators 
+c
+           c1(1) = 0.0d0
+           c1(2) = 0.0d0
+           do ix = -3,3
+             do iy = -3,3
+               c2(1) = ix*boxsize(ilev)
+               c2(2) = iy*boxsize(ilev)
+               call h2d_mkm2ltrans(zk,c1,nterms(ilev),
+     1           c2,nterms(ilev),nsig,wsave,transvecall(1,ix,iy))
+             enddo
+           enddo
+        endif
 
-      call cpu_time(tt1)
+        call cpu_time(tt1)
 C$    tt1=omp_get_wtime()
-
-
+c
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,mptemp,i,nlist2)
+C$OMP$PRIVATE(ibox,jbox,istart,iend,npts,i,nlist2,ix,dx,iy,dy)
 C$OMP$SCHEDULE(DYNAMIC)
+c
          do ibox = laddr(1,ilev),laddr(2,ilev)
             npts = 0
-
+c
+c     if in high freq regime, transform multipole expansions
+c     to diagonal form and store in rmlexp(3,*).
+c
             istart = isrcse(1,ibox)
             iend = isrcse(2,ibox)
             npts = npts + iend-istart+1
@@ -681,13 +767,13 @@ C$OMP$SCHEDULE(DYNAMIC)
                do i=1,nlist2s(ibox)
                   jbox = list2(i,ibox) 
 
-                  if (boxlam .gt. 8.0d0) then
-                    call h2dmplochf(nd,zk,rscales(ilev),
-     $                  centers(1,jbox),
-     1                  rmlexp(iaddr(1,jbox)),nterms(ilev),
-     2                  rscales(ilev),centers(1,ibox),
-     3                  rmlexp(iaddr(2,ibox)),nterms(ilev))
-
+                  if (boxlam .gt. 16.0d0) then
+                    dx = centers(1,ibox)-centers(1,jbox)
+                    ix = nint(dx/boxsize(ilev))
+                    dy = centers(2,ibox)-centers(2,jbox)
+                    iy = nint(dy/boxsize(ilev))
+                    call h2d_diagtrans(nd,nsig,rmlexp(iaddr(3,jbox)),
+     1                   transvecall(1,ix,iy),rmlexp(iaddr(4,ibox)))
                   else
                     call h2dmploc(nd,zk,rscales(ilev),
      $                  centers(1,jbox),
@@ -699,14 +785,23 @@ C$OMP$SCHEDULE(DYNAMIC)
             endif
          enddo
 C$OMP END PARALLEL DO        
-       endif
+         if (boxlam .gt. 16.0d0) then
+C$OMP PARALLEL DO DEFAULT(SHARED)         
+            do ibox = laddr(1,ilev),laddr(2,ilev)
+              call h2d_sig2exp(nd,nsig,
+     3                rmlexp(iaddr(4,ibox)),wsave,nterms(ilev),
+     3                rmlexp(iaddr(2,ibox)))
+             enddo
+C$OMP END PARALLEL DO             
+          endif
+        endif
 
-      call cpu_time(tt2)
+        call cpu_time(tt2)
 C$    tt2=omp_get_wtime()
-       timelev(ilev) = tt2-tt1
+        timelev(ilev) = tt2-tt1
 
-       deallocate(sig, wsave)
-       
+        deallocate(wsave)
+        deallocate(transvecall)
       enddo
       call cpu_time(time2)
 C$    time2=omp_get_wtime()
@@ -718,9 +813,35 @@ C$    time2=omp_get_wtime()
       call cpu_time(time1)
 C$    time1=omp_get_wtime()
       do ilev = 1,nlevels-1
+        dn = 2*(nterms(ilev)+nterms(ilev+1)) + 1
+        nsig = next235(dn)
+        allocate(wsave(4*nsig+100))
+        allocate(sig(nd,nsig))
+        allocate(transvecmpmp(nsig,4))
+        call zffti(nsig, wsave)
+        c1(1) = 0.0d0
+        c1(2) = 0.0d0
+        do jbox=1,4
+           k=2
+           if (jbox.le.2) k=1
+            c2(1) = 0.25d0*boxsize(ilev)*(-1)**jbox
+            c2(2) = 0.25d0*boxsize(ilev)*(-1)**k
+            call h2d_mkmpshift(zk,c1,nterms(ilev+1),
+     1           c2,nterms(ilev),nsig,wsave,transvecmpmp(1,jbox))
+        enddo
+        dlam = zk
+        dlam = 1/(dlam/(2*pi))                 
+        boxlam = boxsize(ilev)/dlam
+C$OMP PARALLEL DO DEFAULT(SHARED)        
+        do ibox = laddr(1,ilev),laddr(2,ilev)
+            call h2d_mptosig(nd,nterms(ilev),nsig,
+     1           rmlexp(iaddr(2,ibox)),rmlexp(iaddr(4,ibox)),wsave)
+        enddo
+C$OMP END PARALLEL DO        
+c
        if(zi*boxsize(ilev).lt.zkiupbound) then
 C$OMP PARALLEL DO DEFAULT(SHARED)
-C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts,dlam,boxlam)
+C$OMP$PRIVATE(ibox,jbox,i,nchild,istart,iend,npts)
 C$OMP$SCHEDULE(DYNAMIC)
          do ibox = laddr(1,ilev),laddr(2,ilev)
             istart = isrcse(1,ibox)
@@ -732,14 +853,12 @@ C$OMP$SCHEDULE(DYNAMIC)
                do i=1,nchild
                   jbox = itree(iptr(5)+4*(ibox-1)+i-1)
 
-                  dlam = zk
-                  dlam = 1/(dlam/(2*pi))                 
-                  boxlam = boxsize(ilev)/dlam
-                  if (boxlam .gt. 8.0d0) then
-                   call h2dmpmphf(nd,zk,rscales(ilev),
-     1                  centers(1,ibox),rmlexp(iaddr(2,ibox)),
-     2                  nterms(ilev),rscales(ilev+1),centers(1,jbox),
-     3                  rmlexp(iaddr(2,jbox)),nterms(ilev+1))
+                  if (boxlam .gt. 16.0d0) then
+                   call h2dloclochf(nd,zk,rscales(ilev),
+     1                  centers(1,ibox),rmlexp(iaddr(4,ibox)),
+     2                  nterms(ilev),nsig,rscales(ilev+1),
+     3                  centers(1,jbox),rmlexp(iaddr(2,jbox)),
+     4                  nterms(ilev+1),transvecmpmp(1,i),wsave)
                   else
                     call h2dlocloc(nd,zk,rscales(ilev),
      1                  centers(1,ibox),
@@ -753,10 +872,17 @@ C$OMP$SCHEDULE(DYNAMIC)
          enddo
 C$OMP END PARALLEL DO        
        endif
+       deallocate(wsave)
+       deallocate(transvecmpmp)
+       deallocate(sig)
       enddo
       call cpu_time(time2)
 C$    time2=omp_get_wtime()
       timeinfo(5) = time2-time1
+
+
+
+
 c
 c
 c

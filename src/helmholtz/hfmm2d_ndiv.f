@@ -332,7 +332,7 @@ c
 c       ... allocate iaddr and temporary arrays
 c
 
-      allocate(iaddr(2,nboxes))
+      allocate(iaddr(4,nboxes))
 
       lmptmp = (2*nmax+1)*nd
       allocate(mptemp(lmptmp))

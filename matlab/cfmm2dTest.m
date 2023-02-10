@@ -1087,6 +1087,6 @@ ipass(itest) = 1;
 
 
 isum = sum(ipass);
-fprintf("Successfully cleared %d out of 54 tests in helmholtz testing suite\n",isum);
+fprintf("Successfully cleared %d out of 54 tests in cauchy testing suite\n",isum);
 
 

@@ -111,7 +111,7 @@ function [U] = c2ddir(srcinfo,targ,pgt)
       mex_id_ = 'c2d_directcdp(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], i double[x])';
 [pottarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, targ, nt, pottarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, 2, nt, 1, nd, nt, 1);
     end
-    U.pottarg = pottarg;
+    U.pottarg = real(pottarg);
   end
   if(pgt == 2)
     if(ifcharge==1 && ifdipole == 0)
@@ -126,7 +126,7 @@ function [U] = c2ddir(srcinfo,targ,pgt)
       mex_id_ = 'c2d_directcdg(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], i double[x])';
 [pottarg, gradtarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, targ, nt, pottarg, gradtarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, 2, nt, 1, nd, nt, nd, nt, 1);
     end
-    U.pottarg = pottarg;
+    U.pottarg = real(pottarg);
     U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
   end
   if(pgt == 3)
@@ -142,7 +142,7 @@ function [U] = c2ddir(srcinfo,targ,pgt)
       mex_id_ = 'c2d_directcdh(i int[x], i double[xx], i int[x], i dcomplex[xx], i dcomplex[xx], i double[xx], i int[x], io dcomplex[xx], io dcomplex[xx], io dcomplex[xx], i double[x])';
 [pottarg, gradtarg, hesstarg] = fmm2d(mex_id_, nd, sources, ns, charges, dipstr, targ, nt, pottarg, gradtarg, hesstarg, thresh, 1, 2, ns, 1, nd, ns, nd, ns, 2, nt, 1, nd, nt, nd, nt, nd, nt, 1);
     end
-    U.pottarg = pottarg;
+    U.pottarg = real(pottarg);
     U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
     U.hesstarg = squeeze(reshape(hesstarg,[nd,nt]));
   end

@@ -679,7 +679,7 @@ ipass(itest) = 1;
 
 srcinfo = rmfield(srcinfo,'charges');
 srcinfo.dipvec= rand(nd,2,ns); 
-srcinfo.dipstr = rand(nd,ns) + 1j*rand(nd,ns)
+srcinfo.dipstr = rand(nd,ns) + 1j*rand(nd,ns);
 
 
 

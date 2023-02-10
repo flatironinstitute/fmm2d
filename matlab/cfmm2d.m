@@ -198,10 +198,10 @@ function [U,varargout] = cfmm2d(eps,srcinfo,pg,varargin)
   U.pottarg = [];
   U.gradtarg = [];
   U.hesstarg = [];
-  if(pg >= 1), U.pot = squeeze(reshape(pot,[nd,ns])); end;
+  if(pg >= 1), U.pot = squeeze(reshape(real(pot),[nd,ns])); end;
   if(pg >= 2), U.grad = squeeze(reshape(grad,[nd,ns])); end;
   if(pg >= 3), U.hess = squeeze(reshape(hess,[nd,ns])); end;
-  if(pgt >= 1), U.pottarg = squeeze(reshape(pottarg,[nd,nt])); end;
+  if(pgt >= 1), U.pottarg = squeeze(reshape(real(pottarg),[nd,nt])); end;
   if(pgt >= 2), U.gradtarg = squeeze(reshape(gradtarg,[nd,nt])); end;
   if(pgt >= 3), U.hesstarg = squeeze(reshape(hesstarg,[nd,nt])); end;
 

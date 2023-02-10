@@ -2,6 +2,7 @@ PROJECT = int2-hfmm2d
 
 HOST = gcc
 HOST = gcc-openmp
+HOST = gcc-openmp-x86
 #HOST = intel
 
 # FC - fortran compiler
@@ -15,6 +16,11 @@ endif
 ifeq ($(HOST),gcc-openmp)
     FC = gfortran 
     FFLAGS=-fPIC -O3 -funroll-loops -march=native -fopenmp -std=legacy
+endif
+
+ifeq ($(HOST),gcc-openmp-x86)
+    FC = gfortran 
+    FFLAGS=-fPIC -O3 -funroll-loops -march=x86-64 -fopenmp -std=legacy
 endif
 
 ifeq ($(HOST),intel)
@@ -32,14 +38,15 @@ COM = ../../src/common
 .PHONY: all clean list
 
 
-OBJECTS =  test_hfmm2dnew.o \
+OBJECTS =  test_hfmm2d_mps.o \
   $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \
   $(COM)/pts_tree2d.o \
   $(COM)/tree_routs2d.o \
   $(COM)/cumsum.o \
-  $(HFMM)/hfmm2dnew.o \
+  $(HFMM)/hfmm2d.o \
+  $(HFMM)/hfmm2d_mps.o \
   $(HFMM)/hfmm2dwrap.o \
   $(HFMM)/hfmm2dwrap_vec.o \
   $(COM)/fmmcommon2d.o \
@@ -51,7 +58,7 @@ OBJECTS =  test_hfmm2dnew.o \
   $(COM)/hank103.o \
   $(HFMM)/h2dcommon.o \
   $(HFMM)/hndiv2d.o \
-  $(HFMM)/wideband2dnew.o \
+  $(HFMM)/wideband2d.o \
   $(HFMM)/h2dterms.o 
 
 
@@ -59,6 +66,8 @@ OBJECTS =  test_hfmm2dnew.o \
 
 %.o : %.f %.h
 	$(FC) $(FFLAGS) $< -o $@
+%.o: %.f90 
+	$(FC) -c $(FFLAGS) $< -o $@
 
 all: $(OBJECTS)
 	rm -f $(PROJECT)

@@ -1,18 +1,107 @@
+c
+c  This file has the following user callable subroutines:
+c
+c  
+c
+c
+c  NOTES: even though as operators the mpmphf and loclochf 
+c  should be identical. Owing to openmp considerations 
+c  and minimizing the number of mp/loc_to_sig or sig_to_exp
+C  operations, we have split out certain parts of the routines
+C  differently.
+C
+C  In particular, for the mpmphf, we act on multipole expansions
+C  and return the signature at the parent, 
+C  while for the loclochf, we act on the signature of the parent
+C  and return the local expansion at the children.
+c
+c
+c
+c
+C***********************************************************************
+      subroutine h2dloclochf(nd,zk,rscale1,center1,sig,nterms1,nsig,
+     1                rscale2,center2,hexp2,
+     2                nterms2,transvec,wsave)
+      implicit none
+C***********************************************************************
+c      
+c     This routine shifts a signature expansion SIG to a new center,
+C     generating the multipole expansions HEXP2, using FFT convolution.
+C     THIS IS AN INCREMENTING ROUTINE - hexp2 is incremented, not
+C     overwritten. In the upward pass, this allows accumulation of data 
+C     from children. In the downward pass, this allows hexp2 to be 
+C     incremented, assuming other data has come in through 
+C     <<list 3/4>> considerations.
+C
+C---------------------------------------------------------------------
+c      INPUT:
+c      
+c      nd      : vector length (number of expansions)
+c      zk      : Helmholtz parameter (ignored in opt. version here)
+c      rscale1 : scaling parameter (IGNORED and assumed equal to 1)
+c      center1 : center of original multiple expansion
+c      sig     : coefficients of original signature expansion
+c      nterms1 : order of original multipole expansion
+c      rscale2 : scaling parameter (IGNORED and assumed equal to 1)
+c      center2 : center of shifted multipole expansion
+c      nterms2 : order of shifted multipole expansion
+c      transvec: precomputed translation operator
+c      wsave   : fftpack precomputed array - needs threadsafe dfft if
+c                using openmp.
+C---------------------------------------------------------------------
+c      OUTPUT:
+c      
+c      hexp2   = coefficients of shifted multipole expansion
+c      
+c      Note:
+c      The FFT accelerated convolution is only valid at high
+c      frequencies, and therefore rscale1 and rscale2 parameters
+c      are assumed to be 1 (i.e. ignored) inside this routine.
+C---------------------------------------------------------------------
+      integer nterms1,nterms2,nsig,j,next235,nd,ii
+      double precision center1(2),center2(2),dn,rscale1,rscale2
+      double complex zk
+      double complex hexp2(nd,-nterms2:nterms2)
+      double complex sig(nd,nsig)
+      double complex, allocatable :: sig2(:,:)
+      double complex transvec(*)
+      double complex wsave(*)
+c     
+c     do the convolution via fft
+c     
+      allocate(sig2(nd,nsig))
+c
+      do ii = 1,nd
+      do j = 1,nsig
+         sig2(ii,j) = 0.0d0
+      enddo
+      enddo
+c
+      call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
+      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, hexp2)
+      return
+      end 
+c
+c
 c      
 C***********************************************************************
-      subroutine h2dmpmphf(nd,zk,rscale1,center1,hexp1,nterms1,
-     1                rscale2,center2,hexp2,nterms2)
+      subroutine h2dmpmphf(nd,zk,rscale1,center1,hexp1,nterms1,rscale2,
+     1                center2,sig2,nterms2,nsig,wsave,transvec)
       implicit none
 C***********************************************************************
 c      
 c     This routine shifts multipole expansions HEXP1 to a new center,
 C     generating the multipole expansions HEXP2, using FFT convolution.
-C     THIS IS NOT AN INCREMENTING ROUTINE - ONLY A TESTING ROUTINE.
 C
 C     The subroutine h2d_diagtrans(nsig,sig,transvec,sig2)
 C     IS INCREMENTAL - that is sig2 is incremented by the translation of
-C     sig. Inside the FMM, sig2 accumulates the contributions from all
-C     children before transformation back to the "physical" hexp2 form.
+C     sig.
+C     
+C     Note that this subroutine returns the signature instead of
+C     updating the multipole expansion. 
+C
+C     The accumulated signature is then converted to a multipole
+C     expansion in the outer loop
 C---------------------------------------------------------------------
 c      INPUT:
 c      
@@ -28,7 +117,7 @@ c      nterms2 : order of shifted multipole expansion
 C---------------------------------------------------------------------
 c      OUTPUT:
 c      
-c      hexp2   = coefficients of shifted multipole expansion
+c      sig2   = coefficients of shifted signature expansion
 c      
 c      Note:
 c      The FFT accelerated convolution is only valid at high
@@ -38,36 +127,18 @@ C---------------------------------------------------------------------
       integer nterms1,nterms2,nsig,j,next235,nd,ii
       double precision center1(2),center2(2),dn,rscale1,rscale2
       double complex zk,hexp1(nd,-nterms1:nterms1) 
-      double complex hexp2(nd,-nterms2:nterms2)
-      double complex, allocatable :: sig(:,:),wsave(:)
-      double complex, allocatable :: transvec(:)
-      double complex, allocatable :: sig2(:,:)
+      double complex wsave(4*nsig+100)
+      double complex sig2(nd,nsig)
+      double complex, allocatable :: sig(:,:)
+      double complex transvec(nsig)
 c     
 c     do the convolution via fft
 c     
-      dn = 2*(nterms1+nterms2) + 1
-      nsig = next235(dn)
-c
       allocate(sig(nd,nsig))
-      allocate(transvec(nsig))
-      allocate(sig2(nd,nsig))
-      allocate(wsave(4*nsig+100))
-
-      
 c
-      call zffti(nsig, wsave)
       call h2d_mptosig(nd,nterms1,nsig,hexp1,sig,wsave)
-      call h2d_mkmpshift(zk, center1, nterms1,
-     1           center2, nterms2, nsig, wsave, transvec)
-c
-      do ii = 1,nd
-      do j = 1,nsig
-         sig2(ii,j) = 0.0d0
-      enddo
-      enddo
-c
       call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
-      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, hexp2)
+
       return
       end 
 c
@@ -246,8 +317,8 @@ c
 c
 c
 C***********************************************************************
-      subroutine h2dmplochf(nd,zk,rscale1,center1,hexp,nterms1,
-     1                rscale2,center2,jexp,nterms2)
+      subroutine h2dmplochf(nd,zk,rscale1,center1,sig,nterms1,
+     1                rscale2,center2,sig2,nterms2,nsig,wsave,tvec)
       implicit none
 C***********************************************************************
 c      
@@ -267,7 +338,7 @@ c      nd      : vector length (number of expansions)
 c      zk      : Helmholtz parameter
 c      rscale1 : scaling parameter (IGNORED and assumed equal to 1)
 c      center1 : center of original multiple expansion
-c      hexp    : coefficients of original multiple expansions
+c      sig     : outgoing expansion in diag form
 c      nterms1 : order of original multipole expansion
 c      rscale2 : scaling parameter (IGNORED and assumed equal to 1)
 c      center2 : center of shifted multipole expansion
@@ -275,48 +346,53 @@ c      nterms2 : order of shifted multipole expansion
 C---------------------------------------------------------------------
 c      OUTPUT:
 c      
-c      jexp    : coefficients of shifted local expansions
+c      sig2    : increments coefficients of incoming signature expansions
 c      
 c      Note:
 c      The FFT accelerated convolution is only valid at high
 c      frequencies, and therefore rscale1 and rscale2 parameters
 c      are assumed to be 1 (i.e. ignored) inside this routine.
 C---------------------------------------------------------------------
-      integer nterms1,nterms2,nsig,j,next235,nd,ii
+      integer nterms1,nterms2,nsig,j,next235,nd,ii,npts
       double precision center1(2),center2(2),dn,rscale1,rscale2
-      double complex zk,hexp(nd,-nterms1:nterms1) 
-      double complex jexp(nd,-nterms2:nterms2)
-      double complex, allocatable :: sig(:,:),wsave(:)
-      double complex, allocatable :: transvec(:)
-      double complex, allocatable :: sig2(:,:)
+      double complex zk
+ccc      double complex wsave(4*nsig+100)
+      double complex wsave(*)
+      double complex sig(nd,nsig)
+      double complex sig2(nd,nsig)
+ccc      double complex, allocatable :: sig(:,:)
+ccc      double complex, allocatable :: transvec(:)
+      double complex tvec(nsig)
+ccc      double complex, allocatable :: sig2(:,:)
 c     
 c     do the convolution via fft
 c     
-      dn = 2*(nterms1+nterms2) + 1
-      nsig = next235(dn)
-ccc      write(6,*) ' nterms1 is',nterms1
-ccc      write(6,*) ' nterms2 is',nterms2
-ccc      write(6,*) ' nsig is',nsig
+ccc      dn = 2*(nterms1+nterms2) + 1
+ccc      nsig = next235(dn)
 c
-      allocate(sig(nd,nsig))
-      allocate(transvec(nsig))
-      allocate(sig2(nd,nsig))
-      allocate(wsave(4*nsig+100))
+ccc      allocate(sig(nd,nsig))
+ccc      allocate(transvec(nsig))
+ccc      allocate(sig2(nd,nsig))
+ccc      allocate(wsave(4*nsig+100))
 c
-      call zffti(nsig, wsave)
-      call h2d_mptosig(nd,nterms1,nsig,hexp,sig,wsave)
-      call h2d_mkm2ltrans(zk, center1, nterms1,
-     1           center2, nterms2, nsig, wsave, transvec)
+ccc      call zffti(nsig,wsave)
+ccc      call h2d_mptosig(nd,nterms1,nsig,hexp,sig,wsave)
+ccc      do ii = 1,nsig
+ccc         transvec(ii) = 0.1d0
+ccc      enddo
+ccc      call h2d_mkm2ltrans(zk, center1, nterms1,
+ccc     1           center2, nterms2, nsig, wsave, transvec)
 c
-      do ii = 1,nd
-      do j = 1,nsig
-         sig2(ii,j) = 0.0d0
-      enddo
-      enddo
+ccc      do ii = 1,nd
+ccc      do j = 1,nsig
+ccc         sig2(ii,j) = 0.0d0
+ccc      enddo
+ccc      enddo
 c
-      call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
+ccc      call h2d_diagtrans(nd,nsig,sig,transvec,sig2)
+      call h2d_diagtrans(nd,nsig,sig,tvec,sig2)
 c
-      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, jexp)
+ccc      call h2d_sig2exp(nd,nsig, sig2, wsave, nterms2, jexp)
       return
       end 
 c

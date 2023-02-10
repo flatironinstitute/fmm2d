@@ -48,7 +48,7 @@ c
       zk = 0.5d0 + 0.1d0*ima
       zk = 10
       zk = 500.0d0
-      zk = 10000.0d0
+c      zk = 10000.0d0
       eps = 0.51d-8
 
       write(*,*) "=========================================="
@@ -1186,9 +1186,9 @@ c
       enddo
 
       write(*,'(a,i2,a,i2,a)') 'Successfully completed ',isum,
-     1   ' out of ',ntests,' tests in hfmm2d testing suite'
+     1   ' out of ',ntests,' tests in hf-hfmm2d testing suite'
       write(33,'(a,i2,a,i2,a)') 'Successfully completed ',isum,
-     1   ' out of ',ntests,' tests in hfmm2d testing suite'
+     1   ' out of ',ntests,' tests in hf-hfmm2d testing suite'
       close(33)
       
 

@@ -96,7 +96,7 @@ LIBDIR = lib-static
 #
 # Common objects
 COM = src/common
-COMOBJS = $(COM)/cdjseval2d.o $(COM)/dfft.o \
+COMOBJS = $(COM)/cdjseval2d.o $(COM)/dfft_threadsafe.o \
 	$(COM)/fmmcommon2d.o $(COM)/next235.o $(COM)/prini.o \
 	$(COM)/tree_routs2d.o $(COM)/pts_tree2d.o \
 	$(COM)/cumsum.o $(COM)/hank103.o
@@ -222,7 +222,8 @@ $(DYNAMICLIB): $(OBJS)
 # testing routines
 #
 test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_vec \
-		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d test/hfmm2d_mps
+		test/cfmm2d test/cfmm2d_vec test/rfmm2d test/rfmm2d_vec test/bhfmm2d test/hfmm2d_mps \
+		test/hfmm2d_hf 
 	(cd test/helmholtz; ./run_helmtest.sh)
 	(cd test/laplace; ./run_laptest.sh)
 	(cd test/biharmonic; ./run_bhtest.sh)
@@ -235,6 +236,9 @@ test: $(STATICLIB) $(TOBJS) test/hfmm2d test/hfmm2d_vec test/lfmm2d test/lfmm2d_
 
 test/hfmm2d:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d $(LIBS)
+
+test/hfmm2d_hf:
+	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d_hf.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d-hf $(LIBS)
 
 test/hfmm2d_vec:
 	$(FC) $(FFLAGS) test/helmholtz/test_hfmm2d_vec.f $(TOBJS) $(COMOBJS) $(HOBJS) -o test/helmholtz/int2-test-hfmm2d-vec  $(LIBS)

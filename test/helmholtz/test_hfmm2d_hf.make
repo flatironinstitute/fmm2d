@@ -1,7 +1,8 @@
 PROJECT = int2-hfmm2d
 
 HOST = gcc
-#HOST = gcc-openmp
+HOST = gcc-openmp
+HOST = gcc-openmp-x86
 #HOST = intel
 
 # FC - fortran compiler
@@ -15,6 +16,11 @@ endif
 ifeq ($(HOST),gcc-openmp)
     FC = gfortran 
     FFLAGS=-fPIC -O3 -funroll-loops -march=native -fopenmp -std=legacy
+endif
+
+ifeq ($(HOST),gcc-openmp-x86)
+    FC = gfortran 
+    FFLAGS=-fPIC -O3 -funroll-loops -march=x86-64 -fopenmp -std=legacy
 endif
 
 ifeq ($(HOST),intel)
@@ -32,7 +38,7 @@ COM = ../../src/common
 .PHONY: all clean list
 
 
-OBJECTS =  test_hfmm2d.o \
+OBJECTS =  test_hfmm2d_hf.o \
   $(COM)/prini.o \
   $(COM)/hkrand.o \
   $(COM)/dlaran.o \

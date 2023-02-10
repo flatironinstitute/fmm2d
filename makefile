@@ -154,7 +154,7 @@ TOBJS = $(COM)/hkrand.o $(COM)/dlaran.o
 
 OBJS = $(COMOBJS) $(HOBJS) $(LOBJS) $(BHOBJS) $(STOBJS) 
 
-.PHONY: usage install lib test all python 
+.PHONY: usage install lib test all python python-dist 
 
 default: usage
 
@@ -171,6 +171,7 @@ usage:
 	@echo "  make test - compile and run validation tests (will take a couple of mins)"
 	@echo "  make matlab - compile matlab interfaces"
 	@echo "  make python - compile and test python interfaces"
+	@echo "  make python-dist    compile python interfaces for distribution"
 	@echo "  make objclean - removal all object files, preserving lib & MEX"
 	@echo "  make clean - also remove lib, MEX, py, and demo executables"
 	@echo "For faster (multicore) making, append the flag -j"

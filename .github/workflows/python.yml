@@ -53,9 +53,9 @@ jobs:
         path: wheelhouse/*.whl
 
   MacOS:
-    runs-on: macos-latest
+    runs-on: macos-11
     env:
-      MACOSX_DEPLOYMENT_TARGET: 11.0
+      MACOSX_DEPLOYMENT_TARGET: 10.9
 
     steps:
     - uses: actions/checkout@v3

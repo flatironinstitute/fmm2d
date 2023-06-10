@@ -1309,10 +1309,10 @@ end
   U.pottarg = [];
   U.gradtarg = [];
   U.hesstarg = [];
-  if(pg >= 1), U.pot = squeeze(reshape(real(pot),[nd,ns])); end;
+  if(pg >= 1), U.pot = squeeze(reshape(pot,[nd,ns])); end;
   if(pg >= 2), U.grad = squeeze(reshape(grad,[nd,ns])); end;
   if(pg >= 3), U.hess = squeeze(reshape(hess,[nd,ns])); end;
-  if(pgt >= 1), U.pottarg = squeeze(reshape(real(pottarg),[nd,nt])); end;
+  if(pgt >= 1), U.pottarg = squeeze(reshape(pottarg,[nd,nt])); end;
   if(pgt >= 2), U.gradtarg = squeeze(reshape(gradtarg,[nd,nt])); end;
   if(pgt >= 3), U.hesstarg = squeeze(reshape(hesstarg,[nd,nt])); end;
 
@@ -1431,7 +1431,7 @@ end
     if(ifcharge==1 && ifdipole == 1)
       # FORTRAN c2d_directcdp(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, double[1] thresh); 
     end
-    U.pottarg = real(pottarg);
+    U.pottarg = pottarg;
   end
   if(pgt == 2)
     if(ifcharge==1 && ifdipole == 0)
@@ -1443,7 +1443,7 @@ end
     if(ifcharge==1 && ifdipole == 1)
       # FORTRAN c2d_directcdg(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, double[1] thresh); 
     end
-    U.pottarg = real(pottarg);
+    U.pottarg = pottarg;
     U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
   end
   if(pgt == 3)
@@ -1456,7 +1456,7 @@ end
     if(ifcharge==1 && ifdipole == 1)
       # FORTRAN c2d_directcdh(int[1] nd, double[2,ns] sources, int[1] ns, dcomplex[nd,ns] charges, dcomplex[nd,ns] dipstr, double[2,nt] targ, int[1] nt, inout dcomplex[nd,nt] pottarg, inout dcomplex[nd,nt] gradtarg, inout dcomplex[nd,nt] hesstarg, double[1] thresh); 
     end
-    U.pottarg = real(pottarg);
+    U.pottarg = pottarg;
     U.gradtarg = squeeze(reshape(gradtarg,[nd,nt]));
     U.hesstarg = squeeze(reshape(hesstarg,[nd,nt]));
   end

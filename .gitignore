@@ -19,3 +19,6 @@ int2
 *debug*
 *~
 lib-static/*.a
+GPATH
+GRTAGS
+GTAGS

@@ -257,7 +257,7 @@ C$OMP END PARALLEL DO
         allocate(chargesort(nd,2,ns),dipsort(nd,3,1))
       endif
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,2),dipsort(nd,3,ns))
+        allocate(chargesort(nd,2,1),dipsort(nd,3,ns))
       endif
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
         allocate(chargesort(nd,2,ns),dipsort(nd,3,ns))

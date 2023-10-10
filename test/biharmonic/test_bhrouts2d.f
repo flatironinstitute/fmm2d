@@ -40,13 +40,13 @@ c
       complex *16 w(lw)
       complex *16 w2(-lw:lw)
 c
-      complex *16 pot(nd),grad(nd,2)
-      complex *16 opot(nd),ograd(nd,2)
+      complex *16 pot(nd),grad(nd,3)
+      complex *16 opot(nd),ograd(nd,3)
       complex *16, allocatable :: mpolecd(:,:,:)
       complex *16, allocatable :: mpole2cd(:,:,:)
       complex *16, allocatable :: localcd(:,:,:)
       complex *16, allocatable :: local2cd(:,:,:)
-      complex *16, allocatable :: charge(:,:),dip(:,:,:)
+      complex *16, allocatable :: charge(:,:,:),dip(:,:,:)
       complex *16, allocatable :: dummy(:,:)
       complex *16 eye
 c
@@ -77,10 +77,11 @@ c
 c       create two charge sources.
 c
       ns = 2
-      allocate(charge(nd,ns),dip(nd,2,ns),dummy(nd,ns))
+      nt = 1
+      allocate(charge(nd,2,ns),dip(nd,3,ns),dummy(nd,ns))
       call mksource(nd,ns,source,charge,dip,dummy,c0)
-      call prin2(' charge is *',charge,2*nd*ns)
-      call prin2(' dip is *',dip,4*nd*ns)
+      call prin2(' charge is *',charge,4*nd*ns)
+      call prin2(' dip is *',dip,6*nd*ns)
 c
 c
 c       create center for shifted expansions
@@ -103,17 +104,15 @@ c
 c       direct calculation:
 c
       np = 1
-      ng = 2
+      ng = 3
       call zero_out(nd,np,opot)
       call zero_out(nd,ng,ograd)
 
       thresh = 1.0d-16
       call bh2d_directcdg(nd,source,ns,charge,dip,
-     1       ztrg,opot,ograd,thresh)
-        call prin2('Via direct calculation, potential is*',opot,2*nd)
-c
+     1       ztrg,nt,opot,ograd,thresh)
       call prin2('Via direct calculation, potential is*',opot,2*nd)
-      call prin2('Via direct calculation, grad is*',ograd,4*nd)
+      call prin2('Via direct calculation, grad is*',ograd,6*nd)
 c
 c
 c       create h-expansion:
@@ -162,8 +161,7 @@ c
         call prin2('Via mpole calculation, potential is*',pot,2*nd)
         call prin2('Via mpole calculation, grad is*',grad,2*nd*ng)
 
-c
-ccc	stop
+
 ccc	goto 8000
 c    mpmp shift
 c
@@ -280,41 +278,37 @@ C
       subroutine mksource(nd,ns,source,charge,dip,dummy,c0)
       implicit none
       integer nd,ns
-      real* 8 dd,source(2,ns),c0(2)
-      complex* 16 dip(nd,2,ns),charge(nd,ns),dummy(nd,ns)
+      real* 8 dd,source(2,ns),c0(2),hkrand
+      complex* 16 dip(nd,3,ns),charge(nd,2,ns),dummy(nd,ns)
       complex *16 eye
+      integer i,idim
 c
       data eye/(0.0d0,1.0d0)/
 c
-      dd = 1.0d-6
+      dd = 1.0d-3
       source(1,1)=c0(1)+0.24d0
       source(2,1)=c0(2)+0.25d0
-      charge(1,1)= (1.0d0 + eye*0.2d0)
-      dummy(1,1)= 0.0d0
-      dip(1,1,1)= charge(1,1)*dd
-      dip(1,1,1)= charge(1,1)
-      dip(1,2,1)= charge(1,1)*dd*eye
-      dip(1,2,1)= charge(1,1)*eye
 
-      charge(2,1)= (1.0d0 + eye*0.2d0)
-      dummy(2,1)= 0.0d0
-      dip(2,1,1)= charge(1,1)*dd
-      dip(2,1,1)= charge(1,1)
-      dip(2,2,1) = charge(1,1)*dd
-      dip(2,2,1) = charge(1,1)
-      source(1,2)=c0(1)+0.25d0
-      source(2,2)=c0(2)-0.25d0
       source(1,2)=source(1,1)+dd
       source(2,2)=source(2,1)
-c
-      charge(1,2)= -1.0d0 + eye*0.1d0
-      charge(2,2)= -1.0d0 + eye*0.1d0
-      dummy(1,2)= 0.0d0
-      dummy(2,2)= 0.0d0
-      dip(1,1,2)= 2.0d0
-      dip(2,1,2)= 2.0d0
-      dip(1,2,2)= 2.0d0 + 3.0d0*eye
-      dip(2,2,2)= 2.0d0 + 3.0d0*eye
+
+
+      do i=3,ns
+        source(1,i) = c0(1) -0.25d0 + hkrand(0)*0.5d0
+        source(2,i) = c0(2) -0.25d0 + hkrand(0)*0.5d0
+      enddo
+
+      do i=1,ns
+         do idim=1,nd
+            dummy(idim,i) = 0 
+            charge(idim,1,i) = hkrand(0)-0.5d0 + eye*(hkrand(0)-0.5d0)
+            charge(idim,2,i) = hkrand(0)-0.5d0 + eye*(hkrand(0)-0.5d0)
+
+            dip(idim,1,i) = hkrand(0)-0.5d0 + eye*(hkrand(0)-0.5d0)
+            dip(idim,2,i) = hkrand(0)-0.5d0 + eye*(hkrand(0)-0.5d0)
+            dip(idim,3,i) = hkrand(0)-0.5d0 + eye*(hkrand(0)-0.5d0)
+         enddo
+      enddo
 
       return
       end

@@ -235,7 +235,7 @@ c*********************************************************************
      1         eye*0.5*mpole(idim,5,i)*i*zpow(i+1)*rinv
             
             grad(idim,2,k) = grad(idim,2,k) + 
-     1           mpole(idim,3,i)*dconjg(zpow)
+     1           mpole(idim,3,i)*dconjg(zpow(i))
 
             grad(idim,3,k) = grad(idim,3,k) - 
      1         mpole(idim,2,i)*dconjg(zpow(i+1))*i*rinv
@@ -392,7 +392,7 @@ c*********************************************************************
       real *8 rscale,center(2),ztarg(2,ntarg)
       complex *16 zc,zt,zdis,eye
       complex *16 mpole(nd,5,0:nterms)
-      complex *16 vel(nd,ntarg),grad(nd,2,ntarg)
+      complex *16 vel(nd,ntarg),grad(nd,3,ntarg)
       complex *16 ztemp,ztemp1,zpow(0:nterms)
 
       rinv=1.0d0/rscale

@@ -380,7 +380,7 @@ c--------------------------------------------------------------------
            do idim=1,nd
              vel(idim,j)=vel(idim,j)+
      1           2*charges(idim,1,i)*log(cdabs(zdis))+
-     1           charges(idim,1,i)*dconjg(zdis1)*zdis
+     1           charges(idim,2,i)*dconjg(zdis1)*zdis
      
              vel(idim,j)=vel(idim,j)+dippar(idim,1,i)*zdis1 + 
      1         dippar(idim,3,i)*dconjg(zdis1)

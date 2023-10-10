@@ -37,79 +37,93 @@ c     * charges are complex, and dipoles are described by vectors
 c       in C^2
 c     * In the legacy interface, dipoles were input as two
 c       complex arrays dip1 and dip2, as opposed to a single
-c       complex array (nd,2,n) where n is the number of sources.
+c       complex array (nd,3,n) where n is the number of sources.
 c       Similarly, the gradients in the legacy interface
 c       were two complex arrays, grada, and gradaa; while
-c       in the new interface, the gradient is a (nd,2,n) 
+c       in the new interface, the gradient is a (nd,3,n) 
 c       complex array where (nd,1,n) is the derivative with
-c       respect to z and the (nd,2,n) component is the derivative
+c       respect to z projection onto z component, 
+c       the (nd,2,n) component is the derivative with respect to z
+c       projection onto zbar component
+c       and the (nd,3,n) component is the derivative
 c       with respect to z_bar
 c     * In this subroutine and the rest the terms potential
 c       and velocity are interchangably used
 c     
 c
-c    vel(z) = \sum charge_j *\log|z-z_j| + 
-c                (charge_j)_bar (z-z_j)/(z-z_j)_bar+
-c                dip1/(z-z_j) + dip2/(z-z_j)_bar-
-c                dip1_bar (z-z_j)/(z-z_j)^2_bar
+c    vel(z) = \sum charge1_j *\log|z-z_j| + 
+c                (charge2_j) (z-z_j)/(z-z_j)_bar+
+c                dip1_j/(z-z_j) + dip2_j/(z-z_j)_bar-
+c                dip3_j (z-z_j)/(z-z_j)^2_bar
 c
-c    The velocity for stokes is related to the goursat functions
-c    as vel = \phi(z) + z (d/dz (\phi))_bar+\psi(z)
+c    For the stokes case, if charge2_j = charge1_j_bar, and dip3 =
+c    dip1_bar, then the velocity is related to the goursat functions
+c    as vel = \phi(z) + z (d/dz (\phi))_bar+\psi(z), where
 c 
-c   The goursat functions are given by
+c    The goursat functions are given by
 c
-c   \phi(z) = \sum charge_j log(z-z_j)+
+c    \phi(z) = \sum charge_j log(z-z_j)+
 c                     dip1/(z-z_j)
 c
-c   \psi(z) = \sum dippar2_bar/(z-z_j)+
+c    \psi(z) = \sum dippar2_bar/(z-z_j)+
 c               z_j_bar dippar1/(z-z_j)^2 +
 c
 c    In all of the sums above, the terms for which |z-z_{j}| <= 2^-51|b|
 c    where |b| is the size of the root box will be ignored.
 c
-c   Gradient here has
-c    
+c    grad(:,1,:) = d/dz vel(z)_proj{z} = 
+c                     charge1_j/(z-z_j) - dip1_j/(z-z_j)^2
+c    grad(:,2,:) = d/dz vel(z)_proj{zbar} = 
+c                     charge2_j/(z-z_j)_bar - dip3_j/(z-z_j)^2_bar
+c    grad(:,3,:) = d/dzbar vel(z) = 
+c                    -charge2_j (z-z_j)/(z-z_j)^2_bar - dip2_j
+c                             (z-z_j)^2_bar +
+c                     2dip3_j(z-z_j)/(z-z_j)^3_bar
 c
 c   INPUT PARAMETERS:
-c   nd            : number of expansions
-c   eps           : FMM precision requested
-c   ns            : number of sources
-c   sources(2,ns) : source locations
-c   ifcharge      : flag for including charge interactions
-c                   charge interactions included if ifcharge =1
-c                   not included otherwise
-c   charge(nd,ns)    : charge strengths
-c                   charge(j,i) is the charge strength of the
-c                   jth charge density at source location i
-c   ifdipole      : flag for including dipole interactions
-c                   dipole interactions included if ifcharge =1
-c                   not included otherwise
-c   dip(nd,2,ns)  : dipole strengths
-c                   dip(j,1,i) is dip1 for the jth dipole density
-c                   at source location i, and dip(j,2,i) is dip2
-c                   for the jth dipole density at source location i
-c   iper          : flag for periodic implmentations. Currently unused
-c   ifpgh         : flag for computing pot/grad/hess
-c                   ifpgh = 1, only potential is computed
-c                   ifpgh = 2, potential and gradient are computed
-c                   ifpgh = 3, potential, gradient, and hessian 
-c                   are computed (hessians not supported currently)
-c   nt            : number of targets
-c   targ(2,nt)    : target locations
-c   ifpghtarg     : flag for computing pottarg/gradtarg/hesstarg
-c                   ifpghtarg = 1, only potential is computed at targets
-c                   ifpghtarg = 2, potential and gradient are 
-c                   computed at targets
-c                   ifpghtarg = 3, potential, gradient, and hessian are 
-c                   computed at targets (hessians not supported
+c   nd              : number of expansions
+c   eps             : FMM precision requested
+c   ns              : number of sources
+c   sources(2,ns)   : source locations
+c   ifcharge        : flag for including charge interactions
+c                     charge interactions included if ifcharge =1
+c                     not included otherwise
+c   charge(nd,2,ns) : charge strengths
+c                     charge(j,1,i) is the charge1 strength of the
+c                     jth charge density at source location i,
+c                     and charge2(j,1,i) is the charge2 strength
+c   ifdipole        : flag for including dipole interactions
+c                     dipole interactions included if ifcharge =1
+c                     not included otherwise
+c   dip(nd,3,ns)    : dipole strengths
+c                     dip(j,1,i) is dip1 for the jth dipole density
+c                     at source location i, dip(j,2,i) is dip2
+c                     for the jth dipole density at source location i,
+c                     and dip(j,3,i) is dip3
+c   iper            : flag for periodic implmentations. Currently unused
+c   ifpgh           : flag for computing pot/grad/hess
+c                     ifpgh = 1, only potential is computed
+c                     ifpgh = 2, potential and gradient are computed
+c                     ifpgh = 3, potential, gradient, and hessian 
+c                     are computed (hessians not supported currently)
+c   nt              : number of targets
+c   targ(2,nt)      : target locations
+c   ifpghtarg       : flag for computing pottarg/gradtarg/hesstarg
+c                     ifpghtarg = 1, only potential is computed at targets
+c                     ifpghtarg = 2, potential and gradient are 
+c                     computed at targets
+c                     ifpghtarg = 3, potential, gradient, and hessian are 
+c                     computed at targets (hessians not supported
 c                     currently)
 c
 c   OUTPUT PARAMETERS
 c   pot(nd,*)       : velocity at the source locations
-c   grad(nd,2,*)    : gradients (d/dz),d/dzbar at the source locations
+c   grad(nd,3,*)    : gradients (d/dz)_proj{z}, 
+c                     (d/dz)_proj{zbar}, d/dzbar at the source locations
 c   hess(nd,3,*)    : hessian  at the source locations (currently unused)
 c   pottarg(nd,*)   : potential at the target locations
-c   gradtarg(nd,2,*): gradient (d/dz), d/dzbar at the target locations
+c   gradtarg(nd,3,*): gradient (d/dz)_proj{z}, 
+c                     (d/dz)_proj{zbar}, d/dzbar at the target locations
 c   hesstarg(nd,3,*): hessian at the target locations (currently unused)
 c
 
@@ -123,10 +137,10 @@ c
       real *8 eps
       integer ns,nt
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns),dip(nd,2,ns)
+      complex *16 charge(nd,2,ns),dip(nd,3,ns)
 
-      complex *16 pot(nd,ns),grad(nd,2,ns), hess(nd,3,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      complex *16 pot(nd,ns),grad(nd,3,ns), hess(nd,3,ns)
+      complex *16 pottarg(nd,nt),gradtarg(nd,3,nt)
       complex *16 hesstarg(nd,3,nt)
 
 c
@@ -150,7 +164,7 @@ c
       integer, allocatable :: itarg(:),itargse(:,:),iexpcse(:,:)
       real *8, allocatable :: sourcesort(:,:)
       real *8, allocatable :: targsort(:,:)
-      complex *16, allocatable :: chargesort(:,:),dipsort(:,:,:)
+      complex *16, allocatable :: chargesort(:,:,:),dipsort(:,:,:)
       complex *16, allocatable :: potsort(:,:),gradsort(:,:,:),
      1                             hesssort(:,:,:)
       complex *16, allocatable :: pottargsort(:,:),gradtargsort(:,:,:),
@@ -240,37 +254,37 @@ C$OMP END PARALLEL DO
 
 
       if(ifcharge.eq.1.and.ifdipole.eq.0) then
-        allocate(chargesort(nd,ns),dipsort(nd,2,1))
+        allocate(chargesort(nd,2,ns),dipsort(nd,3,1))
       endif
       if(ifcharge.eq.0.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,1),dipsort(nd,2,ns))
+        allocate(chargesort(nd,2),dipsort(nd,3,ns))
       endif
       if(ifcharge.eq.1.and.ifdipole.eq.1) then
-        allocate(chargesort(nd,ns),dipsort(nd,2,ns))
+        allocate(chargesort(nd,2,ns),dipsort(nd,3,ns))
       endif
 
       if(ifpgh.eq.1) then
-        allocate(potsort(nd,ns),gradsort(nd,2,1),hesssort(nd,3,1))
+        allocate(potsort(nd,ns),gradsort(nd,3,1),hesssort(nd,3,1))
       else if(ifpgh.eq.2) then
-        allocate(potsort(nd,ns),gradsort(nd,2,ns),hesssort(nd,3,1))
+        allocate(potsort(nd,ns),gradsort(nd,3,ns),hesssort(nd,3,1))
       else if(ifpgh.eq.3) then
-        allocate(potsort(nd,ns),gradsort(nd,2,ns),hesssort(nd,3,ns))
+        allocate(potsort(nd,ns),gradsort(nd,3,ns),hesssort(nd,3,ns))
       else
-        allocate(potsort(nd,1),gradsort(nd,2,1),hesssort(nd,3,1))
+        allocate(potsort(nd,1),gradsort(nd,3,1),hesssort(nd,3,1))
       endif
 
       
       if(ifpghtarg.eq.1) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,2,1),
+        allocate(pottargsort(nd,nt),gradtargsort(nd,3,1),
      1     hesstargsort(nd,3,1))
       else if(ifpghtarg.eq.2) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,2,nt),
+        allocate(pottargsort(nd,nt),gradtargsort(nd,3,nt),
      1      hesstargsort(nd,3,1))
       else if(ifpghtarg.eq.3) then
-        allocate(pottargsort(nd,nt),gradtargsort(nd,2,nt),
+        allocate(pottargsort(nd,nt),gradtargsort(nd,3,nt),
      1     hesstargsort(nd,3,nt))
       else
-        allocate(pottargsort(nd,1),gradtargsort(nd,2,1),
+        allocate(pottargsort(nd,1),gradtargsort(nd,3,1),
      1     hesstargsort(nd,3,1))
       endif
       
@@ -293,6 +307,7 @@ c
             potsort(idim,i) = 0
             gradsort(idim,1,i) = 0
             gradsort(idim,2,i) = 0
+            gradsort(idim,3,i) = 0
           enddo
         enddo
       endif
@@ -303,6 +318,7 @@ c
             potsort(idim,i) = 0
             gradsort(idim,1,i) = 0
             gradsort(idim,2,i) = 0
+            gradsort(idim,3,i) = 0
             hesssort(idim,1,i) = 0
             hesssort(idim,2,i) = 0
             hesssort(idim,3,i) = 0
@@ -325,6 +341,7 @@ c
             pottargsort(idim,i) = 0
             gradtargsort(idim,1,i) = 0
             gradtargsort(idim,2,i) = 0
+            gradtargsort(idim,3,i) = 0
           enddo
         enddo
       endif
@@ -335,6 +352,7 @@ c
             pottargsort(idim,i) = 0
             gradtargsort(idim,1,i) = 0
             gradtargsort(idim,2,i) = 0
+            gradtargsort(idim,3,i) = 0
             hesstargsort(idim,1,i) = 0
             hesstargsort(idim,2,i) = 0
             hesstargsort(idim,3,i) = 0
@@ -362,7 +380,7 @@ c
 
 c       
 c     Multipole and local expansions will be held in workspace
-c     in locations pointed to by array iaddr(3,nboxes).
+c     in locations pointed to by array iaddr(2,nboxes).
 c
 c     iiaddr is pointer to iaddr array, itself contained in workspace.
 c     imptemp is pointer for single expansion (dimensioned by nmax)
@@ -379,9 +397,9 @@ c     reorder sources
 c
       call dreorderf(2,ns,sources,sourcesort,isrc)
       if(ifcharge.eq.1) 
-     1     call dreorderf(2*nd,ns,charge,chargesort,isrc)
+     1     call dreorderf(4*nd,ns,charge,chargesort,isrc)
       if(ifdipole.eq.1) then
-         call dreorderf(4*nd,ns,dip,dipsort,isrc)
+         call dreorderf(6*nd,ns,dip,dipsort,isrc)
       endif
 
 c
@@ -441,12 +459,12 @@ c
 
       if(ifpgh.eq.2) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(4*nd,ns,gradsort,grad,isrc)
+        call dreorderi(6*nd,ns,gradsort,grad,isrc)
       endif
 
       if(ifpgh.eq.3) then
         call dreorderi(2*nd,ns,potsort,pot,isrc)
-        call dreorderi(4*nd,ns,gradsort,grad,isrc)
+        call dreorderi(6*nd,ns,gradsort,grad,isrc)
         call dreorderi(6*nd,ns,hesssort,hess,isrc)
       endif
 
@@ -456,12 +474,12 @@ c
 
       if(ifpghtarg.eq.2) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(4*nd,nt,gradtargsort,gradtarg,itarg)
+        call dreorderi(6*nd,nt,gradtargsort,gradtarg,itarg)
       endif
 
       if(ifpghtarg.eq.3) then
         call dreorderi(2*nd,nt,pottargsort,pottarg,itarg)
-        call dreorderi(4*nd,nt,gradtargsort,gradtarg,itarg)
+        call dreorderi(6*nd,nt,gradtargsort,gradtarg,itarg)
         call dreorderi(6*nd,nt,hesstargsort,hesstarg,itarg)
       endif
 
@@ -491,159 +509,122 @@ c
 c   Generalized biharmonic FMM in R^2: evaluate all pairwise particle
 c   interactions (ignoring self-interaction). 
 c   
-c   bhfmm2d: charge and dipstr are complex valued, z are complex numbers.
+c   bhfmm2d: chargesort and dipsort are complex valued,
+c   z are complex numbers.
 c
-c   bhfmm2d: charge and dip1,dip2 are complex valued,
-c   z are complex numbers. The complex velocity for stokes/
-c   displacement for stokes/elasticity problem take the general form 
-c
-c   Stokes:
-c   vel(z_i) = \sum_{j \neq i} charge_j *\log|z_i-z_j| + 
-c                (charge_j)_bar (z_i-z_j)/(z_i-z_j)_bar+
-c                dip1/(z_i-z_j) + dip2/(z_i-z_j)_bar-
-c                dip1_bar (z_i-z_j)/(z_i-z_j)^2_bar
-c
-c   The velocity for stokes is related to the goursat functions
-c   as vel = \phi(z) + z (d/dz (\phi))_bar+\psi(z)
-c 
-c   The goursat functions are given by
-c
-c   \phi(z_i) = \sum_{j\neq i} charge_j log(z_i-z_j)+
-c                     dip1/(z_i-z_j)
-c
-c   \psi(z_i) = \sum_{j\neq i} dippar2_bar/(z_i-z_j)+
-c               z_j_bar dippar1/(z_i-z_j)^2 +
-c               charge_j_bar log(z_i-z_j)- z_j_bar charge_j/(z_i-z_j)
-c
-c   For stokes and elasticity problems the following derivatives are
-c   relevant to physical quantities such as pressure and vorticity 
-c   for stokes and stresses for elasticity
-c
-c   1) Analytic gradient (grada) 
-c      =  \frac{\partial \phi(z_i)}{\partial z}
-c
-c   2) Anti analytic gradient (gradaa)
-c       = z \frac{\partial^2 \phi_(z_i)} {\partial^2 z}_bar +
-c         \frac{\partial \psi_(z_i)} {\partial z}
+c   See documentation above for definitions of velocity 
 c 
 c
 c   All the source/target/expansion center related quantities
 c   are assumed to be tree-sorted
 c
 c-----------------------------------------------------------------------
-c   INPUT PARAMETERS:
+c  INPUT PARAMETERS:
+c    - nd: integer
+c        number of charge densities
+c    - eps:  real *8
+c        FMM precision requested
+c    - nsource: integer
+c        number of sources
+c    - sourcesort: real *8 (2,nsource)
+c        tree sorted source locations
+c    - ifcharge: integer
+c        charge computation flag
+c        ifcharge = 1 => include charge contribution
+c                           otherwise do not
+c    - chargesort: complex *16 (nd,2,nsource): 
+c        charge strengths
+c    - ifdipole:  integer
+c        dipole computation flag
+c        ifdipole = 1 => include dipole contribution
+c                            otherwise do not
+c    - dipsort: complex *16 (nd,3,nsource): 
+c        dipole strengths
+c    - ntarget: integer
+c        number of targets
+c    - targetsort: real *8 (2,ntarget)
+c        target locations
+c    - nexpc: integer
+c        number of expansion centers
+c    - expcsort: real *8 (2,nexpc)
+c        expansion center locations
+c    - iaddr: integer (2,nboxes)
+c        pointer in rmlexp where multipole and local expansions for 
+c        each box is stored
+c        * iaddr(1,ibox) is the starting index in rmlexp for the 
+c          multipole expansion of ibox, and
+c        * iaddr(2,ibox) is the starting index in rmlexp for the
+c          local expansion of ibox
+c    - mptemp: complex *16(lmptmp): 
+c        temporary multipole/local expansion
+c        (may not be needed in new setting)
+c    - lmptmp: integer
+c        length of temporary expansion
+c    - itree: integer (ltree)
+c        This array contains all the information about the tree
+c        See to pts_tree2d.f for documentation
+c    - ltree: integer
+c        length of itree
+c    - iptr: integer(8)
+c         iptr is a collection of pointers 
+c         which points to where different elements 
+c         of the tree are stored in the itree array
+c    - ndiv: integer
+c        Max number of points per box
+c    - nlevels: integer
+c        number of levels in the tree
+c    - nboxes: integer
+c        number of boxes in the tree
+c    - boxsize: real*8 (0:nlevels)
+c        boxsize(i) is the size of the box from end to end
+c        at level i
+c    - iper: integer
+c        flag for periodic implementation
+c    - centers: real *8(2,nboxes)
+c        array containing the centers of all the boxes
+c    - isrcse: integer(2,nboxes)
+c        starting and ending location of sources in ibox
+c        in sorted list of sources
+c    - itargse: integer(2,nboxes)
+c        starting and ending location of targets in ibox
+c        in sorted list of sources
+c    - iexpcse: integer(2,nboxes)
+c        starting and ending location of expansion centers
+c        in ibox in sorted list of sources
+c    - nterms: integer(0:nlevels) 
+c        length of multipole and local expansions at various levels
+c    - ntj: integer
+c        order of the output expansions (unused)
+c    - ifpgh: integer
+c        flag for evaluating potential/gradients/hessians at sources.
+c        * ifpgh = 1, only potentials will be evaluated
+c        * ifpgh = 2, potentials/gradients will be evaluated
+c        * ifpgh = 3, potentials/gradients/hessians will be evaluated
+c    - ifpghtarg: integer
+c        flag for evaluating potential/gradients/hessians at targets.
+c        * ifpghtarg = 1, only potentials will be evaluated
+c        * ifpghtarg = 2, potentials/gradients will be evaluated
+c        * ifpghtarg = 3, potentials/gradients/hessians will be evaluated
 c
-c   nd:   number of charge densities
-c
-c   eps:  FMM precision requested
-c
-c   nsource:     integer:  number of sources
-c   sourcesort: real *8 (2,ns):  source locations
-c
-c   ifcharge:  charge computation flag
-c              ifcharge = 1   =>  include charge contribution
-c                                     otherwise do not
-c   chargesort: complex *16 (nsource): charge strengths
-c
-c   ifdipole:  dipole computation flag
-c              ifdipole = 1   =>  include dipole contribution
-c                                     otherwise do not
-c   dipsort: complex *16 (nsource): dipole strengths
-c   ntarget: integer:  number of targets
-c   targetsort: real *8 (2,ntarget):  target locations
-c   nexpc: number of expansion centers
-c   expcsort: real *8 (2,nexpc): expansion center locations
-c   iaddr: (2,nboxes): pointer in rmlexp where multipole
-c                      and local expansions for each
-c                      box is stored
-c                      iaddr(1,ibox) is the
-c                      starting index in rmlexp for the 
-c                      multipole expansion of ibox
-c                      and iaddr(2,ibox) is the
-c                      starting index in rmlexp
-c                      for the local expansion of ibox
-c  mptemp: (lmptmp): temporary multipole/local expansion
-c                        (may not be needed in new setting)
-c  lmptmp: length of temporary expansion
-c   
-c
-c
-c   itree    in: integer (ltree)
-c             This array contains all the information
-c             about the tree
-c             Refer to pts_tree2d.f
-c
-c   ltree    in: integer
-c            length of tree
-c
-c    iptr in: integer(8)
-c             iptr is a collection of pointers 
-c             which points to where different elements 
-c             of the tree are stored in the itree array
-c
-c     ndiv    in: integer
-c             Max number of chunks per box
-c
-c     nlevels in: integer
-c             number of levels in the tree
-c
-c     
-c     nboxes  in: integer
-c             number of boxes in the tree
-c
-c     boxsize in: real*8 (0:nlevels)
-c             boxsize(i) is the size of the box from end to end
-c             at level i
-c     iper    in: integer
-c             flag for periodic implementation
-c
-c     centers in: real *8(2,nboxes)
-c                 array containing the centers of all the boxes
-c
-c     isrcse in: integer(2,nboxes)
-c               starting and ending location of sources in ibox
-c                in sorted list of sources
-c
-c     itargse in: integer(2,nboxes)
-c               starting and ending location of targets in ibox
-c                in sorted list of sources
-c
-c     iexpcse in: integer(2,nboxes)
-c               starting and ending location of expansion centers
-c               in ibox in sorted list of sources
-c
-c     nterms: (0:nlevels) length of multipole and local expansions
-c              at various levels
-c     ntj     in: integer
-c             order of the output expansions
-c
-c     ifpgh  in: integer
-c             flag for evaluating potential/gradients/hessians 
-c             at sources.
-c             ifpgh = 1, only potentials will be evaluated
-c             ifpgh = 2, potentials/gradients will be evaluated
-c             ifpgh = 3, potentials/gradients/hessians will be evaluated
-c
-c     ifpghtarg  in: integer
-c             flag for evaluating potential/gradients/hessians 
-c             at targets.
-c             ifpghtarg = 1, only potentials will be evaluated
-c             ifpghtarg = 2, potentials/gradients will be evaluated
-c             ifpghtarg = 3, potentials/gradients/hessians will be evaluated
-c
-c   OUTPUT
-c
-c   Expansions at the targets
-c   jexps : coeffs for local expansion
-c   scj: scaling parameter for the expansions
-c
-c   pot: potential at the source locations
-c   grad: gradient at the source locations (d/dz,d/dzbar)
-c   hess: hessian at the source locations
-c  
-c   pottarg: potential at the target locations
-c   gradatarg: gradient at the target locations (d/dz,d/dzbar)
-c   hesstarg: hessian at the target locations
+c  OUTPUT PARAMETERS:
+c    - pot: complex *16 (nd,nsource)
+c        potential at the source locations
+c    - grad: complex *16 (nd,3,nsource)
+c        gradient at the source locations (d/dz_proj(z),
+c        d/dz_proj(zbar),d/dzbar)
+c    - hess: complex *16 (nd,3,nsource)
+c        currently unused
+c    - pottarg: complex *16 (nd,ntarget)
+c        potential at the target locations
+c    - gradtarg: complex *16 (nd,3,ntarget)
+c        gradient at the target locations (d/dz_proj(z),
+c        d/dz_proj(zbar),d/dzbar)
+c    - hesstarg: complex *16 (nd,3,ntarget)
+c        currently unused
+c    - jexps: complex *16 (nd,5,0:ntj,nexpc)
+c        currently unused
+c    - scjsort: real *8 (nexpc)
+c        currently unused
 c------------------------------------------------------------------
 
       implicit none
@@ -661,8 +642,8 @@ c------------------------------------------------------------------
 
       real *8 sourcesort(2,nsource)
 
-      complex *16 chargesort(nd,*)
-      complex *16 dipsort(nd,2,*)
+      complex *16 chargesort(nd,2,*)
+      complex *16 dipsort(nd,3,*)
 
       real *8 targetsort(2,ntarget)
       complex *16 jsort(nd,5,0:ntj,*)
@@ -670,11 +651,11 @@ c------------------------------------------------------------------
       real *8 expcsort(2,*)
 
       complex *16 pot(nd,*)
-      complex *16 grad(nd,2,*)
+      complex *16 grad(nd,3,*)
       complex *16 hess(nd,3,*)
 
       complex *16 pottarg(nd,*)
-      complex *16 gradtarg(nd,2,*)
+      complex *16 gradtarg(nd,3,*)
       complex *16 hesstarg(nd,3,*)
 
       integer iaddr(2,nboxes),lmptmp
@@ -835,7 +816,7 @@ C$OMP$SCHEDULE(DYNAMIC)
 c              Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
                  call bh2dformmpc(nd,rscales(ilev),
-     1             sourcesort(1,istart),npts,chargesort(1,istart),
+     1             sourcesort(1,istart),npts,chargesort(1,1,istart),
      2             centers(1,ibox),nterms(ilev),
      3             rmlexp(iaddr(1,ibox)))
              endif
@@ -875,7 +856,7 @@ C$OMP$SCHEDULE(DYNAMIC)
 c             Check if current box is a leaf box            
              if(nchild.eq.0.and.npts.gt.0) then
                 call bh2dformmpcd(nd,rscales(ilev),
-     1             sourcesort(1,istart),npts,chargesort(1,istart),
+     1             sourcesort(1,istart),npts,chargesort(1,1,istart),
      2             dipsort(1,1,istart),
      3             centers(1,ibox),
      4             nterms(ilev),rmlexp(iaddr(1,ibox))) 
@@ -926,7 +907,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     
                     call bh2dformtac(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   chargesort(1,istart),centers(1,ibox),
+     2                   chargesort(1,1,istart),centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
                  enddo
               endif
@@ -1003,7 +984,7 @@ C$OMP$SCHEDULE(DYNAMIC)
                     
                     call bh2dformtacd(nd,rscales(ilev),
      1                   sourcesort(1,istart),npts,
-     2                   chargesort(1,istart),dipsort(1,1,istart),
+     2                   chargesort(1,1,istart),dipsort(1,1,istart),
      3                   centers(1,ibox),
      3                   nterms(ilev),rmlexp(iaddr(2,ibox)))
                  enddo
@@ -1391,7 +1372,7 @@ c                  flag for including expansions due to charges
 c                  The expansion due to charges will be included
 c                  if ifcharge == 1
 c
-c     charge       in: complex *16
+c     charge       in: complex *16 (nd,2,ns)
 c                  Charge at the source locations
 c
 c     ifdipole     in: Integer
@@ -1399,7 +1380,7 @@ c                 flag for including expansions due to dipoles
 c                 The expansion due to dipoles will be included
 c                 if ifdipole == 1
 c
-c     dip         in: complex *16(2,ns)
+c     dip         in: complex *16(nd,3,ns)
 c                 dipole strengths at the source locations
 c
 c     targ        in: real *8(2,nt)
@@ -1422,7 +1403,7 @@ c     OUTPUT
 c
 c   Updated velocity and gradients at the targets
 c   pot : potential at the targets
-c   grad: gradient at the targets (d/dz,d/dzbar)
+c   grad: gradient at the targets (d/dz_projz, d/dz_projzbar,d/dzbar)
 c   hess: Hessian at the targets
 c-------------------------------------------------------               
         implicit none
@@ -1435,14 +1416,14 @@ c
 
 
         real *8 source(2,*)
-        complex *16 charge(nd,*),dip(nd,2,*)
+        complex *16 charge(nd,2,*),dip(nd,3,*)
 
         integer ifpgh
         real *8 targ(2,*),thresh
         
 c
         complex *16 pot(nd,*)
-        complex *16 grad(nd,2,*)
+        complex *16 grad(nd,3,*)
         complex *16 hess(nd,3,*)
 
 c
@@ -1451,12 +1432,12 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.0) then
           if(ifpgh.eq.1) then
              call bh2d_directcp(nd,source(1,istart),ns,
-     1         charge(1,istart),targ(1,jstart),nt,pot(1,jstart),thresh)
+     1        charge(1,1,istart),targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
             call bh2d_directcg(nd,source(1,istart),ns,
-     1         charge(1,istart),targ(1,jstart),nt,pot(1,jstart),
+     1         charge(1,1,istart),targ(1,jstart),nt,pot(1,jstart),
      1         grad(1,1,jstart),thresh)
           endif
         endif
@@ -1479,13 +1460,13 @@ c
         if(ifcharge.eq.1.and.ifdipole.eq.1) then
           if(ifpgh.eq.1) then
                call bh2d_directcdp(nd,source(1,istart),ns,
-     1            charge(1,istart),dip(1,1,istart),
+     1            charge(1,1,istart),dip(1,1,istart),
      2            targ(1,jstart),nt,pot(1,jstart),thresh)
           endif
 
           if(ifpgh.eq.2) then
                call bh2d_directcdg(nd,source(1,istart),ns,
-     1            charge(1,istart),dip(1,1,istart),
+     1            charge(1,1,istart),dip(1,1,istart),
      2            targ(1,jstart),nt,pot(1,jstart),
      2            grad(1,1,jstart),
      2            thresh)

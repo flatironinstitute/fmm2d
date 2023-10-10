@@ -41,7 +41,7 @@ c
 c     pot(nd)   (complex *16)      : potential is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
-      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr,r
+      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr
       real *8 thresh,rtmp,thresh2
       complex *16 pot(nd,nt)
       complex *16 charge(nd,ns)
@@ -111,7 +111,7 @@ c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh,rtmp,thresh2
+      real *8 xdiff,ydiff,rr,thresh,rtmp,thresh2
       complex *16 pot(nd,nt),grad(nd,2,nt)
       real *8 dx,dy
       complex *16 charge(nd,ns)
@@ -190,9 +190,9 @@ c     pot(nd,nt)     (complex *16)      : potential is incremented
 c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c     hess(nd,3,nt)  (complex *16)      : Hessian is incremented
 c---------------------------------------------------------------------
-      integer i,ns,ifexpon,ii,nd,j,nt
+      integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh,thresh2
+      real *8 xdiff,ydiff,rr,thresh,thresh2
       complex *16 pot(nd,nt),grad(nd,2,nt),hess(nd,3,nt)
       real *8 rtmp, xdiff2, ydiff2
       real *8 rr2, dx, dy, dxx, dxy, dyy
@@ -277,7 +277,7 @@ c
 c     pot(nd,nt)   (complex *16)      : potential is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
-      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr,r
+      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr
       real *8 thresh,thresh2,p1,p2
       complex *16 pot(nd,nt)
       complex *16 dipstr(nd,ns)
@@ -353,7 +353,7 @@ c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh,rtmp
+      real *8 xdiff,ydiff,rr,thresh
       complex *16 pot(nd,nt),grad(nd,2,nt)
       complex *16 dipstr(nd,ns),d1,d2
       real *8 dx1,dx2,dy1,dy2
@@ -447,11 +447,10 @@ c     pot(nd,nt)     (complex *16)      : potential is incremented
 c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c     hess(nd,3,nt)  (complex *16)      : Hessian is incremented
 c---------------------------------------------------------------------
-      integer i,ns,ifexpon,ii,nd,j,nt
+      integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh
+      real *8 xdiff,ydiff,rr,thresh
       complex *16 pot(nd,nt),grad(nd,2,nt),hess(nd,3,nt)
-      real *8 rtmp
       complex *16 dipstr(nd,ns),d1,d2
       real *8 dipvec(nd,2,ns),dx1,dx2,dy1,dy2
       real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
@@ -551,12 +550,12 @@ c
 c     pot(nd,nt)   (complex *16)      : potential is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
-      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr,r
+      real *8 sources(2,ns),targ(2,nt),xdiff,ydiff,rr
       real *8 thresh,rtmp,thresh2
       complex *16 pot(nd,nt)
       real *8 dipvec(nd,2,ns)
       complex *16 charge(nd,ns),dipstr(nd,ns)
-      real *8 xdiff2,ydiff2,p1,p2
+      real *8 p1,p2
 
       thresh2 = thresh*thresh
 c
@@ -632,13 +631,13 @@ c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c---------------------------------------------------------------------
       integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh,rtmp,thresh2
+      real *8 xdiff,ydiff,rr,thresh,rtmp,thresh2
       complex *16 pot(nd,nt),grad(nd,2,nt)
       complex *16 charge(nd,ns),dipstr(nd,ns)
       complex *16 d1,d2
       real *8 dipvec(nd,2,ns)
-      real *8 xdiff2,ydiff2,p1,p2,dxx1,dxx2,dxy1,dxy2,dyy1,dyy2
-      real *8 rr2,rr3,dx,dy,dx1,dx2,dy1,dy2
+      real *8 xdiff2,ydiff2,p1,p2
+      real *8 rr2,dx,dy,dx1,dx2,dy1,dy2
 
       thresh2 = thresh*thresh
 c
@@ -738,9 +737,9 @@ c     pot(nd,nt)     (complex *16)      : potential is incremented
 c     grad(nd,2,nt)  (complex *16)      : gradient is incremented
 c     hess(nd,3,nt)  (complex *16)      : Hessian is incremented
 c---------------------------------------------------------------------
-      integer i,ns,ifexpon,ii,nd,j,nt
+      integer i,ns,ii,nd,j,nt
       real *8 sources(2,ns),targ(2,nt)
-      real *8 xdiff,ydiff,rr,r,thresh,thresh2
+      real *8 xdiff,ydiff,rr,thresh,thresh2
       complex *16 pot(nd,nt),grad(nd,2,nt),hess(nd,3,nt)
       real *8 rtmp
       complex *16 charge(nd,ns),dipstr(nd,ns),d1,d2

@@ -61,7 +61,7 @@
 
       eps = 0.5d-6
 
-      ifcharge = 1
+      ifcharge = 0
       ifdipole = 1
       iper = 0
       ifpgh = 2

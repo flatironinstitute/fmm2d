@@ -26,8 +26,8 @@ def test_bhfmm():
     ttmp = targ[:,0:ntest]
     eps = 10**(-5)
 
-    charges = np.random.uniform(0,1,n) + 0j
-    dipoles = np.random.uniform(0,1,(2,n))+1j*np.random.uniform(0,1,(2,n))
+    charges = np.random.uniform(0,1,(2,n))+1j*np.random.uniform(0,1,(2,n))
+    dipoles = np.random.uniform(0,1,(3,n))+1j*np.random.uniform(0,1,(3,n))
 
     outex=fmm.Output()
 
@@ -35,7 +35,7 @@ def test_bhfmm():
     out=fmm.bhfmm2d(eps=eps,sources=sources,charges=charges,pg=1)
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,charges=charges,pgt=1)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -47,7 +47,7 @@ def test_bhfmm():
     out=fmm.bhfmm2d(eps=eps,sources=sources,dipoles=dipoles,pg=1)
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,dipoles=dipoles,pgt=1)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,bh=1)
 
 
     if(err<eps):
@@ -62,7 +62,7 @@ def test_bhfmm():
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,charges=charges, \
         dipoles=dipoles,pgt=1)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -76,7 +76,7 @@ def test_bhfmm():
         pgt=2)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,bh=1)
 
 
     if(err<eps):
@@ -92,7 +92,7 @@ def test_bhfmm():
         pgt=2)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -106,7 +106,7 @@ def test_bhfmm():
        dipoles=dipoles,pgt=2)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,bh=1)
 
 
     if(err<eps):
@@ -117,7 +117,7 @@ def test_bhfmm():
     itest=itest+1
     out=fmm.bhfmm2d(eps=eps,sources=sources,targets=targ,charges=charges,pgt=1)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=1)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -131,7 +131,7 @@ def test_bhfmm():
       
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,\
         dipoles=dipoles,pgt=1)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -146,7 +146,7 @@ def test_bhfmm():
     out2=fmm.bh2ddir(sources=sources,targets=ttmp, \
         charges=charges, \
         dipoles=dipoles,pgt=1)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,bh=1)
     
     if(err<eps):
         testres[itest] = 1
@@ -156,7 +156,7 @@ def test_bhfmm():
     itest = itest + 1
     out=fmm.bhfmm2d(eps=eps,sources=sources,targets=targ,charges=charges,pgt=2)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=2)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -169,7 +169,7 @@ def test_bhfmm():
     dipoles=dipoles,pgt=2)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,\
     dipoles=dipoles,pgt=2)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -181,7 +181,7 @@ def test_bhfmm():
         dipoles=dipoles,pgt=2)
     out2 =fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,\
         dipoles=dipoles,pgt=2)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,bh=1)
 
 
     if(err<eps):
@@ -197,7 +197,7 @@ def test_bhfmm():
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=1)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -215,7 +215,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=1)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -234,7 +234,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=1)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -251,7 +251,7 @@ def test_bhfmm():
           pgt=2)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -269,7 +269,7 @@ def test_bhfmm():
           pgt=2)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -287,7 +287,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=2)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -297,14 +297,14 @@ def test_bhfmm():
 
 
     nd = 2
-    charges = np.random.uniform(0,1,(nd,n))
-    dipoles = np.random.uniform(0,1,(nd,2,n))
+    charges = np.random.uniform(0,1,(nd,2,n))+1j*np.random.uniform(0,1,(nd,2,n))
+    dipoles = np.random.uniform(0,1,(nd,3,n))+1j*np.random.uniform(0,1,(nd,3,n))
 
     itest = itest+1
     out=fmm.bhfmm2d(eps=eps,sources=sources,charges=charges,pg=1,nd=nd)
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,charges=charges,pgt=1,nd=nd)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -316,7 +316,7 @@ def test_bhfmm():
     out=fmm.bhfmm2d(eps=eps,sources=sources,dipoles=dipoles,pg=1,nd=nd)
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,dipoles=dipoles,pgt=1,nd=nd)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd,bh=1)
 
 
     if(err<eps):
@@ -331,7 +331,7 @@ def test_bhfmm():
     out2 = fmm.bh2ddir(sources=sources,targets=stmp,charges=charges, \
         dipoles=dipoles,pgt=1,nd=nd)
     out2.pot = out2.pottarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -345,7 +345,7 @@ def test_bhfmm():
         pgt=2,nd=nd)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd,bh=1)
 
 
     if(err<eps):
@@ -361,7 +361,7 @@ def test_bhfmm():
         pgt=2,nd=nd)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -375,7 +375,7 @@ def test_bhfmm():
        dipoles=dipoles,pgt=2,nd=nd)
     out2.pot = out2.pottarg
     out2.grad = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pg=2,nd=nd,bh=1)
 
 
     if(err<eps):
@@ -387,7 +387,7 @@ def test_bhfmm():
     itest=itest+1
     out=fmm.bhfmm2d(eps=eps,sources=sources,targets=targ,charges=charges,pgt=1,nd=nd)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=1,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -401,7 +401,7 @@ def test_bhfmm():
       
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,\
         dipoles=dipoles,pgt=1,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -416,7 +416,7 @@ def test_bhfmm():
     out2=fmm.bh2ddir(sources=sources,targets=ttmp, \
         charges=charges, \
         dipoles=dipoles,pgt=1,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=1,nd=nd,bh=1)
     
     if(err<eps):
         testres[itest] = 1
@@ -426,7 +426,7 @@ def test_bhfmm():
     itest = itest + 1
     out=fmm.bhfmm2d(eps=eps,sources=sources,targets=targ,charges=charges,pgt=2,nd=nd)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=2,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -439,7 +439,7 @@ def test_bhfmm():
     dipoles=dipoles,pgt=2,nd=nd)
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,\
     dipoles=dipoles,pgt=2,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -451,7 +451,7 @@ def test_bhfmm():
         dipoles=dipoles,pgt=2,nd=nd)
     out2 =fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,\
         dipoles=dipoles,pgt=2,nd=nd)
-    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=out2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -466,7 +466,7 @@ def test_bhfmm():
     out2=fmm.bh2ddir(sources=sources,targets=ttmp,charges=charges,pgt=1,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -484,7 +484,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=1,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -503,7 +503,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=1,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=1,pgt=1,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -520,7 +520,7 @@ def test_bhfmm():
           pgt=2,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -538,7 +538,7 @@ def test_bhfmm():
           pgt=2,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1
@@ -556,7 +556,7 @@ def test_bhfmm():
           dipoles=dipoles,pgt=2,nd=nd)
     outex.pottarg = out2.pottarg
     outex.gradtarg = out2.gradtarg
-    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd)
+    err = fmm.comperr(ntest=ntest,out=out,outex=outex,pg=2,pgt=2,nd=nd,bh=1)
 
     if(err<eps):
         testres[itest] = 1

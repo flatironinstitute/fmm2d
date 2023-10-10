@@ -261,7 +261,7 @@ c--------------------------------------------------------------------
              grad(idim,3,j)=grad(idim,3,j)-
      1           dippar(idim,3,i)*dconjg(zdis2)
              grad(idim,3,j)=grad(idim,3,j)-
-     1           2*dippar(idim,1,i)*dconjg(zdis2*zdis1)*zdis
+     1           2*dippar(idim,2,i)*dconjg(zdis2*zdis1)*zdis
           enddo
  1111 continue
         enddo

@@ -988,7 +988,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
           d_{j,3}/(\overline{x-x_{j}}) + 
           d_{j,2} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 
-      where $c_{j,1}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
+      where $c_{j,1}$, $c_{j,2}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
       $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
       source locations.
 
@@ -1589,7 +1589,7 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
           d_{j,3}/(\overline{x-x_{j}}) + 
           d_{j,2} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 
-      where $c_{j,1}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
+      where $c_{j,1}$, $c_{j,2}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
       $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
       source locations.
 

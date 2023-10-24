@@ -50,13 +50,13 @@ In general, the subroutine names take the following form::
     - t: Evaluate $u$ and its gradient at $t_{i}$, a collection of target locations specified  by the user.
     - st: Evaluate $u$ and its gradient at both source and target locations $x_{i}$ and $t_{i}$.
 
-- <int-ker>: kernel of interaction (charges/dipoles/both). The charge interactions are given by $c_{j}/\|x-x_{j}\| $, and the dipole interactions are given by $-v_{j} \cdot \nabla (1/\|x-x_{j}\|)$
+- <int-ker>: kernel of interaction (type of sources present)
 
     - c: charges
     - d: dipoles
     - cd: charges + dipoles
  
-- <out>: Flag for evaluating potential or potential + gradient
+- <out>: flag for evaluating potential or potential + gradient
 
     - p: on output only $u$ is evaluated
     - g: on output both $u$ and its gradient are evaluated

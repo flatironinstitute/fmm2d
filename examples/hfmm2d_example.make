@@ -1,7 +1,7 @@
 OS = osx
 
-#HOST = gcc
-HOST = gcc-openmp
+HOST = gcc
+#HOST = gcc-openmp
 #HOST = intel
 #HOST = intel-openmp
 
@@ -32,7 +32,7 @@ endif
 
 ifeq ($(HOST),gcc)
     FC=gfortran -L${LDFMM} 
-    FFLAGS=-fPIC -O3 -funroll-loops -march=native  
+    FFLAGS=-fPIC -O3 -funroll-loops -march=native -std=legacy 
 endif
 
 ifeq ($(HOST),gcc-openmp)

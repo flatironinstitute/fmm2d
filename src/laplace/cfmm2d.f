@@ -1,4 +1,4 @@
-cc Copyright (C) 2018-2019: Le=",nlevelsslie Greengard, Zydrunas Gimbutas, 
+cc Copyright (C) 2018-2019: Leslie Greengard, Zydrunas Gimbutas, 
 cc and Manas Rachh
 c     c Contact: greengard@cims.nyu.edu
 cc

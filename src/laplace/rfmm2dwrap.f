@@ -28,7 +28,7 @@ c   Self-interactions are not included
 c
 c   l2d: charge and dipstr are real valued, x in \R^2
 c
-c   \phi(x_i) = \sum_{j\ne i} charge_j log|x_i-x_j}
+c   \phi(x_i) = \sum_{j\ne i} charge_j log|x_i-x_j|
 c   + dipstr_j/x_i - x_j
 c
 c

@@ -1723,7 +1723,7 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0,bh=0):
             r = r + la.norm(hhex)**2
             err = err + la.norm(hhex-h)**2
         if(pgt > 0):
-            if(cauchy==0):
+            if(cauchy==0 and bh == 0):
                 r = r+la.norm(outex.pottarg[0:ntest])**2
                 err = err+la.norm(outex.pottarg[0:ntest]-out.pottarg[0:ntest])**2
             else:
@@ -1764,7 +1764,7 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0,bh=0):
             if(cauchy==0 and bh==0):
                 g = out.grad[:,:,0:ntest].reshape(2*nd*ntest,)
                 gex = outex.grad[:,:,0:ntest].reshape(2*nd*ntest,)
-            if(cauchy==0 and bh==1):
+            elif(cauchy==0 and bh==1):
                 g = out.grad[:,:,0:ntest].reshape(3*nd*ntest,)
                 gex = outex.grad[:,:,0:ntest].reshape(3*nd*ntest,)
             else:
@@ -1794,7 +1794,7 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0,bh=0):
             if(cauchy==0 and bh==0):
                 g = out.gradtarg[:,:,0:ntest].reshape(2*nd*ntest,)
                 gex = outex.gradtarg[:,:,0:ntest].reshape(2*nd*ntest,)
-            if(cauchy==0 and bh==1):
+            elif(cauchy==0 and bh==1):
                 g = out.gradtarg[:,:,0:ntest].reshape(3*nd*ntest,)
                 gex = outex.gradtarg[:,:,0:ntest].reshape(3*nd*ntest,)
             else:

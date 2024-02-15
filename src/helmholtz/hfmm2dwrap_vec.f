@@ -40,8 +40,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -105,8 +105,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -174,8 +174,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -241,7 +241,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -307,7 +307,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -377,7 +377,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       integer nt
       real *8 targ(2)
       complex *16 pottarg(nd,1)
@@ -645,8 +645,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       complex *16 pot(nd)
       complex *16 grad(nd,2),gradtarg(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
@@ -708,8 +708,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       complex *16 pot(nd,1)
       complex *16 grad(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
@@ -776,8 +776,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       complex *16 pot(nd,1)
       complex *16 grad(nd,2)
       complex *16 hess(nd,3)
@@ -841,7 +841,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       complex *16 pot(nd,1)
       complex *16 grad(nd,2),gradtarg(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
@@ -905,7 +905,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       complex *16 pot(nd,1)
       complex *16 grad(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
@@ -974,7 +974,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       complex *16 pot(nd,1)
       complex *16 grad(nd,2)
       complex *16 hess(nd,3)
@@ -1234,8 +1234,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       complex *16 grad(nd,2),gradtarg(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
@@ -1299,8 +1299,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       complex *16 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
@@ -1369,8 +1369,8 @@ c
 c
 cc     temporary variables
 c
-      complex *16 dipstr(nd)
-      real *8 dipvec(nd,2)
+      complex *16 dipstr(nd,1)
+      real *8 dipvec(nd,2,1)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 
@@ -1433,7 +1433,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       complex *16 grad(nd,2),gradtarg(nd,2)
       complex *16 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
@@ -1499,7 +1499,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       complex *16 hess(nd,3),hesstarg(nd,3)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
@@ -1570,7 +1570,7 @@ c
 c
 cc     temporary variables
 c
-      complex *16 charge(nd)
+      complex *16 charge(nd,1)
       integer ifcharge,ifdipole,iper
       integer ifpgh,ifpghtarg
 

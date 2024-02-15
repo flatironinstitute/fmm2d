@@ -272,7 +272,7 @@ test/bhfmm2d:
 #python
 python: $(STATICLIB)
 	cd python && \
-	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) -m pip install -e .
+	FMM_FLIBS='$(LIBS) $(OMPFLAGS)' FMM_FFLAGS='$(FFLAGS)' $(PYTHON) -m pip install . --verbose
 
 python-dist: $(STATICLIB)
 	cd python && \

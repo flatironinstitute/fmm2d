@@ -30,10 +30,10 @@ c     * In this subroutine and the rest the terms potential
 c       and velocity are interchangably used
 c     
 c
-c    vel(z) = \sum charge_j *\log|z-z_j| + 
-c                (charge_j)_bar (z-z_j)/(z-z_j)_bar+
-c                dip1/(z-z_j) + dip2/(z-z_j)_bar-
-c                dip1_bar (z-z_j)/(z-z_j)^2_bar
+c    vel(z) = \sum charge1_j 2*\log|z-z_j| + 
+c                (charge2_j) (z-z_j)/(z-z_j)_bar+
+c                dip1/(z-z_j) + dip3/(z-z_j)_bar+
+c                dip2 (z-z_j)/(z-z_j)^2_bar
 c
 c    The velocity for stokes is related to the goursat functions
 c    as vel = \phi(z) + z (d/dz (\phi))_bar+\psi(z)
@@ -60,16 +60,20 @@ c   sources(2,ns) : source locations
 c   ifcharge      : flag for including charge interactions
 c                   charge interactions included if ifcharge =1
 c                   not included otherwise
-c   charge(nd,ns)    : charge strengths
-c                   charge(j,i) is the charge strength of the
+c   charge(nd,2,ns) : charge strengths
+c                   charge(j,1,i) is the charge1 strength of the
+c                   jth charge density at source location i, and
+c                   charge(j,2,i) is the charge2 stregth of the 
 c                   jth charge density at source location i
 c   ifdipole      : flag for including dipole interactions
 c                   dipole interactions included if ifcharge =1
 c                   not included otherwise
-c   dip(nd,2,ns)  : dipole strengths
+c   dip(nd,3,ns)  : dipole strengths
 c                   dip(j,1,i) is dip1 for the jth dipole density
-c                   at source location i, and dip(j,2,i) is dip2
-c                   for the jth dipole density at source location i
+c                   at source location i, dip(j,2,i) is dip2
+c                   for the jth dipole density at source location i, and
+c                   dip(j,3,i) is dip3 for the jth dipole density
+c                   at source locaation i
 c   iper          : flag for periodic implmentations. Currently unused
 c   ifpgh         : flag for computing pot/grad/hess
 c                   ifpgh = 1, only potential is computed
@@ -88,10 +92,10 @@ c                     currently)
 c
 c   OUTPUT PARAMETERS
 c   pot(nd,*)       : velocity at the source locations
-c   grad(nd,2,*)    : gradients (d/dz),d/dzbar at the source locations
+c   grad(nd,3,*)    : gradients (d/dz)_projz, (d/dz)_projzbar, d/dzbar at the source locations
 c   hess(nd,3,*)    : hessian  at the source locations (currently unused)
 c   pottarg(nd,*)   : potential at the target locations
-c   gradtarg(nd,2,*): gradient (d/dz), d/dzbar at the target locations
+c   gradtarg(nd,3,*): gradient (d/dz)_projz, (d/dz)_projzbar, d/dzbar at the target locations
 c   hesstarg(nd,3,*): hessian at the target locations (currently unused)
 c
 
@@ -107,10 +111,10 @@ c
       integer ifcharge,ifdipole
       integer iper,ier,ifpgh,ifpghtarg
       real *8 sources(2,ns),targ(2,nt)
-      complex *16 charge(nd,ns),dip(nd,2,ns)
+      complex *16 charge(nd,2,ns),dip(nd,3,ns)
 
-      complex *16 pot(nd,ns),grad(nd,2,ns), hess(nd,3,ns)
-      complex *16 pottarg(nd,nt),gradtarg(nd,2,nt)
+      complex *16 pot(nd,ns),grad(nd,3,ns), hess(nd,3,ns)
+      complex *16 pottarg(nd,nt),gradtarg(nd,3,nt)
       complex *16 hesstarg(nd,3,nt)
 
       call bhfmm2d(nd,eps,ns,sources,ifcharge,charge,

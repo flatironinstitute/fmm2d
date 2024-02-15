@@ -94,14 +94,14 @@ c
          fjs(0) = done
          do i = 1, nterms
             fjs(i) = zero
-	 enddo
+      enddo
 c
-	 if (ifder.eq.1) then
-	    do i=0,nterms
-	       fjder(i)=zero
-	    enddo
-	    fjder(1)=done/(2*rscale)
-	 endif
+      if (ifder.eq.1) then
+        do i=0,nterms
+          fjder(i)=zero
+        enddo
+        fjder(1)=done/(2*rscale)
+      endif
 c
          RETURN
       endif
@@ -148,7 +148,7 @@ c
       fjtemp(ntop)=zero
       fjtemp(ntop-1)=done
       do i=ntop-1,1,-1
-	 dcoef=2*i
+         dcoef=2*i
          ztmp=dcoef*zinv*fjtemp(i)-fjtemp(i+1)
          fjtemp(i-1)=ztmp
 c

@@ -167,7 +167,7 @@ c
 
 
 c     local
-      complex *16, allocatable :: charge(:,:),dip(:,:,:)
+      complex *16, allocatable :: charge(:,:,:),dip(:,:,:)
       complex *16, allocatable :: potl(:,:),gradl(:,:,:),zsum(:)
       complex *16, allocatable :: pottargl(:,:),gradtargl(:,:,:)
       
@@ -189,9 +189,9 @@ c     local
 
 c     allocate necessary arrays
       
-      allocate(charge(nd,nsource),dip(nd,2,nsource),
+      allocate(charge(nd,2,nsource),dip(nd,3,nsource),
      1     potl(nd,nsource),pottargl(nd,ntarg),
-     2     gradl(nd,2,nsource),gradtargl(nd,2,ntarg),stat=ier)
+     2     gradl(nd,3,nsource),gradtargl(nd,3,ntarg),stat=ier)
       allocate(zsum(nd))
       if(ier .ne. 0) then
          print *, "In stfmm2d: cannot allocate Laplace call storage"
@@ -209,15 +209,18 @@ c     set-up appropriate vector charge and dipole arrays
 ccc$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j,zd1,zd2) REDUCTION(+:zsum)
       do i = 1,nsource
          do j = 1,nd
-           charge(j,i) = 0
+           charge(j,1,i) = 0
+           charge(j,2,i) = 0
            dip(j,1,i) = 0
            dip(j,2,i) = 0
+           dip(j,3,i) = 0
          enddo
 
          if(ifstoklet.eq.1) then
            do j=1,nd
-             charge(j,i) = (-ima*stoklet(j,1,i) + stoklet(j,2,i))/4
-             zsum(j) = zsum(j) - charge(j,i)
+             charge(j,1,i) = (-ima*stoklet(j,1,i) + stoklet(j,2,i))/4
+             charge(j,2,i) = dconjg(charge(j,1,i))
+             zsum(j) = zsum(j) - charge(j,1,i)
            enddo
          endif
 
@@ -226,7 +229,8 @@ ccc$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j,zd1,zd2) REDUCTION(+:zsum)
              zd1 = -(-strslet(j,2,i) + ima*strslet(j,1,i))/2
              zd2 =  (-strsvec(j,2,i) + ima*strsvec(j,1,i))
              dip(j,1,i) = -ima*zd1*zd2 
-             dip(j,2,i) =  ima*(zd1*dconjg(zd2) + dconjg(zd1)*zd2) 
+             dip(j,2,i) = -dconjg(dip(j,1,i))
+             dip(j,3,i) =  ima*(zd1*dconjg(zd2) + dconjg(zd1)*zd2) 
            enddo
          endif
       enddo
@@ -255,8 +259,8 @@ c     call biharmonic FMM
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)      
         do i=1,nsource
           do j=1,nd
-            pot(j,1,i) =  imag(potl(j,i)+zsum(j)+charge(j,i)) 
-            pot(j,2,i) = -real(potl(j,i)+zsum(j)+charge(j,i)) 
+            pot(j,1,i) =  imag(potl(j,i)+zsum(j)+charge(j,1,i)) 
+            pot(j,2,i) = -real(potl(j,i)+zsum(j)+charge(j,1,i)) 
           enddo
         enddo
 C$OMP END PARALLEL DO
@@ -276,10 +280,10 @@ C$OMP END PARALLEL DO
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
         do i=1,nsource
           do j=1,nd
-             grad(j,1,1,i) =  imag(gradl(j,2,i))
-             grad(j,2,2,i) = -imag(gradl(j,2,i))
-             grad(j,2,1,i) =  real(2*gradl(j,1,i)-gradl(j,2,i))
-             grad(j,1,2,i) = -real(2*gradl(j,1,i)+gradl(j,2,i))
+             grad(j,1,1,i) =  imag(gradl(j,3,i))
+             grad(j,2,2,i) = -imag(gradl(j,3,i))
+             grad(j,2,1,i) =  real(2*gradl(j,1,i)-gradl(j,3,i))
+             grad(j,1,2,i) = -real(2*gradl(j,1,i)+gradl(j,3,i))
           enddo
         enddo
 C$OMP END PARALLEL DO
@@ -313,12 +317,12 @@ C$OMP END PARALLEL DO
 C$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(i,j)
         do i=1,ntarg
           do j=1,nd
-             gradtarg(j,1,1,i) =  imag(gradtargl(j,2,i))
-             gradtarg(j,2,2,i) = -imag(gradtargl(j,2,i))
+             gradtarg(j,1,1,i) =  imag(gradtargl(j,3,i))
+             gradtarg(j,2,2,i) = -imag(gradtargl(j,3,i))
              gradtarg(j,2,1,i) =  real(2*gradtargl(j,1,i)-
-     1           gradtargl(j,2,i))
+     1           gradtargl(j,3,i))
              gradtarg(j,1,2,i) = -real(2*gradtargl(j,1,i)+
-     1           gradtargl(j,2,i))
+     1           gradtargl(j,3,i))
           enddo
         enddo
 C$OMP END PARALLEL DO

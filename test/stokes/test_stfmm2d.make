@@ -3,17 +3,20 @@ PROJECT = int2-stfmm2d
 HOST = gcc
 HOST = gcc-openmp
 
+arch = native
+# arch = x86-64
+
 # FC - fortran compiler
 # FFLAGS - fortran compiler flags
 
 ifeq ($(HOST),gcc)
     FC=gfortran 
-    FFLAGS=-fPIC -O3 -funroll-loops -march=native -std=legacy 
+    FFLAGS=-fPIC -O3 -funroll-loops -march=${arch} -std=legacy 
 endif
 
 ifeq ($(HOST),gcc-openmp)
     FC = gfortran 
-    FFLAGS=-fPIC -O3 -funroll-loops -march=native -fopenmp -std=legacy
+    FFLAGS=-fPIC -O3 -funroll-loops -march=${arch} -fopenmp -std=legacy
 endif
 
 # Test objects

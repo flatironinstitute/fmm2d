@@ -1,6 +1,6 @@
       implicit real *8 (a-h,o-z)
       real *8, allocatable :: sources(:,:),targ(:,:)
-      complex *16, allocatable :: charges(:),dip(:,:)
+      complex *16, allocatable :: charges(:,:),dip(:,:)
       complex *16, allocatable :: pot(:),grad(:,:),hess(:,:)
       complex *16, allocatable :: pottarg(:),gradtarg(:,:)
       complex *16, allocatable :: hesstarg(:,:)
@@ -30,19 +30,21 @@
       nsrc = 9998
       ntarg = 9999
 
-      allocate(sources(2,nsrc),charges(nsrc),dip(2,nsrc))
+      allocate(sources(2,nsrc),charges(2,nsrc),dip(3,nsrc))
       allocate(targ(2,ntarg))
-      allocate(pot(nsrc),grad(2,nsrc),hess(3,nsrc))
-      allocate(pottarg(ntarg),gradtarg(2,ntarg),hesstarg(3,ntarg))
+      allocate(pot(nsrc),grad(3,nsrc),hess(3,nsrc))
+      allocate(pottarg(ntarg),gradtarg(3,ntarg),hesstarg(3,ntarg))
 
       do i=1,nsrc
 
          sources(1,i) = hkrand(0)
          sources(2,i) = hkrand(0)
 
-         charges(i) = hkrand(0) + ima*hkrand(0) 
+         charges(1,i) = hkrand(0) + ima*hkrand(0) 
+         charges(2,i) = hkrand(0) + ima*hkrand(0) 
          dip(1,i) = hkrand(0) + ima*hkrand(0)
          dip(2,i) = hkrand(0) + ima*hkrand(0)
+         dip(3,i) = hkrand(0) + ima*hkrand(0)
       enddo
 
 
@@ -54,12 +56,12 @@
       nts = min(20,nsrc)
       ntt = min(20,ntarg)
 
-      allocate(potex(nts),gradex(2,nts),hessex(3,nts))
-      allocate(pottargex(ntt),gradtargex(2,ntt),hesstargex(3,ntt))
+      allocate(potex(nts),gradex(3,nts),hessex(3,nts))
+      allocate(pottargex(ntt),gradtargex(3,ntt),hesstargex(3,ntt))
 
       eps = 0.5d-6
 
-      ifcharge = 1
+      ifcharge = 0
       ifdipole = 1
       iper = 0
       ifpgh = 2
@@ -76,8 +78,8 @@ cc       test against exact potential
 c
       call dzero(potex,2*nts)
       call dzero(pottargex,2*ntt)
-      call dzero(gradex,4*nts)
-      call dzero(gradtargex,4*ntt)
+      call dzero(gradex,6*nts)
+      call dzero(gradtargex,6*ntt)
 
       thresh = 1.0d-14
 
@@ -102,8 +104,8 @@ c
       if(ifpghtarg.ge.1) call derr(pottargex,pottarg,2*ntt,errpt)
 
 
-      if(ifpgh.ge.2) call derr(gradex,grad,4*nts,errgs)
-      if(ifpghtarg.ge.2) call derr(gradtargex,gradtarg,4*ntt,errgt)
+      if(ifpgh.ge.2) call derr(gradex,grad,6*nts,errgs)
+      if(ifpghtarg.ge.2) call derr(gradtargex,gradtarg,6*ntt,errgt)
 
       call errprintbh(errps,errgs,errhs,errpt,errgt,
      1  errht)

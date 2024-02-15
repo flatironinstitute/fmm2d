@@ -1,7 +1,7 @@
 PROJECT = int2-bhfmm2d
 
 HOST = gcc
-HOST = gcc-openmp
+#HOST = gcc-openmp
 
 # FC - fortran compiler
 # FFLAGS - fortran compiler flags

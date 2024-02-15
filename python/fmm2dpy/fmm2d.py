@@ -983,13 +983,14 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
-          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) + 
-          d_{j,2}/(\overline{x-x_{j}}) - 
-          \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
+          u(x) = \sum_{j=1}^{N} 2 c_{j,1} * log\(\|x-x_{j}\|\) + 
+          c_{j,2} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) + 
+          d_{j,3}/(\overline{x-x_{j}}) + 
+          d_{j,2} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 
-      where $c_{j}$ are the charge densities, $d_{j,1}$, $d_{j,2}$ are the dipole strengths,
-      and $x_{j}$ are the source locations.
+      where $c_{j,1}$, $c_{j,2}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
+      $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
+      source locations.
 
       When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
       sum
@@ -1001,10 +1002,10 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
 
         sources: float(2,n)   
                source locations (x_{j})
-        charges: complex(nd,n) or complex(n)
-               charge densities (c_{j})
-        dipoles: complex(nd,2,n) or complex(2,n)
-               dipole densities (d_{j,1}, d_{j,2})
+        charges: complex(nd,2,n) or complex(2,n)
+               charge densities (c_{j,1}, c_{j,2})
+        dipoles: complex(nd,3,n) or complex(3,n)
+               dipole densities (d_{j,1}, d_{j,2}, d_{j,3})
         targets: float(2,nt)
                 target locations (x)
         pg:  integer
@@ -1043,27 +1044,28 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
         print("Nothing to compute, set either pg or pgt to non-zero")
         return out
     if charges is not None:
-        if nd == 1:
-            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
-            charges = charges.reshape(1,ns)
+        if nd == 1 and ns>1:
+            assert charges.shape[0] == 2 and charges.shape[1] == ns, "Charges must be of shape [2, number of source]"
+        if nd == 1 and ns==1:
+            assert charges.shape[0] == 2, "Charges must of shape [2, number of sources]"
         if nd>1:
-            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
+            assert charges.shape[0] == nd and charges.shape[1] == 2 and charges.shape[2]==ns, "Charges must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources" 
         ifcharge = 1
-        charges = charges.reshape([nd,ns])
+        charges = charges.reshape([nd,2,ns])
     else:
-       charges = np.zeros([nd,ns],dtype='complex') 
+       charges = np.zeros([nd,2,ns],dtype='complex') 
 
     if(dipoles is not None):
         if nd == 1 and ns>1:
-            assert dipoles.shape[0] == 2 and dipoles.shape[1] == ns, "Dipole must of shape [2, number of sources]"
+            assert dipoles.shape[0] == 3 and dipoles.shape[1] == ns, "Dipole must of shape [3, number of sources]"
         if nd == 1 and ns==1:
-            assert dipoles.shape[0] == 2, "Dipole must of shape [2, number of sources]"
+            assert dipoles.shape[0] == 3, "Dipole must of shape [3, number of sources]"
         if nd>1:
-            assert dipoles.shape[0] == nd and dipoles.shape[1] == 2 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
-        dipoles = dipoles.reshape([nd,2,ns])
+            assert dipoles.shape[0] == nd and dipoles.shape[1] == 3 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
+        dipoles = dipoles.reshape([nd,3,ns])
         ifdipole = 1
     else:
-        dipoles = np.zeros([nd,2,ns],dtype='complex')
+        dipoles = np.zeros([nd,3,ns],dtype='complex')
     if(targets is not None):
         assert targets.shape[0] == 2, "The first dimension of targets must be 2"
         iftarg = 1
@@ -1079,11 +1081,11 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
         if(pgt>0):
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):
-            out.gradtarg = out.gradtarg.reshape(2,nt)
+            out.gradtarg = out.gradtarg.reshape(3,nt)
         if(pg>0):
             out.pot = out.pot.reshape(ns,)
         if(pg==2):
-            out.grad = out.grad.reshape(2,ns)
+            out.grad = out.grad.reshape(3,ns)
 
     if(pg<2):
         out.grad = None
@@ -1574,7 +1576,6 @@ def c2ddir(*,sources,targets,charges=None,dipstr=None,
 
 def bh2ddir(*,sources,targets,charges=None,dipoles=None,
           pgt=0,nd=1,thresh=1e-16):
-
     r"""
       This subroutine computes the N-body biharmonic interactions 
       in two dimensions where the interaction kernel is related to the
@@ -1583,13 +1584,14 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + 
-          \overline{c}_{j} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) - 
-          d_{j,2}/(\overline{x-x_{j}}) - 
-          \overline{d_{j,1}} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
+          u(x) = \sum_{j=1}^{N} 2 c_{j,1} * log\(\|x-x_{j}\|\) + 
+          c_{j,2} (x-x_{j})/(\overline{x-x_{j}) + d_{j,1}/(x-x_{j}) + 
+          d_{j,3}/(\overline{x-x_{j}}) + 
+          d_{j,2} (x-x_{j})/(\overline{x-x_{j}})^2\, ,
 
-      where $c_{j}$ are the charge densities, $d_{j,1}$, $d_{j,2}$ are the dipole strengths,
-      and $x_{j}$ are the source locations.
+      where $c_{j,1}$, $c_{j,2}$ are the charge densities, $d_{j,1}$, $d_{j,2}$, 
+      $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
+      source locations.
 
       When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
       sum
@@ -1601,10 +1603,10 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
 
         sources: float(2,n)   
                source locations (x_{j})
-        charges: complex(nd,n) or complex(n)
-               charge densities (c_{j})
-        dipoles: complex(nd,2,n) or complex(2,n)
-               dipole densities (d_{j,1}, d_{j,2})
+        charges: complex(nd,2,n) or complex(2,n)
+               charge densities (c_{j,1}, c_{j,2})
+        dipoles: complex(nd,3,n) or complex(3,n)
+               dipole densities (d_{j,1}, d_{j,2}, d_{j,3})
         targets: float(2,nt)
                 target locations (x)
         pgt:  integer
@@ -1614,7 +1616,6 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
         
         nd:   integer
                number of densities
-        thresh: contribution of source x_i, at location x ignored if |x-x_i|<=thresh
 
       Returns:
         out.pottarg: potential at target locations if requested
@@ -1640,27 +1641,28 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
     ifdipole = 0
     iftarg = 0
     if charges is not None:
-        if nd == 1:
-            assert charges.shape[0] == ns, "Charges must be same length as second dimension of sources"
-            charges = charges.reshape(1,ns)
+        if nd == 1 and ns>1:
+            assert charges.shape[0] == 2 and charges.shape[1] == ns, "Charges must be of shape [2, number of source]"
+        if nd == 1 and ns==1:
+            assert charges.shape[0] == 2, "Charges must of shape [2, number of sources]"
         if nd>1:
-            assert charges.shape[0] == nd and charges.shape[1]==ns, "Charges must be of shape [nd,ns] where nd is number of densities, and ns is number of sources" 
-        charges = charges.reshape([nd,ns])
+            assert charges.shape[0] == nd and charges.shape[1] == 2 and charges.shape[2]==ns, "Charges must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources" 
         ifcharge = 1
+        charges = charges.reshape([nd,2,ns])
     else:
-       charges = np.zeros([nd,ns],dtype='complex') 
+       charges = np.zeros([nd,2,ns],dtype='complex') 
 
     if(dipoles is not None):
         if nd == 1 and ns>1:
-            assert dipoles.shape[0] == 2 and dipoles.shape[1] == ns, "Dipole must of shape [2, number of sources]"
+            assert dipoles.shape[0] == 3 and dipoles.shape[1] == ns, "Dipole must of shape [3, number of sources]"
         if nd == 1 and ns==1:
-            assert dipoles.shape[0] == 2, "Dipole must of shape [2, number of sources]"
+            assert dipoles.shape[0] == 3, "Dipole must of shape [3, number of sources]"
         if nd>1:
-            assert dipoles.shape[0] == nd and dipoles.shape[1] == 2 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
-        dipoles = dipoles.reshape([nd,2,ns])
+            assert dipoles.shape[0] == nd and dipoles.shape[1] == 3 and dipoles.shape[2]==ns, "Dipole must of shape [nd,2, number of sources]"
+        dipoles = dipoles.reshape([nd,3,ns])
         ifdipole = 1
     else:
-        dipoles = np.zeros([nd,2,ns],dtype='complex')
+        dipoles = np.zeros([nd,3,ns],dtype='complex')
 
     assert targets.shape[0] == 2, "The first dimension of targets must be 2"
     nt = targets.shape[1]
@@ -1682,13 +1684,13 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
         if(pgt>0):
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):
-            out.gradtarg = out.gradtarg.reshape(2,nt,)
+            out.gradtarg = out.gradtarg.reshape(3,nt,)
 
     return out
 
 
 
-def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
+def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0,bh=0):
     r = 0
     err = 0
     if(nd == 1):
@@ -1700,9 +1702,12 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
                 r = r+la.norm(outex.pot.real[0:ntest])**2
                 err = err+la.norm(outex.pot.real[0:ntest]-out.pot.real[0:ntest])**2
         if(pg >= 2):
-            if(cauchy==0):
+            if(cauchy==0 and bh == 0):
                 g = out.grad[:,0:ntest].reshape(2*ntest,)
                 gex = outex.grad[:,0:ntest].reshape(2*ntest,)
+            elif(cauchy==0 and bh==1):
+                g = out.grad[:,0:ntest].reshape(3*ntest,)
+                gex = outex.grad[:,0:ntest].reshape(3*ntest,)
             else:
                 g = out.grad[0:ntest].reshape(ntest,)
                 gex = outex.grad[0:ntest].reshape(ntest,)
@@ -1718,16 +1723,19 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
             r = r + la.norm(hhex)**2
             err = err + la.norm(hhex-h)**2
         if(pgt > 0):
-            if(cauchy==0):
+            if(cauchy==0 and bh == 0):
                 r = r+la.norm(outex.pottarg[0:ntest])**2
                 err = err+la.norm(outex.pottarg[0:ntest]-out.pottarg[0:ntest])**2
             else:
                 r = r+la.norm(outex.pottarg.real[0:ntest])**2
                 err = err+la.norm(outex.pottarg.real[0:ntest]-out.pottarg.real[0:ntest])**2
         if(pgt >= 2):
-            if(cauchy==0):
+            if(cauchy==0 and bh==0):
                 g = out.gradtarg[:,0:ntest].reshape(2*ntest,)
                 gex = outex.gradtarg[:,0:ntest].reshape(2*ntest,)
+            elif(cauchy==0 and bh==1):
+                g = out.gradtarg[:,0:ntest].reshape(3*ntest,)
+                gex = outex.gradtarg[:,0:ntest].reshape(3*ntest,)
             else:
                 g = out.gradtarg[0:ntest].reshape(ntest,)
                 gex = outex.gradtarg[0:ntest].reshape(ntest,)
@@ -1753,9 +1761,12 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
             r = r+la.norm(pex)**2
             err = err+la.norm(p-pex)**2
         if(pg >= 2):
-            if(cauchy==0):
+            if(cauchy==0 and bh==0):
                 g = out.grad[:,:,0:ntest].reshape(2*nd*ntest,)
                 gex = outex.grad[:,:,0:ntest].reshape(2*nd*ntest,)
+            elif(cauchy==0 and bh==1):
+                g = out.grad[:,:,0:ntest].reshape(3*nd*ntest,)
+                gex = outex.grad[:,:,0:ntest].reshape(3*nd*ntest,)
             else:
                 g = out.grad[:,0:ntest].reshape(nd*ntest,)
                 gex = outex.grad[:,0:ntest].reshape(nd*ntest,)
@@ -1780,9 +1791,12 @@ def comperr(*,ntest,out,outex,pg=0,pgt=0,nd=1,cauchy=0):
             r = r+la.norm(pex)**2
             err = err+la.norm(p-pex)**2
         if(pgt >= 2):
-            if(cauchy==0):
+            if(cauchy==0 and bh==0):
                 g = out.gradtarg[:,:,0:ntest].reshape(2*nd*ntest,)
                 gex = outex.gradtarg[:,:,0:ntest].reshape(2*nd*ntest,)
+            elif(cauchy==0 and bh==1):
+                g = out.gradtarg[:,:,0:ntest].reshape(3*nd*ntest,)
+                gex = outex.gradtarg[:,:,0:ntest].reshape(3*nd*ntest,)
             else:
                 g = out.gradtarg[:,0:ntest].reshape(nd*ntest,)
                 gex = outex.gradtarg[:,0:ntest].reshape(nd*ntest,)

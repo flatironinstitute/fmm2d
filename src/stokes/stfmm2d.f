@@ -11,16 +11,16 @@ c
 c     The Stokeslet, G_{ij}, and its associated pressure tensor, P_j,
 c     (without the 1/2pi scaling) are
 c
-c   UPDATE formulae
-c
-c     G_{ij}(x,y) = (r_i r_j)/(2r^3) + delta_{ij}/(2r)
-c     P_j(x,y) = r_j/r^3
+c     G_{ij}(x,y) = (r_i r_j)/(2r^2) - delta_{ij}log(r)/(2)
+c     P_j(x,y) = r_j/r^2
 c
 c     The (Type I) stresslet, T_{ijk}, and its associated pressure
-c     tensor, PI_{jk}, (without the 1/4pi scaling) are
+c     tensor, PI_{jk}, (without the 1/2pi scaling) are
 c     
-c     T_{ijk}(x,y) = -3 r_i r_j r_k/ r^5
-c     PI_{jk} = -2 delta_{jk} + 6 r_j r_k/r^5      
+c     T_{ijk}(x,y) = -2 r_i r_j r_k/ r^4
+c     PI_{jk} = - delta_{jk}/r^2 + 2 r_j r_k/r^4      
+c
+c
 c
       
 

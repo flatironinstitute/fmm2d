@@ -36,10 +36,10 @@ c
 c     u(x) = sum_j charge(j)*G(x,y(j))
 c     + dipstr(j)*(G_{y1}(x,y(j))*dipvec(1,j) + G_{y2}*dipvec(2,j))
 c     + quadstr(j)*(G_{y1y1}(x,y(j))*quadvec(1,j)
-c             + G_{y1y2}*quadvec(2,j) + G_{y2y2}*quadvec(2,j))
+c             + G_{y1y2}*quadvec(2,j) + G_{y2y2}*quadvec(3,j))
 c     + octstr(j)*(G_{y1y1y1}(x,y(j))*octvec(1,j)
-c             + G_{y1y1y2}*octvec(2,j) + G_{y1y2y2}*octvec(2,j)
-c             + G_{y1y2y2}*octvec(2,j))
+c             + G_{y1y1y2}*octvec(2,j) + G_{y1y2y2}*octvec(3,j)
+c             + G_{y2y2y2}*octvec(4,j))
 c
 c     INPUT PARAMETERS:
 c      

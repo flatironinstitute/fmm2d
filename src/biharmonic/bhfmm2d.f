@@ -51,7 +51,7 @@ c     * In this subroutine and the rest the terms potential
 c       and velocity are interchangably used
 c     
 c
-c    vel(z) = \sum charge1_j *\log|z-z_j| + 
+c    vel(z) = \sum 2*charge1_j *\log|z-z_j| + 
 c                (charge2_j) (z-z_j)/(z-z_j)_bar+
 c                dip1_j/(z-z_j) + dip2_j/(z-z_j)_bar-
 c                dip3_j (z-z_j)/(z-z_j)^2_bar
@@ -65,8 +65,8 @@ c
 c    \phi(z) = \sum charge_j log(z-z_j)+
 c                     dip1/(z-z_j)
 c
-c    \psi(z) = \sum dippar2_bar/(z-z_j)+
-c               z_j_bar dippar1/(z-z_j)^2 +
+c    \psi(z) = \sum dip2_bar/(z-z_j)+
+c               z_j_bar dip1/(z-z_j)^2 +
 c
 c    In all of the sums above, the terms for which |z-z_{j}| <= 2^-51|b|
 c    where |b| is the size of the root box will be ignored.

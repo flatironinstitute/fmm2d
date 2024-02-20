@@ -58,8 +58,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'fmm2d'
-copyright = u'2018-2019 The Simons Foundation, Inc. - All Rights Reserved'
-author = u"Zydrunas Gimbutas, Leslie Greengard, Mike O'Neil, Manas Rachh, and Vladimir Rokhlin"
+copyright = u'2018-2023 The Simons Foundation, Inc. - All Rights Reserved'
+author = u"Travis Askham, Zydrunas Gimbutas, Leslie Greengard, Libin Lu, Mike O'Neil, Manas Rachh, and Vladimir Rokhlin"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

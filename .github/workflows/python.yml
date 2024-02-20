@@ -3,13 +3,14 @@ name: Python Build
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v*
       - py_v*
   pull_request:
     branches:
-      - master
+      - main
+  workflow_dispatch
 
 jobs:
   Linux:

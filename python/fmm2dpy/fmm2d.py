@@ -1,6 +1,7 @@
 from . import hfmm2d_fortran as hfmm
 from . import lfmm2d_fortran as lfmm
 from . import bhfmm2d_fortran as bhfmm
+from . import stfmm2d_fortran as stfmm
 import numpy as np
 import numpy.linalg as la
 
@@ -12,6 +13,8 @@ class Output():
     pottarg = None
     gradtarg = None
     hesstarg = None
+    pre = None
+    pretarg = None
     ier = 0
 
 def hfmm2d(*,eps,zk,sources,charges=None,dipstr=None,dipvec=None,
@@ -1094,6 +1097,169 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
 
     return out
 
+def stfmm2d(*,eps,sources,stoklet=None,strslet=None,strsvec=None,targets=None,ifppreg=0,ifppregtarg=0,nd=1):
+    r"""
+      Stokes FMM in R^{2}: evaluate all pairwise particle
+      interactions (ignoring self-interactions) and
+      interactions with targs.
+ 
+      This routine computes sums of the form
+ 
+        u(x) = sum_m G_{ij}(x,y^{(m)}) sigma^{(m)}_j
+                 + sum_m T_{ijk}(x,y^{(m)}) mu^{(m)}_j nu^{(m)}_k
+ 
+      where sigma^{(m)} is the Stokeslet charge, mu^{(m)} is the
+      stresslet charge, and nu^{(m)} is the stresslet orientation
+      (note that each of these is a 2 vector per source point y^{(m)}).
+      For x a source point, the self-interaction in the sum is omitted.
+ 
+      Optionally, the associated pressure p(x) and gradient grad u(x)
+      are returned
+ 
+        p(x) = sum_m P_j(x,y^m) sigma^{(m)}_j
+           + sum_m T_{ijk}(x,y^{(m)}) PI_{jk} mu^{(m)}_j nu^{(m)}_k
+ 
+        grad u(x) = grad[sum_m G_{ij}(x,y^m) sigma^{(m)}_j
+                 + sum_m T_{ijk}(x,y^{(m)}) mu^{(m)}_j nu^{(m)}_k]
+
+      where G_{ij} is the Stokelet, P_{j} its associated pressure
+      tensor, T_{ijk} is the type I stresslet, and PI_{jk} is its 
+      associated pressure tensor. These kernels are given by
+
+         G_{ij} = (r_{i} r_{j})/(2 r^2) - \delta_{ij} \log(r)/2
+         P_{j} = r_{j}/r^2
+         T_{ijk} = - 2 r_{i} r_{j} r_{k}/r^4
+         PI_{jk} = -\delta_{jk}/r^2 + 2r_{j} r_{k}/r^{4}
+
+      where for a source y, and target x, r_{i} = x_{i}-y_{i}, 
+      and r = \sqrt{r_{1}^2 + r_{2}^2}
+      
+      Args:
+        eps: float   
+               precision requested
+        sources: float(2,n)   
+               source locations
+        stoklet: float(nd,2,n) or float(2,n)
+               Stokeslet charge strengths (sigma vectors above)
+        strslet: float(nd,2,n) or float(2,n)
+               stresslet strengths (mu vectors above)
+        strsvec: float(nd,2,n) or float(2,n)
+               stresslet orientations (nu vectors above)
+        targets: float(2,nt)
+               target locations (x)
+
+        ifppreg: integer
+               flag for evaluating potential, gradient, and pressure
+               at the sources
+               ifppreg = 1, only potential
+               ifppreg = 2, potential and pressure
+               ifppreg = 3, potential, pressure, and gradient
+
+        ifppregtarg: integer
+               flag for evaluating potential, gradient, and pressure
+               at the targets
+               ifppregtarg = 1, only potential
+               ifppregtarg = 2, potential and pressure
+               ifppregtarg = 3, potential, pressure, and gradient
+
+        nd:   integer
+               number of densities
+
+      Returns:
+        out.pot: velocity at source locations if requested
+        out.pre: pressure at source locations if requested
+        out.grad: gradient of velocity at source locations if requested
+        out.pottarg: velocity at target locations if requested
+        out.pretarg: pressure at target locations if requested
+        out.gradtarg: gradient of velocity at target locations if requested
+              
+      Example:
+        see stfmmexample.py
+
+    r"""
+    out = Output()
+
+    if(ifppreg == 0 and ifppregtarg == 0):
+        print("Nothing to compute, set either ifppreg or ifppregtarg to non-zero")
+        return out
+
+    if(stoklet is None and strslet is None and strsvec is None):
+        print("Nothing to compute, set either stoklet or strslet+strsvec to non-None")
+        return out
+
+    if(strslet is not None and strsvec is None):
+        print("strslet and strsvec mush be both None or both not None")
+        return out
+    if(strslet is None and strsvec is not None):
+        print("strslet and strsvec mush be both None or both not None")
+        return out
+
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    if(targets is not None):
+        assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+        if(np.size(np.shape(targets))==2):
+            nt = targets.shape[1]
+        if(np.size(np.shape(targets))==1):
+            nt = 1
+    else:
+        targets = np.zeros([2,0],dtype='double')
+        nt = 0
+
+    ifstoklet = 0
+    ifstrslet = 0
+
+    if(stoklet is not None):
+        if(nd == 1 and ns>1):
+            assert stoklet.shape[0] == 2 and stoklet.shape[1] == ns, "stoklet vectors must be of shape [2,number of sources]"
+        if(nd == 1 and ns==1):
+            assert stoklet.shape[0] == 2, "stoklet vectors must be of shape [2,number of sources]"
+        if(nd>1):
+            assert stoklet.shape[0] == nd and stoklet.shape[1] == 2 and stoklet.shape[2] == ns, "stoklet vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+        stoklet = stoklet.reshape([nd,2,ns])
+        ifstoklet = 1
+    else:
+        stoklet = np.zeros([nd,2,ns],dtype='double')
+
+    if(strslet is not None and strsvec is not None):
+        if(nd == 1 and ns>1):
+            assert strslet.shape[0] == 2 and strslet.shape[1] == ns, "strslet vectors must be of shape [2,number of sources]"
+            assert strsvec.shape[0] == 2 and strsvec.shape[1] == ns, "strsvec vectors must be of shape [2,number of sources]"
+        if(nd == 1 and ns==1):
+            assert strslet.shape[0] == 2, "strslet vectors must be of shape [2,number of sources]"
+            assert strsvec.shape[0] == 2, "strsvec vectors must be of shape [2,number of sources]"
+        if(nd>1):
+            assert strslet.shape[0] == nd and strslet.shape[1] == 2 and strslet.shape[2] == ns, "strslet vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+            assert strsvec.shape[0] == nd and strsvec.shape[1] == 2 and strsvec.shape[2] == ns, "strsvec vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+        strslet = strslet.reshape([nd,2,ns])
+        strsvec = strsvec.reshape([nd,2,ns])
+        ifstrslet = 1
+    else:
+        strslet = np.zeros([nd,2,ns],dtype='double')
+        strsvec = np.zeros([nd,2,ns],dtype='double')
+
+    out.pot,out.pre,out.grad,out.pottarg,out.pretarg,out.gradtarg,out.ier = stfmm.stfmm2d(eps,sources,ifstoklet,stoklet,ifstrslet,strslet,strsvec,ifppreg,targets,ifppregtarg,nd,ns,nt)
+
+    if(ifppreg < 3):
+        out.grad = None
+    if(ifppregtarg < 3):
+        out.gradtarg = None
+
+    if(ifppreg < 2):
+        out.pre = None
+    if(ifppregtarg < 2):
+        out.pretarg = None
+
+    if(ifppreg < 1):
+        out.pot = None
+    if(ifppregtarg < 1):
+        out.pottarg = None
+
+    return out
+
 def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
           pgt=0,nd=1,thresh=1e-16):
     r"""
@@ -1685,6 +1851,177 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
             out.pottarg = out.pottarg.reshape(nt,)
         if(pgt==2):
             out.gradtarg = out.gradtarg.reshape(3,nt,)
+
+    return out
+
+
+def st2ddir(*,eps,sources,stoklet=None,strslet=None,strsvec=None,targets=None,ifppreg=0,ifppregtarg=0,nd=1,thresh=1e-16):
+    r"""
+      This subroutine evaluates all pairwise particle
+      interactions (ignoring self-interactions) and
+      interactions with targs.
+ 
+      This routine computes sums of the form
+ 
+        u(x) = sum_m G_{ij}(x,y^{(m)}) sigma^{(m)}_j
+                 + sum_m T_{ijk}(x,y^{(m)}) mu^{(m)}_j nu^{(m)}_k
+ 
+      where sigma^{(m)} is the Stokeslet charge, mu^{(m)} is the
+      stresslet charge, and nu^{(m)} is the stresslet orientation
+      (note that each of these is a 2 vector per source point y^{(m)}).
+      For x a source point, the self-interaction in the sum is omitted.
+ 
+      Optionally, the associated pressure p(x) and gradient grad u(x)
+      are returned
+ 
+        p(x) = sum_m P_j(x,y^m) sigma^{(m)}_j
+           + sum_m T_{ijk}(x,y^{(m)}) PI_{jk} mu^{(m)}_j nu^{(m)}_k
+ 
+        grad u(x) = grad[sum_m G_{ij}(x,y^m) sigma^{(m)}_j
+                 + sum_m T_{ijk}(x,y^{(m)}) mu^{(m)}_j nu^{(m)}_k]
+
+      where G_{ij} is the Stokelet, P_{j} its associated pressure
+      tensor, T_{ijk} is the type I stresslet, and PI_{jk} is its 
+      associated pressure tensor. These kernels are given by
+
+         G_{ij} = (r_{i} r_{j})/(2 r^2) - \delta_{ij} \log(r)/2
+         P_{j} = r_{j}/r^2
+         T_{ijk} = - 2 r_{i} r_{j} r_{k}/r^4
+         PI_{jk} = -\delta_{jk}/r^2 + 2r_{j} r_{k}/r^{4}
+
+      where for a source y, and target x, r_{i} = x_{i}-y_{i}, 
+      and r = \sqrt{r_{1}^2 + r_{2}^2}
+      
+      Args:
+        eps: float   
+               precision requested
+        sources: float(2,n)   
+               source locations
+        stoklet: float(nd,2,n) or float(2,n)
+               Stokeslet charge strengths (sigma vectors above)
+        strslet: float(nd,2,n) or float(2,n)
+               stresslet strengths (mu vectors above)
+        strsvec: float(nd,2,n) or float(2,n)
+               stresslet orientations (nu vectors above)
+        targets: float(2,nt)
+               target locations (x)
+
+        ifppreg: integer
+               flag for evaluating potential, gradient, and pressure
+               at the sources
+               ifppreg = 1, only potential
+               ifppreg = 2, potential and pressure
+               ifppreg = 3, potential, pressure, and gradient
+
+        ifppregtarg: integer
+               flag for evaluating potential, gradient, and pressure
+               at the targets
+               ifppregtarg = 1, only potential
+               ifppregtarg = 2, potential and pressure
+               ifppregtarg = 3, potential, pressure, and gradient
+
+        nd:   integer
+               number of densities
+        
+        thresh: contribution of source x_i, at location x ignored if |x-x_i|<=thresh
+
+      Returns:
+        out.pot: velocity at source locations if requested
+        out.pre: pressure at source locations if requested
+        out.grad: gradient of velocity at source locations if requested
+        out.pottarg: velocity at target locations if requested
+        out.pretarg: pressure at target locations if requested
+        out.gradtarg: gradient of velocity at target locations if requested
+              
+      Example:
+        see stfmmexample.py
+
+    r"""
+    out = Output()
+
+    if(ifppreg == 0 and ifppregtarg == 0):
+        print("Nothing to compute, set either ifppreg or ifppregtarg to non-zero")
+        return out
+
+    if(stoklet == None and strslet == None and strsvec == None):
+        print("Nothing to compute, set either stoklet or strslet+strsvec to non-None")
+        return out
+
+    if(strslet is not None and strsvec is None):
+        print("strslet and strsvec mush be both None or both not None")
+        return out
+    if(strslet is None and strsvec is not None):
+        print("strslet and strsvec mush be both None or both not None")
+        return out
+
+    assert sources.shape[0] == 2, "The first dimension of sources must be 2"
+    if(np.size(np.shape(sources))==2):
+        ns = sources.shape[1]
+    if(np.size(np.shape(sources))==1):
+        ns = 1
+    if(targets is not None):
+        assert targets.shape[0] == 2, "The first dimension of targets must be 2"
+        if(np.size(np.shape(targets))==2):
+            nt = targets.shape[1]
+        if(np.size(np.shape(targets))==1):
+            nt = 1
+    else:
+        targets = np.zeros([2,0],dtype='double')
+        nt = 0
+
+    ifstoklet = 0
+    ifstrslet = 0
+
+    if(stoklet is not None):
+        if(nd == 1 and ns>1):
+            assert stoklet.shape[0] == 2 and stoklet.shape[1] == ns, "stoklet vectors must be of shape [2,number of sources]"
+        if(nd == 1 and ns==1):
+            assert stoklet.shape[0] == 2, "stoklet vectors must be of shape [2,number of sources]"
+        if(nd>1):
+            assert stoklet.shape[0] == nd and stoklet.shape[1] == 2 and stoklet.shape[2] == ns, "stoklet vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+        stoklet = stoklet.reshape([nd,2,ns])
+        ifstoklet = 1
+    else:
+        stoklet = np.zeros([nd,2,ns],dtype='double')
+
+    if(strslet is not None and strsvec is not None):
+        if(nd == 1 and ns>1):
+            assert strslet.shape[0] == 2 and strslet.shape[1] == ns, "strslet vectors must be of shape [2,number of sources]"
+            assert strsvec.shape[0] == 2 and strsvec.shape[1] == ns, "strsvec vectors must be of shape [2,number of sources]"
+        if(nd == 1 and ns==1):
+            assert strslet.shape[0] == 2, "strslet vectors must be of shape [2,number of sources]"
+            assert strsvec.shape[0] == 2, "strsvec vectors must be of shape [2,number of sources]"
+        if(nd>1):
+            assert strslet.shape[0] == nd and strslet.shape[1] == 2 and strslet.shape[2] == ns, "strslet vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+            assert strsvec.shape[0] == nd and strsvec.shape[1] == 2 and strsvec.shape[2] == ns, "strsvec vectors must be of shape [nd,2,ns] where nd is number of densities, and ns is number of sources"
+        strslet = strslet.reshape([nd,2,ns])
+        strsvec = strsvec.reshape([nd,2,ns])
+        ifstrslet = 1
+    else:
+        strslet = np.zeros([nd,2,ns],dtype='double')
+        strsvec = np.zeros([nd,2,ns],dtype='double')
+
+    if(ifstoklet == 1 and ifstrslet == 0): 
+        out.pot,out.pre,out.grad = stfmm.st2ddirectstokg(sources,stoklet,sources,thresh,nd,ns,nt)
+        out.pottarg,out.pretarg,out.gradtarg = stfmm.st2ddirectstokg(sources,stoklet,targets,thresh,nd,ns,nt)
+    else:
+        out.pot,out.pre,out.grad = stfmm.st2ddirectstokstrsg(sources,stoklet,1,strslet,strsvec,sources,thresh,nd,ns,nt)
+        out.pottarg,out.pretarg,out.gradtarg = stfmm.st2ddirectstokstrsg(sources,stoklet,1,strslet,strsvec,targets,thresh,nd,ns,nt)
+
+    if(ifppreg < 3):
+        out.grad = None
+    if(ifppregtarg < 3):
+        out.gradtarg = None
+
+    if(ifppreg < 2):
+        out.pre = None
+    if(ifppregtarg < 2):
+        out.pretarg = None
+
+    if(ifppreg < 1):
+        out.pot = None
+    if(ifppregtarg < 1):
+        out.pottarg = None
 
     return out
 

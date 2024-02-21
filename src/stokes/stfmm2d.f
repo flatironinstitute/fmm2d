@@ -29,6 +29,16 @@ c
      $                 ifstoklet, stoklet, ifstrslet, strslet, strsvec,
      $                 ifppreg, pot, pre, grad, ntarg, targ, 
      $                 ifppregtarg, pottarg, pretarg, gradtarg,ier)
+
+cf2py  intent(in) nd,eps
+cf2py  intent(in) nsource,source
+cf2py  intent(in) ifstoklet,stoklet
+cf2py  intent(in) ifstrslet,strslet,strsvec
+cf2py  intent(in) ifppreg,ifppregtarg
+cf2py  intent(in) ntarg,targ
+cf2py  intent(out) pot,pre,grad
+cf2py  intent(out) pottarg,pretarg,gradtarg
+cf2py  intent(out) ier
 c
 c     Stokes FMM in R^{3}: evaluate all pairwise particle
 c     interactions (ignoring self-interactions) and
@@ -154,12 +164,13 @@ c------------------------------------------------------------------
       integer nd, ifstoklet, ifstrslet, ntarg
       double precision eps
       integer nsource, ifppreg, ifppregtarg
-      double precision source(2, *), targ(2, *)
-      double precision stoklet(nd, 2, *), strslet(nd, 2, *)
-      double precision strsvec(nd, 2, *)
-      double precision pot(nd, 2, *), pre(nd,*), grad(nd, 2, 2, *)
-      double precision pottarg(nd, 2, *), pretarg(nd,*),
-     1     gradtarg(nd, 2, 2, *)     
+      double precision source(2, nsource), targ(2, ntarg)
+      double precision stoklet(nd, 2, nsource), strslet(nd, 2, nsource)
+      double precision strsvec(nd, 2, nsource)
+      double precision pot(nd, 2, nsource), pre(nd, nsource)
+      double precision grad(nd, 2, 2, nsource)
+      double precision pottarg(nd, 2, ntarg), pretarg(nd,ntarg),
+     1     gradtarg(nd, 2, 2, ntarg)     
 c
 c  CONTINUE FROM HERE
 c

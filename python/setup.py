@@ -13,6 +13,7 @@ pkg_name = "fmm2dpy"
 list_helm=['hfmm2dwrap.f','hfmm2dwrap_vec.f','helmkernels2d.f']
 list_lap=['rfmm2dwrap.f','rfmm2dwrap_vec.f','rlapkernels2d.f','lfmm2dwrap.f','lfmm2dwrap_vec.f','lapkernels2d.f','cfmm2dwrap.f','cfmm2dwrap_vec.f','cauchykernels2d.f']
 list_bh=['bhfmm2dwrap.f','bhkernels2d.f']
+list_stk=['stfmm2d.f','stokkernels2d.f']
 list_common=[]
 
 FLIBS = os.getenv('FMM_FLIBS')
@@ -94,24 +95,31 @@ ext_bh = Extension(
     extra_link_args=FLIBS
 )
 
+ext_st = Extension(
+    name='fmm2dpy.stfmm2d_fortran',
+    sources=['../src/stokes/stfmm2d.f']+['../src/stokes/stokkernels2d.f'],
+    f2py_options=['only:']+['stfmm2d']+['st2ddirectstokg']+['st2ddirectstokstrsg']+[':'],
+    extra_link_args=FLIBS
+)
+
 
 ## TODO: fill in the info below
 setup(
     name=pkg_name,
     python_requires='>=3.0.0',
-    version="0.0.5",
+    version="1.1.0",
     author="Travis Askham, Zydrunas Gimbutas, Leslie Greengard, Libin Lu, Michael O'Neil, Manas Rachh, and Vladimir Rokhlin",
     author_email="mrachh@flatironinstitute.org",
     description="This pacakge contains basic routines for Laplace and Helmholtz fast multipole methods in two dimensions",
     long_description=open('../README.md').read(),
     long_description_content_type='text/markdown',
-    url="",
+    url="https://github.com/flatironinstitute/fmm2d",
     packages=['fmm2dpy'],
     install_requires=[
         "numpy",
         "pytest"
     ],
-    ext_modules=[ext_helm,ext_lap,ext_bh],
+    ext_modules=[ext_helm,ext_lap,ext_bh,ext_st],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",

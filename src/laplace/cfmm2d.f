@@ -952,7 +952,6 @@ C$OMP END PARALLEL DO
 C$    time2=omp_get_wtime()
       timeinfo(2)=time2-time1
 
-cc      print *, ldc
 cc      call prin2('carray=*',carray,(ldc+1)*(ldc+1))
 
       if(ifprint .ge. 1)

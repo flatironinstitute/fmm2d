@@ -1056,7 +1056,6 @@ c
            allocate(wsave(4*nsig+100))
            allocate(transvecmpmp(nsig,4))
            call zffti(nsig, wsave)
-           if(ifprint.ge.1) print *, "Doing mpmp using hf"
            c2(1) = 0.0d0
            c2(2) = 0.0d0
            do jbox=1,4
@@ -1119,7 +1118,6 @@ C$    time1=omp_get_wtime()
         dlam = 1/(dlam/(2*pi))                 
         boxlam = boxsize(ilev)/dlam
         call zffti(nsig,wsave)
-        if(boxlam.gt.16.and.ifprint.ge.1) print *, "in high freq"
 c
 c   precompute mp to sig for all boxes 
 c       

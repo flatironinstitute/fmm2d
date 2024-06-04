@@ -250,7 +250,6 @@ c
 c         if current memory is not sufficient reallocate
 c
         if(nbtot.gt.nbmax) then
-           print *, "Reallocating"
            allocate(centers2(2,nbmax),ilevel2(nbmax),iparent2(nbmax))
            allocate(nchild2(nbmax),ichild2(4,nbmax),isrcse2(2,nbmax))
            allocate(itargse2(2,nbmax))

@@ -125,6 +125,8 @@ jobs:
         .github/workflows/python_build_posix.sh /Library/Frameworks/Python.framework/Versions/3.11/bin/python3
         PYTHON_BIN=/Library/Frameworks/Python.framework/Versions/3.7/bin/
         $PYTHON_BIN/python3 -m pip install delocate
+        wheel tags --platform-tag=macosx_10_9_x86_64 python/dist/*.whl
+        rm -rf python/dist/*universal*.whl
         ls python/dist/*.whl | xargs -n1 $PYTHON_BIN/delocate-wheel -w wheelhouse/
 
     - name: Test python bindings

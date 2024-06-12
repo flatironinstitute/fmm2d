@@ -28,7 +28,7 @@ c
      $                 nsource, source,
      $                 ifstoklet, stoklet, ifstrslet, strslet, strsvec,
      $                 ifppreg, pot, pre, grad, ntarg, targ, 
-     $                 ifppregtarg, pottarg, pretarg, gradtarg,ier)
+     $                 ifppregtarg, pottarg, pretarg, gradtarg, ier)
 
 cf2py  intent(in) nd,eps
 cf2py  intent(in) nsource,source

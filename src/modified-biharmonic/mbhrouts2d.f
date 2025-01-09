@@ -1,14 +1,3 @@
-cc Copyright (C) 2017: Travis Askham, Leslie Greengard,
-cc Zydrunas Gimbutas
-cc email: askhamwhat@gmail.com      
-cc 
-cc This software is being released under a modified FreeBSD license
-cc (see licenses folder in home directory). 
-
-c      This file contains the basic subroutines for 
-c      forming and evaluating multipole (partial wave) expansions
-c      in two dimensions.
-c
 c-----------------------------------------------------------------------
 c         **************  IMPORTANT NOTE **************  
 c
@@ -197,9 +186,9 @@ c     local
      1     diffs(0:nterms+6),kvec(0:nterms+6))
 
       do i = 1,ntarg
-         zdiff(1) = ztarg(1,i)-center(1)
-	 zdiff(2) = ztarg(2,i)-center(2)
-      	 call h2cart2polar(zdiff,r,theta)
+        zdiff(1) = ztarg(1,i)-center(1)
+        zdiff(2) = ztarg(2,i)-center(2)
+        call h2cart2polar(zdiff,r,theta)
          
 c     get values of difference functions
          ifders = 0
@@ -210,13 +199,13 @@ c     get values of difference functions
          mptemp2(0)=kvec(0)
          ztemp2=exp(eye*theta)
          ztemp1=ztemp2
-	 do j=1,nterms+2
-   	    mptemp1(j)=dcmplx(diffs(j)*dreal(ztemp1),
-     1           diffs(j)*dimag(ztemp1))
-	    mptemp2(j)=dcmplx(kvec(j)*dreal(ztemp1),
+         do j=1,nterms+2
+           mptemp1(j)=dcmplx(diffs(j)*dreal(ztemp1),
+     1             diffs(j)*dimag(ztemp1))
+           mptemp2(j)=dcmplx(kvec(j)*dreal(ztemp1),
      1           kvec(j)*dimag(ztemp1))
             ztemp1 = ztemp1*ztemp2
-	 enddo
+      enddo
          
 c     evaluate
          do j = 1,nd

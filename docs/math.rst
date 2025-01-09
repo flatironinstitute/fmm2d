@@ -35,7 +35,7 @@ given by
 .. math::
    :label: rlap_nbody
 
-    u(x) = \sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}  \, , 
+    u(x) = -\frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}\right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{R}^{2}$
 at the source and target locations. When $x=x_{j}$, the term
@@ -51,14 +51,14 @@ $j=1,2,\ldots N$,
 denote a collection of dipole strengths, and let $d_{j} \in \mathbb{R}^{2}$,
 $j=1,2,\ldots N$, denote the corresponding dipole orientation vectors.
 
-The Laplace FMM (rfmm2d) computes 
+The Laplace FMM (lfmm2d) computes 
 the potential $u(x) \in \mathbb{C}$ 
 given by
 
 .. math::
    :label: llap_nbody
 
-    u(x) = \sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}  \, , 
+    u(x) = -\frac{1}{2\pi} \left(\sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}\right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{C}^{2}$
 at the source and target locations. (The outputs are complex-valued in this case because
@@ -83,7 +83,7 @@ given by
 .. math::
    :label: clap_nbody
 
-    u(z) = \sum_{j=1}^{N} c_{j} \log{(\|z-\xi_{j}\|)} - \frac{v_{j}}{z-\xi_{j}}  \, , 
+    u(z) = -\frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{(\|z-\xi_{j}\|)} - \frac{v_{j}}{z-\xi_{j}}\right)  \, , 
 
 and its 
 derivatives $u'(z), u''(z) \in
@@ -111,7 +111,7 @@ given by
 .. math::
    :label: helm_nbody
 
-    u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)  \, , 
+    u(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{C}^{2}$
 at the source and target locations, where $H_{0}^{(1)}$ is the Hankel function
@@ -136,21 +136,21 @@ given by
 .. math::
    :label: biharm_nbody
 
-    u(z) &= \sum_{j=1}^{N} 2 \, c_{j,1} \log{\|z - \xi_{j}\|} + 
+    u(z) &= \frac{1}{2\pi} \left(\sum_{j=1}^{N} 2 \, c_{j,1} \log{\|z - \xi_{j}\|} + 
     c_{j,2} \frac{z-\xi_{j}}{\overline{z-\xi_{j}}} + \frac{v_{j,1}}{z - \xi_{j}} + 
     \frac{v_{j,3}}{\overline{z-\xi_{j}}} + 
-    v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^2} \, , \\
-    P_{z} \frac{\mathrm{d}}{\mathrm{d} z}u(z) &= \sum_{j=1}^{N} \frac{c_{j,1}}{z-\xi_{j}} -
-    \frac{v_{j,1}}{(z-\xi_{j})^2} \, \\
+    v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^2} \right) \, , \\
+    P_{z} \frac{\mathrm{d}}{\mathrm{d} z}u(z) &= \frac{1}{2\pi} \left(\sum_{j=1}^{N} \frac{c_{j,1}}{z-\xi_{j}} -
+    \frac{v_{j,1}}{(z-\xi_{j})^2} \right) \, \\
     P_{\overline{z}} \frac{\mathrm{d}}{\mathrm{d} z} u(z) &= 
-    \sum_{j=1}^{N} \frac{c_{j,2}}{\overline{z-\xi_{j}}} + 
-    \frac{v_{j,2}}{(\overline{z-\xi_{j}})^2} \,
+    \frac{1}{2\pi} \left(\sum_{j=1}^{N} \frac{c_{j,2}}{\overline{z-\xi_{j}}} + 
+    \frac{v_{j,2}}{(\overline{z-\xi_{j}})^2} \right) \,
     ,\\
     \frac{\mathrm{d}}{\mathrm{d}\overline{z}} u(z) &= 
-    \sum_{j=1}^{N} \frac{c_{j,1}}{\overline{z-\xi_{j}}} - 
+    \frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j,1}}{\overline{z-\xi_{j}}} - 
     c_{j,2} \frac{z-\xi_{j}}{(\overline{z-\xi_{j}})^2} - 
     \frac{v_{j,3}}{(\overline{z-\xi_{j}})^2} - 
-    2v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^3} \, , \\
+    2v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^3}\right) \, , \\
 
 at the source and target locations. 
 When $z=\xi_{j}$, the term
@@ -216,7 +216,7 @@ Stokes FMM
 Let $G^{\textrm{stok}}(x,y)$ denote the Stokeslet given by
 
 .. math::
-    G^{\textrm{stok}}(x,y) = \frac{1}{2}
+    G^{\textrm{stok}}(x,y) = \frac{1}{4\pi}
     \begin{bmatrix}
     -\log{\|x-y \|} +  \frac{(x_{1}-y_{1})^2}{\|x-y\|^2} & \frac{(x_{1}-y_{1})
     (x_{2}-y_{2})}{\|x-y \|^2} \\
@@ -294,7 +294,7 @@ given by
 .. math::
     :label: helm_nbody_vec
 
-    u_{\ell}(x) = \sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)  \, , 
+    u_{\ell}(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
 
 and its gradients $\nabla u_{\ell}(x) \in \mathbb{C}^{2}$
 at the source and target locations. 

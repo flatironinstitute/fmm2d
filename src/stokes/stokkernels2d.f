@@ -167,9 +167,8 @@ c
 c
 
       subroutine st2ddirectstokstrsg(nd,sources,ifstoklet,
-     1     stoklet,
-     1     istress, strslet, strsvec, ns,targ,nt,pot,pre,
-     2     grad,thresh)
+     1     stoklet, istress, strslet, strsvec, ns, targ, nt, pot,
+     2     pre, grad, thresh)
 c
 c     This subroutine evaluates the potential and gradient due
 c     to a collection of Stokeslet and stresslet sources and adds
@@ -188,7 +187,6 @@ c     For x a source point, the self-interaction in the sum is omitted.
 c
 c
 c-----------------------------------------------------------------------
-      
 c     INPUT:
 c     
 c     nd in: integer

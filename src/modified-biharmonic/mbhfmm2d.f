@@ -1,21 +1,8 @@
-cc Copyright (C) 2018-2021: Leslie Greengard, Zydrunas Gimbutas, 
-cc  Manas Rachh, Travis Askham
-cc Contact: greengard@cims.nyu.edu
-cc 
-cc This program is free software; you can redistribute it and/or modify 
-cc it under the terms of the GNU General Public License as published by 
-cc the Free Software Foundation; either version 2 of the License, or 
-cc (at your option) any later version.  This program is distributed in 
-cc the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
-cc even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
-cc PARTICULAR PURPOSE.  See the GNU General Public License for more 
-cc details. You should have received a copy of the GNU General Public 
-cc License along with this program; 
-cc if not, see <http://www.gnu.org/licenses/>.
-ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
-c    $Date$
-c    $Revision$
+c
+c
+c
+
       subroutine mbhfmm2d(nd,eps,beta,ns,sources,ifcharge,charge,
      1     ifdipole,dipstr,dipvec,ifquadpole,quadstr,quadvec,ifoctpole,
      2     octstr,octvec,iper,ifpgh,pot,grad,hess,nt,targ,ifpghtarg,

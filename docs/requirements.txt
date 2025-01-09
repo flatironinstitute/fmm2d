@@ -1,2 +1,2 @@
-texext
 sphinxcontrib.bibtex
+sphinx-math-dollar

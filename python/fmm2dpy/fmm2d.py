@@ -32,7 +32,7 @@ def hfmm2d(*,eps,zk,sources,charges=None,dipstr=None,dipvec=None,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
       Args:
@@ -208,13 +208,13 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + d_{j}v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
+          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) - d_{j}v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
 
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -227,9 +227,9 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
         charges: float(nd,n) or float(n)
                charge densities (c_{j})
         dipstr: float(nd,n) or float(n)
-               dipole densities (d_{j})
+               dipole densities (v_{j})
         dipvec: float(nd,2,n) or float(2,n)
-               dipole orientation vectors (v_{j})
+               dipole orientation vectors (d_{j})
         targets: float(2,nt)
                 target locations (x)
         pg:  integer
@@ -475,7 +475,7 @@ def lfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -735,7 +735,7 @@ def cfmm2d(*,eps,sources,charges=None,dipstr=None,
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths,
       and $x_{j}$ are the source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -995,7 +995,7 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
       $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
       source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -1277,7 +1277,7 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When |x-x_{m}| \leq thresh, the term corresponding to $x_{m}$ is dropped from the
+      When |x-x_{m}| \leq thresh, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -1396,7 +1396,7 @@ def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is dropped from the
+      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -1519,7 +1519,7 @@ def l2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
       $v_{j}$ are the dipole orientation vectors, and 
       $x_{j}$ are the source locations.
 
-      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is dropped from the
+      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -1641,7 +1641,7 @@ def c2ddir(*,sources,targets,charges=None,dipstr=None,
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths 
       and $x_{j}$ are the source locations.
 
-      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is dropped from the
+      When |x-x_{m}|leq thresh, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 
@@ -1759,7 +1759,7 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
       $d_{j,3}$ are the dipole strengths, and $x_{j}$ are the 
       source locations.
 
-      When $x=x_{m}$, the term corresponding to $x_{m}$ is dropped from the
+      When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
 

@@ -1,0 +1,5 @@
+if (WIN32)
+    install(TARGETS hfmm2d_fortran lfmm2d_fortran bhfmm2d_fortran stfmm2d_fortran DESTINATION fmm2dpy RUNTIME DESTINATION fmm2dpy)
+else ()
+    install(TARGETS hfmm2d_fortran lfmm2d_fortran bhfmm2d_fortran stfmm2d_fortran DESTINATION fmm2dpy)
+endif ()

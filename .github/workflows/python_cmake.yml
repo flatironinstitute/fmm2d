@@ -3,13 +3,13 @@ name: Python cmake build test
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v*
       - py_v*
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   Linux:

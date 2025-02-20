@@ -15,17 +15,16 @@ The Laplace FMM comes in three varieties
 * cfmm2d: all quantities are double complex, except there are no dipole orientation vectors. Instead, the dipole kernel is assumed to be of the form $1/(z - \xi_{j})$ where $z, \xi_{j}$ are the target and source locations, viewed as points in the complex
   plane given by $z = x_{1} + i\cdot x_{2}$, and $\xi_{j} = x_{j,1} + i \cdot x_{j,2}$. 
   In this case, instead of gradients and Hessians, the first and second derivatives of 
-  the potential with respect to $z$ are returned and, with a slight abuse of
-  notation, we set $\frac{\mathrm{d}}{\mathrm{d} z} \log(\|z\|) = 1/z$.
+  the potential with respect to $z$ are returned.
  
 
 Laplace FMM (rfmm2d)
 ---------------------
 Let $c_{j} \in \mathbb{R}$, 
 $j=1,2,\ldots N$, 
-denote a collection of charge strengths, let $v_{j} \in \mathbb{R}$,
+denote a collection of charge strengths, let $d_{j} \in \mathbb{R}$,
 $j=1,2,\ldots N$, 
-denote a collection of dipole strengths, and let $d_{j} \in \mathbb{R}^{2}$,
+denote a collection of dipole strengths, and let $v_{j} \in \mathbb{R}^{2}$,
 $j=1,2,\ldots N$, denote the corresponding dipole orientation vectors.
 
 The Laplace FMM (rfmm2d) computes 
@@ -35,7 +34,7 @@ given by
 .. math::
    :label: rlap_nbody
 
-    u(x) = -\frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}\right)  \, , 
+    u(x) = \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|x-x_{j}\|}\right)} + d_{j}\frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|^2} \right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{R}^{2}$
 at the source and target locations. When $x=x_{j}$, the term
@@ -46,9 +45,9 @@ Laplace FMM (lfmm2d)
 ---------------------
 Let $c_{j} \in \mathbb{C}$, 
 $j=1,2,\ldots N$, 
-denote a collection of charge strengths, let $v_{j} \in \mathbb{C}$,
+denote a collection of charge strengths, let $d_{j} \in \mathbb{C}$,
 $j=1,2,\ldots N$, 
-denote a collection of dipole strengths, and let $d_{j} \in \mathbb{R}^{2}$,
+denote a collection of dipole strengths, and let $v_{j} \in \mathbb{R}^{2}$,
 $j=1,2,\ldots N$, denote the corresponding dipole orientation vectors.
 
 The Laplace FMM (lfmm2d) computes 
@@ -58,7 +57,7 @@ given by
 .. math::
    :label: llap_nbody
 
-    u(x) = -\frac{1}{2\pi} \left(\sum_{j=1}^{N} c_{j} \log{(\|x-x_{j}\|)} - v_{j} d_{j}\cdot \nabla \log{(\|x-x_{j}\|)}\right)  \, , 
+    u(x) = \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|x-x_{j}\|}\right)} + d_{j}\frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|^2} \right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{C}^{2}$
 at the source and target locations. (The outputs are complex-valued in this case because
@@ -77,17 +76,18 @@ denote a collection of dipole strengths.
 
 For $z, \xi_{j} \in \mathbb{C}$, 
 the Laplace FMM (cfmm2d) computes 
-the potential $u(z) \in \mathbb{C}$ 
+the potential $u(z) \in \mathbb{C}$, its derivative $u'(z)$, and
+its second derivative $u''(z)$ given by
+
 given by
 
 .. math::
    :label: clap_nbody
 
-    u(z) = -\frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{(\|z-\xi_{j}\|)} - \frac{v_{j}}{z-\xi_{j}}\right)  \, , 
+    u(z) &= \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|z-\xi_{j}\|}\right)} + \frac{d_{j}}{z-\xi_{j}}\right)  \, , \\
+    u'(z) &= -\frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j}}{z-\xi_{j}}  + \frac{d_{j}}{(z-\xi_{j})^2}\right)  \, , \\
+    u''(z) &= \frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j}}{(z-\xi_{j})^2}  + \frac{2d_{j}}{(z-\xi_{j})^3}\right)  \, , \\
 
-and its 
-derivatives $u'(z), u''(z) \in
-\mathbb{C}$
 at the source and target locations. When $z=\xi_{j}$, the term
 corresponding to $\xi_{j}$ is omitted from the sum. 
 As noted above, we define $\frac{\mathrm{d}}{\mathrm{d} z} \log(\|z\|) = 1/z$.
@@ -111,56 +111,13 @@ given by
 .. math::
    :label: helm_nbody
 
-    u(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{j} d_{j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
+    u(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) + k d_{j} \frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|} H_{1}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
 
 and its gradient $\nabla u(x) \in \mathbb{C}^{2}$
-at the source and target locations, where $H_{0}^{(1)}$ is the Hankel function
-of the first kind of order $0$. When $x=x_{j}$, the term
+at the source and target locations, where 
+$H_{\ell}^{(1)}$ is the Hankel function
+of the first kind of order $\ell$. When $x=x_{j}$, the term
 corresponding to $x_{j}$ is omitted from the sum.
-
-
-Biharmonic FMM
-***************
-Let $c_{j} = (c_{j,1}, c_{j,2})\in \mathbb{C}^2$, 
-$j=1,2,\ldots N$, 
-denote a collection of charge strengths, and let
-$v_{j} = (v_{j,1}, v_{j,2}, v_{j,3}) \in \mathbb{C}^{3}$,
-$j=1,2,\ldots N$, 
-denote a collection of dipole strengths.
-
-For $z, \xi_j \in \mathbb{C}$, the biharmonic FMM computes 
-the potential $u(z)$ and its `gradient` = 
-$(P_{z} \frac{\mathrm{d}}{\mathrm{d}z}, P_{\overline{z}} \frac{\mathrm{d}}{\mathrm{d}z}, \frac{\mathrm{d}}{\mathrm{d}\overline{z}})$
-given by
-
-.. math::
-   :label: biharm_nbody
-
-    u(z) &= \frac{1}{2\pi} \left(\sum_{j=1}^{N} 2 \, c_{j,1} \log{\|z - \xi_{j}\|} + 
-    c_{j,2} \frac{z-\xi_{j}}{\overline{z-\xi_{j}}} + \frac{v_{j,1}}{z - \xi_{j}} + 
-    \frac{v_{j,3}}{\overline{z-\xi_{j}}} + 
-    v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^2} \right) \, , \\
-    P_{z} \frac{\mathrm{d}}{\mathrm{d} z}u(z) &= \frac{1}{2\pi} \left(\sum_{j=1}^{N} \frac{c_{j,1}}{z-\xi_{j}} -
-    \frac{v_{j,1}}{(z-\xi_{j})^2} \right) \, \\
-    P_{\overline{z}} \frac{\mathrm{d}}{\mathrm{d} z} u(z) &= 
-    \frac{1}{2\pi} \left(\sum_{j=1}^{N} \frac{c_{j,2}}{\overline{z-\xi_{j}}} + 
-    \frac{v_{j,2}}{(\overline{z-\xi_{j}})^2} \right) \,
-    ,\\
-    \frac{\mathrm{d}}{\mathrm{d}\overline{z}} u(z) &= 
-    \frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j,1}}{\overline{z-\xi_{j}}} - 
-    c_{j,2} \frac{z-\xi_{j}}{(\overline{z-\xi_{j}})^2} - 
-    \frac{v_{j,3}}{(\overline{z-\xi_{j}})^2} - 
-    2v_{j,2} \frac{z - \xi_{j}}{(\overline{z-\xi_{j}})^3}\right) \, , \\
-
-at the source and target locations. 
-When $z=\xi_{j}$, the term
-corresponding to $\xi_{j}$ is omitted from the sum. 
-The expression $P_{z} \frac{\mathrm{d}}{\mathrm{d}z}$
-denotes the component of the derivative $\frac{\mathrm{d}}{\mathrm{d} z}$
-which is purely a function of $z$, and the expression
-$P_{\overline{z}} \frac{\mathrm{d}}{\mathrm{d}z}$
-denotes the component of the derivative $\frac{\mathrm{d}}{\mathrm{d} z}$
-which is purely a function of $\overline{z}$.
 
 
 Modified Biharmonic FMM
@@ -294,7 +251,7 @@ given by
 .. math::
     :label: helm_nbody_vec
 
-    u_{\ell}(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) - v_{\ell,j} d_{\ell,j}\cdot \nabla H_{0}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
+    u_{\ell}(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{\ell,j} H_{0}^{(1)}(k\|x-x_{j}\|) + k d_{\ell,j} \frac{v_{\ell,j} \cdot (x-x_{j})}{\|x-x_{j}\|} H_{1}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
 
 and its gradients $\nabla u_{\ell}(x) \in \mathbb{C}^{2}$
 at the source and target locations. 

@@ -21,28 +21,28 @@ def hfmm2d(*,eps,zk,sources,charges=None,dipstr=None,dipvec=None,
           targets=None,pg=0,pgt=0,nd=1):
     r"""
       This subroutine computes the N-body Helmholtz interactions
-      in three dimensions where the interaction kernel is given by e^{ikr}/r 
-      and its gradients. 
+      and its gradients in two dimensions given by
 
       .. math::
 
-          u(x) = \sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k \|x-x_{j}\|) - d_{j} v_{j}\cdot \\nabla \left( H_{0}^{(1)}(k \|x-x_{j}\|) \\right)  \, ,
+          u(x) = \frac{i}{4}\left(\sum_{j=1}^{N} c_{j} H_{0}^{(1)}(k\|x-x_{j}\|) + k d_{j} \frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|} H_{1}^{(1)}(k\|x-x_{j}\|)\right)  \, , 
 
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole densities, 
       $v_{j}$ are the dipole orientation vectors, and 
-      $x_{j}$ are the source locations.
+      $x_{j}$ are the source locations. Here $H_{\ell}^{(1)}$ is the Hankel
+      function of the first kind of order $\ell$.
 
       When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
       sum
 
       Args:
-        eps (float): precision requested
+        eps (double): precision requested
         zk (complex): Helmholtz parameter 
-        sources (float(2,n)): source locations ($x_{j}$)
+        sources (double(2,n)): source locations ($x_{j}$)
         charges (complex(nd,n) or complex(n)): charge densities ($c_{j}$)
         dipstr (complex(nd,n) or complex(n)): dipole densities ($d_{j}$)
-        dipvec (float(nd,2,n) or float(2,n)): dipole orientation vectors ($v_{j}$)
-        targets (float(2,nt)): target locations (x)
+        dipvec (double(nd,2,n) or double(2,n)): dipole orientation vectors ($v_{j}$)
+        targets (double(2,nt)): target locations (x)
         pg (integer): source eval flag. Potential at sources evaluated if pg = 1. Potenial and gradient at sources evaluated if pg=2. Potential, gradient and hessian evaluated at sources if pg=3
         pgt (integer): target eval flag. Potential at targets evaluated if pgt = 1. Potenial and gradient at targets evaluated if pgt=2. Potential, gradient and hessian evaluated at targets if pgt=3
         nd (integer): number of densities
@@ -59,7 +59,7 @@ def hfmm2d(*,eps,zk,sources,charges=None,dipstr=None,dipvec=None,
 
 
       Example:
-        see hfmmexample.py
+        see examples/hfmm_example.py
     r"""
     
     out = Output()
@@ -202,13 +202,11 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
           targets=None,pg=0,pgt=0,nd=1):
     r"""
       This subroutine computes the N-body Laplace interactions
-      in two dimensions where the interaction kernel is given by log(r) 
-      and its gradients. 
-
+      and its gradients in two dimensions given by
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) - d_{j}v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
+          u(x) = \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|x-x_{j}\|}\right)} + d_{j}\frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|^2} \right)  \, , 
 
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths,
       $v_{j}$ are the dipole orientation vectors, and 
@@ -219,18 +217,17 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
 
 
       Args:
-        eps: float
+        eps: double
              precision requested
-
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
-        charges: float(nd,n) or float(n)
+        charges: double(nd,n) or double(n)
                charge densities (c_{j})
-        dipstr: float(nd,n) or float(n)
+        dipstr: double(nd,n) or double(n)
                dipole densities (v_{j})
-        dipvec: float(nd,2,n) or float(2,n)
+        dipvec: double(nd,2,n) or double(2,n)
                dipole orientation vectors (d_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
         pg:  integer
                source eval flag
@@ -256,7 +253,7 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
         out.hesstarg: hessian at target locations if requested
       
       Example:
-        see rfmmexample.py
+        see examples/rfmm_example.py
     r"""
 
     out = Output()
@@ -462,14 +459,12 @@ def rfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
 def lfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
           targets=None,pg=0,pgt=0,nd=1):
     r"""
-      This subroutine computes the N-body Laplace interactions
-      in two dimensions where the interaction kernel is given by log(r) 
-      and its gradients. 
-
+      This subroutine computes the N-body Laplace interactions.
+      its gradients and hessians in two dimensions given by
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + d_{j}v_{j} \cdot \\nabla( log(\|x-x_{j}\|) )  \, ,
+          u(x) = \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|x-x_{j}\|}\right)} + d_{j}\frac{v_{j} \cdot (x-x_{j})}{\|x-x_{j}\|^2} \right)  \, , 
 
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths,
       $v_{j}$ are the dipole orientation vectors, and 
@@ -480,31 +475,28 @@ def lfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
 
 
       Args:
-        eps: float
+        eps: double
              precision requested
-
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,n) or complex(n)
                charge densities (c_{j})
         dipstr: complex(nd,n) or complex(n)
                dipole densities (d_{j})
-        dipvec: float(nd,2,n) or float(2,n)
+        dipvec: double(nd,2,n) or double(2,n)
                dipole orientation vectors (v_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
         pg:  integer
                source eval flag
                potential at sources evaluated if pg = 1
                potenial and gradient at sources evaluated if pg=2
                potential, gradient and hessian at sources evaluated if pg=3
-
         pgt:  integer
                target eval flag
                potential at targets evaluated if pgt = 1
                potenial and gradient at targets evaluated if pgt=2
                potential, gradient and hessian at targets evaluated if pgt=3
-        
         nd:   integer
                number of densities
 
@@ -517,7 +509,7 @@ def lfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
         out.hesstarg: hessian at target locations if requested
       
       Example:
-        see lfmmexample.py
+        see examples/lfmm_example.py
     r"""
 
     out = Output()
@@ -723,59 +715,55 @@ def lfmm2d(*,eps,sources,charges=None,dipstr=None,dipvec=None,
 def cfmm2d(*,eps,sources,charges=None,dipstr=None,
           targets=None,pg=0,pgt=0,nd=1):
     r"""
-      This subroutine computes the N-body Laplace interactions with Cauchy kernel
-      in two dimensions where the interaction kernel is given by log(r)
-      and its gradients. 
-
+      This subroutine computes the N-body Laplace interactions 
+      with Cauchy kernel along with its first and second derivative
+      in two dimensions given by 
 
       .. math:: 
 
-          u(x) = \sum_{j=1}^{N} c_{j} * log\(\|x-x_{j}\|\) + d_{j}/(x-x_{j})  \, ,
+          u(z) &= \frac{1}{2\pi}\left(\sum_{j=1}^{N} c_{j} \log{\left(\frac{1}{\|z-\xi_{j}\|}\right)} + \frac{v_{j}}{z-\xi_{j}}\right)  \, , \\
+          u'(z) &= -\frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j}}{z-\xi_{j}}  + \frac{v_{j}}{(z-\xi_{j})^2}\right)  \, , \\
+          u''(z) &= \frac{1}{2\pi}\left(\sum_{j=1}^{N} \frac{c_{j}}{(z-\xi_{j})^2}  + \frac{2v_{j}}{(z-\xi_{j})^3}\right)  \, , \\
 
       where $c_{j}$ are the charge densities, $d_{j}$ are the dipole strengths,
       and $x_{j}$ are the source locations.
-
       When $x=x_{m}$, the term corresponding to $x_{m}$ is omitted from the
-      sum
-
+      sum. Here $z = x_{1} + i \cdot x_{2}$, and $\xi_{j} = x_{j,1} + i\cdot x_{j,2}$.
 
       Args:
-        eps: float
+        eps: double
              precision requested
-
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,n) or complex(n)
                charge densities (c_{j})
         dipstr: complex(nd,n) or complex(n)
                dipole densities (d_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
         pg:  integer
                source eval flag
                potential at sources evaluated if pg = 1
                potenial and gradient at sources evaluated if pg=2
                potential, gradient and hessian at sources evaluated if pg=3
-
         pgt:  integer
                target eval flag
                potential at targets evaluated if pgt = 1
                potenial and gradient at targets evaluated if pgt=2
                potential, gradient and hessian at targets evaluated if pgt=3
-        
         nd:   integer
                number of densities
 
       Returns:
         out.pot: potential at source locations if requested
-        out.grad: gradient at source locations if requested
-        out.hess: hessian at source locations if requested
+        out.grad: derivative of potential at source locations if requested
+        out.hess: second derivative of potential at source locations if requested
         out.pottarg: potential at target locations if requested
-        out.gradtarg: gradient at target locations if requested
-        out.hesstarg: hessian at target locations if requested
+        out.gradtarg: derivative of potential at target locations if requested
+        out.hesstarg: second derivative of potential at target locations if requested
       
       Example:
-        see cfmmexample.py
+        see examples/cfmm_example.py
     r"""
 
     out = Output()
@@ -975,7 +963,6 @@ def cfmm2d(*,eps,sources,charges=None,dipstr=None,
 
     return out
 
-
 def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
           targets=None,pg=0,pgt=0,nd=1):
     r"""
@@ -1000,16 +987,16 @@ def bhfmm2d(*,eps,sources,charges=None,dipoles=None,
 
 
       Args:
-        eps: float
+        eps: double
              precision requested
 
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,2,n) or complex(2,n)
                charge densities (c_{j,1}, c_{j,2})
         dipoles: complex(nd,3,n) or complex(3,n)
                dipole densities (d_{j,1}, d_{j,2}, d_{j,3})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
         pg:  integer
                source eval flag
@@ -1135,17 +1122,17 @@ def stfmm2d(*,eps,sources,stoklet=None,strslet=None,strsvec=None,targets=None,if
       and r = \sqrt{r_{1}^2 + r_{2}^2}
       
       Args:
-        eps: float   
+        eps: double   
                precision requested
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations
-        stoklet: float(nd,2,n) or float(2,n)
+        stoklet: double(nd,2,n) or double(2,n)
                Stokeslet charge strengths (sigma vectors above)
-        strslet: float(nd,2,n) or float(2,n)
+        strslet: double(nd,2,n) or double(2,n)
                stresslet strengths (mu vectors above)
-        strsvec: float(nd,2,n) or float(2,n)
+        strsvec: double(nd,2,n) or double(2,n)
                stresslet orientations (nu vectors above)
-        targets: float(2,nt)
+        targets: double(2,nt)
                target locations (x)
 
         ifppreg: integer
@@ -1264,7 +1251,7 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
           pgt=0,nd=1,thresh=1e-16):
     r"""
       This subroutine computes the N-body Helmholtz interactions
-      in three dimensions where the interaction kernel is given by $H_{0}^{(1)(kr)$ 
+      in two dimensions where the interaction kernel is given by $H_{0}^{(1)(kr)$ 
       and its gradients. 
 
 
@@ -1282,19 +1269,19 @@ def h2ddir(*,zk,sources,targets,charges=None,dipstr=None,dipvec=None,
 
 
       Args:
-        eps: float   
+        eps: double   
                precision requested
         zk: complex
                Helmholtz parameter - k
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,n) or complex(n)
                 charge densities (c_{j})
         dipstr: complex(nd,n) or complex(n)
                 dipole densities (d_{j})
-        dipole orientation vectors: float(nd,2,n) or complex(2,n)
+        dipole orientation vectors: double(nd,2,n) or complex(2,n)
                 dipole orientation vectors (v_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
 
         pgt:  integer
@@ -1401,15 +1388,15 @@ def r2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
 
 
       Args:
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
-        charges: float(nd,n) or float(n)
+        charges: double(nd,n) or double(n)
                 charge densities (c_{j})
-        dipstr: float(nd,n) or float(n)
+        dipstr: double(nd,n) or double(n)
                 dipole densities  (d_{j})
-        dipvec: float(nd,2,n) or float(2,n)
+        dipvec: double(nd,2,n) or double(2,n)
                 dipole orientation vectors (v_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
 
         pgt:  integer
@@ -1524,15 +1511,15 @@ def l2ddir(*,sources,targets,charges=None,dipstr=None,dipvec=None,
 
 
       Args:
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,n) or complex(n)
                 charge densities (c_{j})
         dipstr: complex(nd,n) or complex(n)
                 dipole densities  (d_{j})
-        dipvec: float(nd,2,n) or float(2,n)
+        dipvec: double(nd,2,n) or double(2,n)
                 dipole orientation vectors (v_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
 
         pgt:  integer
@@ -1646,13 +1633,13 @@ def c2ddir(*,sources,targets,charges=None,dipstr=None,
 
 
       Args:
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,n) or complex(n)
                 charge densities (c_{j})
         dipstr: complex(nd,n) or complex(n)
                 dipole densities  (d_{j})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
 
         pgt:  integer
@@ -1764,16 +1751,16 @@ def bh2ddir(*,sources,targets,charges=None,dipoles=None,
 
 
       Args:
-        eps: float
+        eps: double
              precision requested
 
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations (x_{j})
         charges: complex(nd,2,n) or complex(2,n)
                charge densities (c_{j,1}, c_{j,2})
         dipoles: complex(nd,3,n) or complex(3,n)
                dipole densities (d_{j,1}, d_{j,2}, d_{j,3})
-        targets: float(2,nt)
+        targets: double(2,nt)
                 target locations (x)
         pgt:  integer
                target eval flag
@@ -1893,17 +1880,17 @@ def st2ddir(*,eps,sources,stoklet=None,strslet=None,strsvec=None,targets=None,if
       and r = \sqrt{r_{1}^2 + r_{2}^2}
       
       Args:
-        eps: float   
+        eps: double   
                precision requested
-        sources: float(2,n)   
+        sources: double(2,n)   
                source locations
-        stoklet: float(nd,2,n) or float(2,n)
+        stoklet: double(nd,2,n) or double(2,n)
                Stokeslet charge strengths (sigma vectors above)
-        strslet: float(nd,2,n) or float(2,n)
+        strslet: double(nd,2,n) or double(2,n)
                stresslet strengths (mu vectors above)
-        strsvec: float(nd,2,n) or float(2,n)
+        strsvec: double(nd,2,n) or double(2,n)
                stresslet orientations (nu vectors above)
-        targets: float(2,nt)
+        targets: double(2,nt)
                target locations (x)
 
         ifppreg: integer

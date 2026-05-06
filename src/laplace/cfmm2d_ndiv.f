@@ -114,9 +114,10 @@ c
 c
 cc     additional fmm variables
 
-      integer lmptot
+      integer *8 lmptot
       real *8, allocatable :: rscales(:)
-      integer, allocatable :: nterms(:),iaddr(:,:)
+      integer, allocatable :: nterms(:)
+      integer *8, allocatable :: iaddr(:,:)
       real *8, allocatable :: rmlexp(:)
       complex *16, allocatable :: mptemp(:)
 

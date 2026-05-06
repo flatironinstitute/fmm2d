@@ -110,9 +110,10 @@ c
 c
 cc     additional fmm variables
 
-      integer lmptot
+      integer *8 lmptot
       real *8, allocatable :: rscales(:)
-      integer, allocatable :: nterms(:),iaddr(:,:)
+      integer, allocatable :: nterms(:)
+      integer *8, allocatable :: iaddr(:,:)
       real *8, allocatable :: rmlexp(:)
       complex *16, allocatable :: mptemp(:)
 
@@ -617,7 +618,8 @@ c------------------------------------------------------------------
       complex *16 gradtarg(nd,*)
       complex *16 hesstarg(nd,*)
 
-      integer iaddr(2,nboxes),lmptmp
+      integer *8 iaddr(2,nboxes)
+      integer lmptmp
       real *8 rmlexp(*)
       complex *16 mptemp(lmptmp)
        
@@ -1649,8 +1651,11 @@ c------------------------------------------------------------------
 
       implicit none
       integer nlevels,nterms(0:nlevels),nd,nsig,nt1,nt2,next235
-      integer iaddr(2,*), lmptot, laddr(2,0:nlevels)
-      integer ibox,i,iptr,istart,nn,itmp
+      integer *8 iaddr(2,*), lmptot
+      integer laddr(2,0:nlevels)
+      integer ibox,i,iptr
+      integer *8 nn,itmp
+      integer *8 istart
       real *8 ddn
 c
       istart = 1

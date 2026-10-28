@@ -452,6 +452,8 @@ c---------------------------------------------------------------------
       real *8 rr2,rr3,thresh2
 
 c
+      thresh2 = thresh*thresh
+
       do j = 1,nt
          do i = 1,ns
             xdiff=targ(1,j)-sources(1,i)
